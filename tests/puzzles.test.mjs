@@ -452,3 +452,13 @@ test('block views "Show me": the camera ends on the marked answer', () => {
     }
   }
 });
+
+test('a set of every type at every level is quick to make (cheap tablets are ~10x slower)', () => {
+  // generous on purpose: this only catches a change that makes generation many times slower
+  for (const type of Object.keys(T.GEN)) for (const level of LEVELS) {
+    const t0 = performance.now();
+    make(type, level, 10);
+    const ms = performance.now() - t0;
+    assert.ok(ms < 400, `${type} at ${level.name} took ${ms.toFixed(0)} ms for ten puzzles`);
+  }
+});

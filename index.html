@@ -52,7 +52,7 @@ h1{font-family:var(--display);font-weight:800;font-size:clamp(1.9rem,5vw,2.6rem)
 .btn{font:inherit;font-weight:700;border:1.5px solid var(--ink);background:var(--card);color:var(--ink);border-radius:8px;padding:7px 14px;cursor:pointer}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--paper)}
 .actions{margin-left:auto}
-button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button:focus-visible,a:focus-visible,.ptable-wrap:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .score{font-family:var(--display);font-weight:800;font-size:1.25rem;font-variant-numeric:tabular-nums;margin-right:4px}
 .list{display:flex;flex-direction:column}
 .q{display:flex;flex-direction:column;gap:12px;padding-block:20px;border-bottom:1px solid var(--rule)}
@@ -176,7 +176,7 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .nowplaying{font-family:var(--display);font-weight:800;font-size:1.2rem;color:var(--accent)}
 @media (max-width:640px){.tiles{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.tile .tl{font-size:.9rem}.actrow .actions{margin-left:0}}
 @media (prefers-reduced-motion:reduce){.tile{transition:none}.tile:hover{transform:none}}
-:root[data-color="orange"]{--accent:#b8510f;--accent-soft:#fbe7d8;--flap:#f3cdb0}
+:root[data-color="orange"]{--accent:#a8490d;--accent-soft:#fbe7d8;--flap:#f3cdb0}
 :root[data-color="green"]{--accent:#2a7556;--accent-soft:#ddf0e6;--flap:#bfe0cf}
 :root[data-color="purple"]{--accent:#6a4c9c;--accent-soft:#ece5f6;--flap:#d6cbea}
 :root[data-color="yellow"]{--accent:#8a6200;--accent-soft:#fbf0c9;--flap:#f1dc94}
@@ -1446,11 +1446,13 @@ function lookKey(cols){
   const X0=Math.min(...pr.map(p=>p[0])),X1=Math.max(...pr.map(p=>p[0])),Y0=Math.min(...pr.map(p=>p[1])),Y1=Math.max(...pr.map(p=>p[1]));
   let s='';
   for(let Y=Y0+.07;Y<Y1;Y+=.14)for(let X=X0+.07;X<X1;X+=.14){
-    const a=X/.866,b=Y;let best=-Infinity,code='.';
+    // the ray enters each cube when it has crossed all three slabs, and leaves through the face it crosses first
+    const a=X/.866,b=Y,u=-b-a/2,v=-b+a/2;let best=-Infinity,code='.';
     for(const q of cubes){
-      const iv=[[q.z,q.z+1,'t'],[q.x-b-a/2,q.x+1-b-a/2,'r'],[q.y-b+a/2,q.y+1-b+a/2,'f']];
-      const lo=Math.max(...iv.map(v=>v[0])),hiV=iv.reduce((m,v)=>v[1]<m[1]?v:m);
-      if(hiV[1]-lo>1e-6&&hiV[1]>best){best=hiV[1];code=hiV[2]+(q.d?'D':'')}
+      let lo=q.z,h=q.z+1,k='t';const rx=q.x+u,fy=q.y+v;
+      if(rx>lo)lo=rx;if(fy>lo)lo=fy;
+      if(rx+1<h){h=rx+1;k='r'}if(fy+1<h){h=fy+1;k='f'}
+      if(h-lo>1e-6&&h>best){best=h;code=k+(q.d?'D':'')}
     }
     s+=code;
   }
@@ -1859,7 +1861,7 @@ if(typeof document!=='undefined'){
     const groups=new Map();for(const r of h){const k=r.m+'|'+r.l;if(!groups.has(k))groups.set(k,[]);groups.get(k).push(r)}
     const rows=[...groups.values()].sort((a,b)=>b[b.length-1].t-a[a.length-1].t);
     const fmt=t=>new Date(t).toLocaleDateString(undefined,{day:'numeric',month:'short'});
-    el.innerHTML=`<div class="ptable-wrap"><table class="ptable"><thead><tr><th>Puzzle</th><th>Level</th><th>Sets</th><th>Best</th><th>Average</th><th>Last 8</th><th>Last played</th></tr></thead><tbody>${rows.map(g=>{
+    el.innerHTML=`<div class="ptable-wrap" tabindex="0" role="region" aria-label="Progress table (scrolls sideways)"><table class="ptable"><thead><tr><th>Puzzle</th><th>Level</th><th>Sets</th><th>Best</th><th>Average</th><th>Last 8</th><th>Last played</th></tr></thead><tbody>${rows.map(g=>{
       const last=g.slice(-8),best=Math.max(...g.map(r=>r.s)),avg=g.reduce((a,r)=>a+r.s,0)/g.length,n=g[0].n||10;
       return `<tr><td>${label('mode',g[0].m)}</td><td>${label('level',g[0].l)}</td><td class="pn">${g.length}</td><td class="pn">${best}/${n}</td><td class="pn">${avg.toFixed(1)}</td><td><div class="spark" title="${last.map(r=>r.s).join(', ')}">${last.map(r=>`<i class="${r.s===n?'full':''}" style="height:${Math.max(3,r.s/n*30)}px"></i>`).join('')}</div></td><td>${fmt(g[g.length-1].t)}</td></tr>`}).join('')}</tbody></table></div>`;
     cl.innerHTML=confirmClear?'<span>Delete all saved scores and stickers on this device?</span><button class="btn small danger" id="pyes">Delete</button><button class="btn small" id="pno">Keep them</button>':'<button class="btn small" id="pask">Clear history</button>';
