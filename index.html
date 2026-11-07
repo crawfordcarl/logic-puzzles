@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<!-- Only the site's own files may load, and nothing can be sent anywhere. Inline code and styles are allowed because the whole app lives in this page. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Puzzle Puffin: free picture and word puzzles for children. Rotate, mirror, sequences, codes, fold and punch, cube nets, 3D views and word ladders.">
 <meta name="theme-color" content="#2d6a8c">

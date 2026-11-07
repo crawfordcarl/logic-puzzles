@@ -4,6 +4,10 @@ on:
   push:
   pull_request:
 
+# the tests only read the code; they can't change anything in the repository
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -15,3 +19,19 @@ jobs:
           node-version: 22
       - name: Check every puzzle type is fair
         run: npm test
+
+  accessibility:
+    # axe-core in a real browser: labels, contrast and keyboard basics, in every colour theme, light and dark
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install the browser and axe-core
+        run: |
+          npm install --no-save playwright@1.63.0 axe-core@4.10.3
+          npx playwright install --with-deps chromium
+      - name: Check accessibility
+        run: node tests/a11y.mjs
