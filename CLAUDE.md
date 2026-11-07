@@ -43,6 +43,7 @@ These are 112 checks using only Node 18+, and GitHub Actions runs them on every 
 - **No pop-ups or install prompts.** The browser's install bar is suppressed, and installing is only ever offered through the browser menu.
 - **Keep the screen calm.** "Why?" appears only under wrong answers. Puffin tips appear only after a mistake in the set, give one question-specific nudge, and must never give the answer away (at least two choices must still fit the tip; tested). The celebration screen keeps the star as the main focus, with no puffin on it.
 - **Text for 5–8 year olds:** Andika, large question text, short plain sentences, kind wording ("Good effort!", never "Wrong").
+- **Keep clear of Puffin Books** (Penguin Random House's children's imprint): don't use "Puffin Books", "Puffin stories", "Puffin Club" or similar names, and keep our logo (a round colourful badge, puffin holding a puzzle piece) visibly different from theirs.
 - **Never use the child's name on the site.** The footer credit stays "Made by a parent with Claude".
 - New visitors start on **Easy**. The level-up nudge suggests the next level after three sets in a row of nearly all right. Nothing ever suggests going down.
 
@@ -70,7 +71,7 @@ These are 112 checks using only Node 18+, and GitHub Actions runs them on every 
 
 **Features:**
 - **Several children on one device:** players picked by animal (Puffin, Seal, Fox…) rather than by name, chosen from the footer only. Each has its own history, stickers and settings. The existing `logic-puzzles-history-v1` data must become the first player, never lost.
-- **Puffin stories (a surprise extra, not a puzzle or a reward):** short original stories about the puffin and friends for 5–8 year olds (100–200 words, Andika, one simple picture each). **Always freely available, never unlocked or tied to scores**: the aim is for children to find them and choose to read on their own. Reached through a quiet "Puffin stories" link (footer or a small book icon), on its own page so the puzzle screen stays calm. New stories can be added over time to be discovered. All characters original. Stories can touch on shapes and patterns, but never test the reader.
+- **Stories (a surprise extra, not a puzzle or a reward):** short original stories about our puffin and friends for 5–8 year olds (100–200 words, Andika, one simple picture each). **Always freely available, never unlocked or tied to scores**: the aim is for children to find them and choose to read on their own. On their own page behind a quiet link, so the puzzle screen stays calm. New stories can be added over time to be discovered. All characters original. Stories can touch on shapes and patterns, but never test the reader. **Naming:** don't call them "Puffin stories", a "Puffin library" or "Puffin books", which are too close to Puffin Books (Penguin Random House's children's imprint, whose first series was "Puffin Story Books"). Give our puffin a name and title them after it (e.g. "Pip's Tales").
 - **Back up progress:** a "save my progress" file or code from the footer, so clearing the browser or changing tablets doesn't lose stickers.
 
 ## Ideas not done yet
