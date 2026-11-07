@@ -198,6 +198,8 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .cel-stk svg{width:100%;height:100%;display:block}
 .cel-new-n{font-size:.9rem;color:var(--muted)}
 @media (prefers-reduced-motion:reduce){.cel-stk{animation:none}}
+.why{margin:0;max-width:62ch;font-size:1.02rem;line-height:1.5;padding:10px 14px;border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0}
+.why b{color:var(--accent);margin-right:4px}
 .tip{color:var(--muted);font-size:1rem;line-height:1.55;max-width:62ch;margin:0}
 .shape{fill:var(--card);stroke:currentColor;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
 .ink{fill:currentColor;stroke:none}
@@ -519,9 +521,12 @@ function rotatePuzzle(lvl){
   const ic=pickIcon(KEYS),step={easy:90,normal:45,hard:30}[lvl];
   const correct=iconFig(ic,{a:pick(range(step).slice(1))});
   const kinds=XP?[{m:true},{m:true},{m:true},{m:true}]:lvl==='easy'?[{m:true},{m:true},{v:true}]:[{m:true},{m:true},{v:true},{v:true,m:true}];
-  const cands=kinds.map(k=>iconFig(ic,{a:pick(range(step)),m:!!k.m,v:!!k.v}));
-  const r=finish(correct,cands,nOpts(lvl));
-  return {type:'rotate',src:iconFig(ic),step,turn:0,hints:0,...r};
+  // every wrong answer must be flipped or changed: a plain turn would be a second right answer
+  const extra=XP?[{m:true}]:[{m:true},{v:true},{m:true,v:true}],want=nOpts(lvl),seen=new Set([key(correct)]),out=[];
+  for(let t=0;t<200&&out.length<want-1;t++){const k=t<kinds.length?kinds[t]:pick(extra);
+    const o=iconFig(ic,{a:pick(range(step)),m:!!k.m,v:!!k.v}),kk=key(o);if(seen.has(kk))continue;seen.add(kk);out.push(o)}
+  const opts=shuffle([correct,...out]);
+  return {type:'rotate',src:iconFig(ic),step,turn:0,hints:0,opts,ans:opts.indexOf(correct)};
 }
 /* ---------- Mirror ---------- */
 function mirrorPuzzle(lvl){
@@ -578,7 +583,7 @@ function seqPuzzle(lvl){
   const correct=make();
   let cands=[];for(const k of names)for(const j of [b-1,b+1,b-2,b+2])cands.push(make({[k]:j}));
   cands=[...extras.map(f=>f(correct)),...shuffle(cands)];
-  return {type:'sequence',cells,blank:b,...finish(correct,cands,nOpts(lvl))};
+  return {type:'sequence',cells,blank:b,rule:names,...finish(correct,cands,nOpts(lvl))};
 }
 /* ---------- Complete the pair ---------- */
 const INV={white:'black',black:'white'};
@@ -603,6 +608,15 @@ function pairFig(trs,useIcon,avoid){
   else if(trs.includes('invert')&&Math.random()<.5)p.inner=pick(['circle','square','star']);
   return p;
 }
+// a pair puzzle is fair only if every rule that turns A into B gives the same answer for C
+function pairAmbiguous(A,B,C,opts){
+  const names=Object.keys(TR),kB=key(B),optKeys=new Set(opts.map(key)),fits=new Set();
+  const tryRule=list=>{let b=A,d=C;for(const t of list){b=TR[t].f(b);d=TR[t].f(d)}if(valid(b)&&valid(d)&&key(b)===kB){const kd=key(d);if(optKeys.has(kd))fits.add(kd)}};
+  for(const a of names){tryRule([a]);for(const c of names)if(c!==a)tryRule([a,c])}
+  if(fits.size>1)return true;
+  for(const a of names)for(const c of names)for(const e of names)if(a!==c&&c!==e&&a!==e){tryRule([a,c,e]);if(fits.size>1)return true}
+  return false;
+}
 function pairPuzzle(lvl){
   if(Math.random()<({easy:.25,normal:.35,hard:.45}[lvl]+(XP?.1:0))){const p=matPair(lvl);if(p)return p}
   for(let tries=0;tries<200;tries++){
@@ -620,7 +634,9 @@ function pairPuzzle(lvl){
     if(!valid(B)||!valid(correct)||key(A)===key(B)||key(C)===key(correct))continue;
     let cands=[];
     trs.forEach((t,j)=>{if(trs.length>1)cands.push(apply(C,fs.filter((_,i)=>i!==j)));for(const w of TR[t].w)cands.push(apply(C,fs.map((f,i)=>i===j?w:f)))});
-    return {type:'pair',A,B,C,...finish(correct,shuffle(cands),nOpts(lvl))};
+    const r=finish(correct,shuffle(cands),nOpts(lvl));
+    if(pairAmbiguous(A,B,C,r.opts))continue;
+    return {type:'pair',A,B,C,trs,...r};
   }
 }
 /* ---------- Complete the pair: shapes and patterns moving round a picture ---------- */
@@ -675,7 +691,7 @@ function matPair(lvl){
     for(const c of shuffle(cands)){if(out.length>=want-1)break;const k=matKey(c);if(seen.has(k))continue;seen.add(k);out.push(c)}
     if(out.length<want-1)continue;
     const opts=shuffle([D,...out]);
-    return {type:'pair',A,B,C,opts,ans:opts.indexOf(D),matSig:lay+':'+rule.d+':'+A.items.map(i=>i.s).join(',')};
+    return {type:'pair',A,B,C,opts,rule,ans:opts.indexOf(D),matSig:lay+':'+rule.d+':'+A.items.map(i=>i.s).join(',')};
   }
 }
 function matSVG(p){
@@ -714,7 +730,7 @@ function oddPuzzle(lvl){
     }
     const keys=new Set(figs.map(key));if(keys.size<5)continue;
     const odd=figs[0],opts=shuffle(figs);
-    return {type:'odd',opts,ans:opts.indexOf(odd)};
+    return {type:'odd',t,opts,ans:opts.indexOf(odd)};
   }
 }
 /* ---------- Codes ---------- */
@@ -750,7 +766,7 @@ function codesPuzzle(lvl){
     const correct=code(test);
     const others=sample(combos.filter(c=>c.join()!==test.join()).map(code),nOpts(lvl)-1);
     const opts=shuffle([correct,...others]);
-    return {type:'codes',examples:exs.map((c,i)=>({fig:figH(c,i),code:code(c)})),test:figH(test,exs.length),opts,ans:opts.indexOf(correct)};
+    return {type:'codes',key:names.map((nm,k)=>({nm,letter:letters[k][test[k]],val:vals[k][test[k]]})),examples:exs.map((c,i)=>({fig:figH(c,i),code:code(c)})),test:figH(test,exs.length),opts,ans:opts.indexOf(correct)};
   }
 }
 
@@ -1343,6 +1359,66 @@ function ladderPuzzle(lvl){
   }
 }
 
+/* ---------- a short reason, shown only under a wrong answer ---------- */
+const FILLW={white:'white',black:'black',grey:'grey',stripes:'striped',dots:'spotty'};
+const SHAPEW={circle:'circle',square:'square',triangle:'triangle',star:'star',heart:'heart',hexagon:'hexagon',cross:'cross',pentagon:'pentagon',diamond:'diamond',arrow:'arrow'};
+function turnWords(a){
+  a=mod(Math.round(a),360);if(a===0)return 'not turned at all';if(a===180)return 'turned upside down (half a turn)';
+  const cw=a<180,x=cw?a:360-a,dir=cw?'clockwise':'anticlockwise';
+  const amt=x===90?'a quarter turn':x<90?'less than a quarter turn':'more than a quarter turn';return `turned ${amt} ${dir}`;
+}
+const placeWords=k=>{k=mod(k,4);return k===1?'one place clockwise':k===3?'one place anticlockwise':k===2?'two places round':'nowhere'};
+function explain(p,o){
+  switch(p.type){
+    case 'rotate':{
+      const c=p.opts[p.ans],base=`The right answer is the same picture ${turnWords(c.a)}.`;
+      if(o.m&&o.v)return `That one is flipped over and has a small change too. ${base}`;
+      if(o.m)return `That one is flipped over like a mirror image, so it can't just be turned. ${base}`;
+      if(o.v)return `Look closely: that one has a small difference in the picture. ${base}`;
+      return base;}
+    case 'mirror':{
+      const line=p.axis==='h'?'In a mirror underneath, top and bottom swap, but left and right stay the same.':p.axis==='v'?'In a mirror beside the picture, left and right swap, but the top stays at the top.':'With a slanted mirror, picture where each part would land on the other side of the line.';
+      if(o.v)return `That one has a small difference in the picture. ${line}`;
+      if(!o.m)return `That one is only turned round, not reflected. ${line}`;
+      return `That's a reflection, but in the wrong direction. ${line}`;}
+    case 'sequence':{
+      const W={a:'the picture turns a little more each time',count:'there is one more shape each time',dot:'the dot moves round the edge',size:'the shape gets bigger each time',shape:'the shape gets one more side each time',fill:'the colour changes in a repeating pattern',outer:'the shaded parts turn round',inner:'the inner shaded parts turn round',pos:'the triangle slides along the box',up:'the triangle flips up and down'};
+      const r=(p.rule||[]).map(k=>W[k]).filter(Boolean);
+      return r.length?`Look at what changes from box to box: ${r.join(', and ')}. Follow that pattern into the gap.`:'Look at what changes from box to box, then follow the pattern into the gap.';}
+    case 'pair':{
+      if(p.rule){const n=p.A.items.length,ring=n===3||n===4,rot=a=>n===4?placeWords(a[0]):a[0]===0?'nowhere':a[0]===1?'one place clockwise':'one place anticlockwise';
+        const parts=[],P=p.rule.P,Q=p.rule.Q,seg=p.A.lay==='seg4';
+        if(seg)parts.push(`the shading moves ${rot(Q)}`);
+        else{if(P[0]!==0)parts.push(`the shapes move ${rot(P)}`);
+          if(Q.join()===P.join()){if(P[0]!==0)parts.push('their patterns move with them')}
+          else if(Q[0]===0)parts.push('the patterns stay where they are');
+          else parts.push(`the patterns move ${rot(Q)} on their own`);
+          if(p.rule.spin)parts.push(`each shape is ${turnWords(p.rule.spin)}`)}
+        if(p.rule.inv)parts.push('black and white swap');
+        return `The rule is: ${parts.join(', ')}. Do exactly the same to the third picture.`;}
+      const W={rot90:'turns a quarter turn clockwise',rot180:'turns upside down (half a turn)',rot45:'turns a little way clockwise (less than a quarter turn)',flip:'flips over from left to right',flipV:'flips over from top to bottom',invert:'black and white swap',countUp:'gets one more shape',swapIn:'the inside and outside shapes swap places'};
+      const r=(p.trs||[]).map(t=>W[t]).filter(Boolean);
+      return r.length?`The first picture ${r.join(', and ')}. Do exactly the same to the third picture.`:'Say what changed between the first two pictures, then do the same to the third.';}
+    case 'odd':{
+      const W={mirror:'It is the only one that is flipped over. The others are all the same picture, just turned round.',variant:'It is the only one with a small difference. The others are the same picture, just turned round.',inner:'In all the others, the shape inside matches the shape outside.',fill:'In all the others, the inside and outside are opposite colours.',count:'It is the only one with a different number of shapes.'};
+      return W[p.t]||'Find what four of them have in common: the odd one out breaks that rule.';}
+    case 'codes':{
+      const D={shape:v=>SHAPEW[v]||v,fill:v=>FILLW[v]||v,count:v=>v===1?'one shape':`${v} shapes`,dir:v=>['pointing up','pointing right','pointing down','pointing left'][mod(v,360)/90],inner:v=>`a ${SHAPEW[v]||v} inside`,size:v=>v===1?'big':'small',dot:v=>['dot at the top','dot on the right','dot at the bottom','dot on the left'][v/2]};
+      if(!p.key)return 'Find two pictures that share a letter and spot what else they share.';
+      const bits=p.key.map(k=>`${k.letter} means ${D[k.nm](k.val)}`);
+      return `Here ${bits.join(', ')}. So the last picture is ${p.opts[p.ans]}.`;}
+    case 'punch':case 'punch2':{
+      const n=(p.opts[p.ans].holes||p.opts[p.ans].holes2).length;
+      return `Unfold one step at a time, starting with the last fold. Each fold opens into a mirror copy of the holes, so the opened paper has ${n} holes.`;}
+    case 'cube':return p.dir==='toNet'?'Two faces that are opposite each other on a cube can never be seen together. In that net, check which faces end up opposite, and which way each picture points when it folds up.':'In the net, faces with one square between them in a straight line end up opposite each other, so you can never see both at once. Then check which way each picture points.';
+    case 'top':{const n=p.cols.length;return `From straight above you see just the top of each stack, however tall it is. This model has ${n} stacks, so you see ${n} squares in that shape. The answer may be turned round.`;}
+    case 'side':return p.view3d?'Imagine walking round to where the eye is: the side the eye looks at becomes the front. Check where the tall stacks and dark blocks end up.':'From the right you only see the nearest block in each row and column. A dark block only shows if nothing stands in front of it.';
+    case 'count':{const all=p.prompt.startsWith('How many blocks are'),hs=p.cols.map(c=>c.h);
+      return all?`Add up how tall each tower is: ${hs.join(' + ')} = ${hs.reduce((a,b)=>a+b,0)}.`:`From above, each tower looks like just one block, however tall it is. There are ${hs.length} towers, so you would see ${hs.length}.`;}
+    case 'ladder':return `Each step changes just one letter: ${[p.start,...p.opts[p.ans].split('\n'),p.end].join(' → ')}.`;
+  }
+  return '';
+}
 /* ---------- keep each set varied ---------- */
 function usesOf(p){
   if(p.type==='ladder')return [...new Set([p.start,p.end,...p.opts[p.ans].split('\n')])].map(w=>'w:'+w);
@@ -1452,7 +1528,7 @@ if(typeof document!=='undefined'){
         return `<button class="${cls}" data-q="${qi}" data-o="${oi}" ${p.done?'disabled':''} aria-label="Answer ${LET[oi]}">${inner}<span class="let">${LET[oi]}</span></button>`;
       }).join('');
       return `<section class="q"><div class="qhead"><div class="num">${qi+1}</div><p class="prompt">${p.prompt?p.prompt:p.type==='cube'?(p.dir==='toNet'?'Which net folds up to make this cube?':'Which cube can be made by folding up this net?'):PROMPT[p.type]}</p></div>
-        <div class="body">${stem(p,qi)}<div class="opts" style="grid-template-columns:repeat(${p.opts.length},minmax(0,1fr))">${opts}</div></div></section>`;
+        <div class="body">${stem(p,qi)}<div class="opts" style="grid-template-columns:repeat(${p.opts.length},minmax(0,1fr))">${opts}</div></div>${p.done&&p.pick>=0&&p.pick!==p.ans?`<p class="why"><b>Why?</b> ${explain(p,p.opts[p.pick])}</p>`:''}</section>`;
     }).join('');
     document.getElementById('score').textContent=`${right} / ${set.length}`;
   }
@@ -1633,7 +1709,7 @@ if(typeof document!=='undefined'){
   seg('mode',v=>mode=v);seg('level',v=>level=v);
   build();
   renderProgress();
-}else{globalThis.__T={side3dPuzzle,lookKey,turnRight,matPair,applyMat,matKey,punch2Puzzle,holesSimilar,insideP,reflectPt,sideOf,TR,usesOf,sigOf,resetUsed:()=>USED_ICONS=new Set(),USED:()=>USED_ICONS,canonTurn,setXP:v=>XP=v,chainOK,viewGrid,gridKey,canonAll,GEN,key,valid,holeKey,netToCube,showsView,viewOf,cubeKey,unfold}}
+}else{globalThis.__T={explain,side3dPuzzle,lookKey,turnRight,matPair,applyMat,matKey,punch2Puzzle,holesSimilar,insideP,reflectPt,sideOf,TR,usesOf,sigOf,resetUsed:()=>USED_ICONS=new Set(),USED:()=>USED_ICONS,canonTurn,setXP:v=>XP=v,chainOK,viewGrid,gridKey,canonAll,GEN,key,valid,holeKey,netToCube,showsView,viewOf,cubeKey,unfold}}
 </script>
 
 </body>
