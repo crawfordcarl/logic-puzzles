@@ -153,6 +153,25 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .nowplaying{font-family:var(--display);font-weight:800;font-size:1.2rem;color:var(--accent)}
 @media (max-width:640px){.tiles{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.tile .tl{font-size:.9rem}.actrow .actions{margin-left:0}}
 @media (prefers-reduced-motion:reduce){.tile{transition:none}.tile:hover{transform:none}}
+:root[data-color="orange"]{--accent:#b8510f;--accent-soft:#fbe7d8;--flap:#f3cdb0}
+:root[data-color="green"]{--accent:#2a7556;--accent-soft:#ddf0e6;--flap:#bfe0cf}
+:root[data-color="purple"]{--accent:#6a4c9c;--accent-soft:#ece5f6;--flap:#d6cbea}
+:root[data-color="yellow"]{--accent:#8a6200;--accent-soft:#fbf0c9;--flap:#f1dc94}
+@media (prefers-color-scheme: dark){:root[data-color="orange"]:not([data-theme="light"]){--accent:#f5a066;--accent-soft:#3d2a1d;--flap:#553723}}
+:root[data-theme="dark"][data-color="orange"]{--accent:#f5a066;--accent-soft:#3d2a1d;--flap:#553723}
+@media (prefers-color-scheme: dark){:root[data-color="green"]:not([data-theme="light"]){--accent:#74cda4;--accent-soft:#1d3a2e;--flap:#26503e}}
+:root[data-theme="dark"][data-color="green"]{--accent:#74cda4;--accent-soft:#1d3a2e;--flap:#26503e}
+@media (prefers-color-scheme: dark){:root[data-color="purple"]:not([data-theme="light"]){--accent:#b79ce6;--accent-soft:#2e2640;--flap:#3e3358}}
+:root[data-theme="dark"][data-color="purple"]{--accent:#b79ce6;--accent-soft:#2e2640;--flap:#3e3358}
+@media (prefers-color-scheme: dark){:root[data-color="yellow"]:not([data-theme="light"]){--accent:#f2cc4d;--accent-soft:#3a3218;--flap:#4f4420}}
+:root[data-theme="dark"][data-color="yellow"]{--accent:#f2cc4d;--accent-soft:#3a3218;--flap:#4f4420}
+.brand{flex-wrap:wrap}
+.colours{display:flex;align-items:center;gap:8px;margin-left:auto}
+.colours .lbl{min-width:0;margin-right:2px}
+.sw{width:30px;height:30px;border-radius:50%;border:2.5px solid var(--card);box-shadow:0 0 0 1.5px var(--rule);cursor:pointer;padding:0;transition:transform .15s}
+.sw:hover{transform:scale(1.12)}
+.sw[aria-pressed="true"]{box-shadow:0 0 0 3px var(--ink)}
+@media (prefers-reduced-motion:reduce){.sw{transition:none}.sw:hover{transform:none}}
 .tip{color:var(--muted);font-size:1rem;line-height:1.55;max-width:62ch;margin:0}
 .shape{fill:var(--card);stroke:currentColor;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
 .ink{fill:currentColor;stroke:none}
@@ -172,6 +191,7 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 <body>
 
 
+<script>try{var c=localStorage.getItem("pp-colour");if(c&&c!=="blue")document.documentElement.setAttribute("data-color",c)}catch(e){}</script>
 <svg class="defs" aria-hidden="true" focusable="false"><defs>
   <pattern id="pS" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" style="fill:var(--card)"/><rect width="2.6" height="7" style="fill:var(--ink)"/></pattern>
   <pattern id="pD" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" style="fill:var(--card)"/><circle cx="4" cy="4" r="1.9" style="fill:var(--ink)"/></pattern>
@@ -202,7 +222,7 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
     <path d="M0 0 H7 a4 4 0 1 1 6 0 H20 V7 a4 4 0 1 0 0 6 V20 H0 Z" fill="#ffd23f" stroke="#1c2430" stroke-width="2.2" stroke-linejoin="round"/>
   </g>
   <path d="M48 86 Q56 84 60 78" fill="none" stroke="#141a22" stroke-width="6" stroke-linecap="round"/>
-</svg></span><h1>Puzzle Puffin</h1></div>
+</svg></span><h1>Puzzle Puffin</h1><div class="colours" id="colours" role="group" aria-label="Choose a colour"><span class="lbl">Colour</span><button class="sw" data-c="blue" aria-pressed="true" aria-label="Puffin Blue" title="Puffin Blue" style="background:#2d6a8c"></button><button class="sw" data-c="orange" aria-pressed="false" aria-label="Beak Orange" title="Beak Orange" style="background:#e0701f"></button><button class="sw" data-c="green" aria-pressed="false" aria-label="Sea Green" title="Sea Green" style="background:#2f9a6e"></button><button class="sw" data-c="purple" aria-pressed="false" aria-label="Heather Purple" title="Heather Purple" style="background:#7c55b8"></button><button class="sw" data-c="yellow" aria-pressed="false" aria-label="Sunny Yellow" title="Sunny Yellow" style="background:#f2c230"></button></div></div>
     <p class="lede">Reasoning puzzles like the ones in school homework and practice books, from turning and mirroring pictures to folding paper, cube nets and word ladders. Choose a kind of puzzle and a level, then tap an answer to check it. Every tap of "New puzzles" makes a fresh set.</p>
   </header>
 
@@ -1532,6 +1552,11 @@ if(typeof document!=='undefined'){
   document.getElementById('mode').addEventListener('click',e=>{const b=e.target.closest('.tile');if(!b)return;
     const r=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
     document.getElementById('actrow').scrollIntoView({behavior:r?'auto':'smooth',block:'start'})});
+  /* ---- colour themes ---- */
+  const setColour=c=>{if(c==='blue')document.documentElement.removeAttribute('data-color');else document.documentElement.setAttribute('data-color',c);
+    document.querySelectorAll('#colours .sw').forEach(b=>b.setAttribute('aria-pressed',b.dataset.c===c))};
+  {let c='blue';try{c=localStorage.getItem('pp-colour')||'blue'}catch(e){}setColour(c)}
+  document.getElementById('colours').addEventListener('click',e=>{const b=e.target.closest('.sw');if(!b)return;setColour(b.dataset.c);try{localStorage.setItem('pp-colour',b.dataset.c)}catch(e){}});
   seg('mode',v=>mode=v);seg('level',v=>level=v);
   build();
   renderProgress();
