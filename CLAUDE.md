@@ -70,7 +70,7 @@ These are 112 checks using only Node 18+, and GitHub Actions runs them on every 
 
 **Features:**
 - **Several children on one device:** players picked by animal (Puffin, Seal, Fox…) rather than by name, chosen from the footer only. Each has its own history, stickers and settings. The existing `logic-puzzles-history-v1` data must become the first player, never lost.
-- **Puffin stories (a surprise extra, not a puzzle):** short original stories about the puffin and friends for 5–8 year olds (100–200 words, Andika, one simple picture each). Unlock predictably, never randomly: e.g. a new story every 5 finished sets, with "Next story after 2 more sets" shown in the sticker book. Keep read stories on a "Puffin stories" shelf for rereading. All characters original. Stories can touch on shapes and patterns, but never test the reader.
+- **Puffin stories (a surprise extra, not a puzzle or a reward):** short original stories about the puffin and friends for 5–8 year olds (100–200 words, Andika, one simple picture each). **Always freely available, never unlocked or tied to scores**: the aim is for children to find them and choose to read on their own. Reached through a quiet "Puffin stories" link (footer or a small book icon), on its own page so the puzzle screen stays calm. New stories can be added over time to be discovered. All characters original. Stories can touch on shapes and patterns, but never test the reader.
 - **Back up progress:** a "save my progress" file or code from the footer, so clearing the browser or changing tablets doesn't lose stickers.
 
 ## Ideas not done yet
