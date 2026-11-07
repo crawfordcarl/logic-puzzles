@@ -140,6 +140,19 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .logo{width:clamp(56px,12vw,76px);flex:none}
 .logo svg{width:100%;height:auto;display:block}
 .cel-card{position:relative;box-sizing:border-box}
+.tiles-head{margin-top:4px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:10px}
+.tile{font:inherit;color:var(--ink);background:var(--card);border:1.5px solid var(--rule);border-radius:14px;aspect-ratio:1;max-width:100%;min-width:0;padding:10px 6px 6px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;cursor:pointer;transition:border-color .15s,transform .15s,background .15s}
+.tile:hover{border-color:var(--accent);transform:translateY(-2px)}
+.tile[aria-pressed="true"]{border:2.5px solid var(--accent);background:var(--accent-soft)}
+.tile .ti{width:64%;flex:1 1 auto;min-height:0;aspect-ratio:1;display:block}
+.tile .ti svg{width:100%;height:100%;display:block;overflow:visible}
+.tile .tl{font-weight:700;font-size:.98rem;line-height:1.15;text-align:center;text-wrap:balance;min-height:2.3em;display:flex;align-items:center}
+.actrow{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;border-bottom:1px solid var(--rule);padding-block:6px 12px;scroll-margin-top:12px}
+.actrow .actions{margin-left:auto}
+.nowplaying{font-family:var(--display);font-weight:800;font-size:1.2rem;color:var(--accent)}
+@media (max-width:640px){.tiles{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.tile .tl{font-size:.9rem}.actrow .actions{margin-left:0}}
+@media (prefers-reduced-motion:reduce){.tile{transition:none}.tile:hover{transform:none}}
 .tip{color:var(--muted);font-size:1rem;line-height:1.55;max-width:62ch;margin:0}
 .shape{fill:var(--card);stroke:currentColor;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
 .ink{fill:currentColor;stroke:none}
@@ -195,24 +208,6 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 
   <div class="bar">
     <div class="row">
-      <span class="lbl">Puzzle</span>
-      <div class="group" id="mode" role="group" aria-label="Kind of puzzle">
-        <button class="chip" data-v="count" aria-pressed="false">Warm-up</button>
-        <button class="chip" data-v="rotate" aria-pressed="true">Rotate</button>
-        <button class="chip" data-v="mirror" aria-pressed="false">Mirror</button>
-        <button class="chip" data-v="sequence" aria-pressed="false">Fill the gap</button>
-        <button class="chip" data-v="pair" aria-pressed="false">Complete the pair</button>
-        <button class="chip" data-v="odd" aria-pressed="false">Odd one out</button>
-        <button class="chip" data-v="codes" aria-pressed="false">Codes</button>
-        <button class="chip" data-v="punch" aria-pressed="false">Fold &amp; punch</button>
-        <button class="chip" data-v="cube" aria-pressed="false">Cube nets</button>
-        <button class="chip" data-v="top" aria-pressed="false">Top view</button>
-        <button class="chip" data-v="side" aria-pressed="false">View from the right</button>
-        <button class="chip" data-v="ladder" aria-pressed="false">Word ladders</button>
-        <button class="chip" data-v="mix" aria-pressed="false">Mix</button>
-      </div>
-    </div>
-    <div class="row">
       <span class="lbl">Level</span>
       <div class="group" id="level" role="group" aria-label="Difficulty">
         <button class="chip" data-v="easy" aria-pressed="false">Easy</button>
@@ -220,14 +215,33 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
         <button class="chip" data-v="hard" aria-pressed="false">Tricky</button>
         <button class="chip" data-v="expert" aria-pressed="false">Expert</button>
       </div>
-      <div class="group actions">
-        <span class="score" id="score" aria-live="polite">0 / 10</span>
-        <button class="btn" id="reveal">Show answers</button>
-        <button class="btn primary" id="new">New puzzles</button>
-      </div>
+    </div>
+    <div class="tiles-head"><span class="lbl">Choose a puzzle</span></div>
+    <div class="tiles" id="mode" role="group" aria-label="Kind of puzzle">
+      <button class="tile" data-v="count" aria-pressed="false"><span class="ti" data-ic="count"></span><span class="tl">Warm-up</span></button>
+      <button class="tile" data-v="rotate" aria-pressed="true"><span class="ti" data-ic="rotate"></span><span class="tl">Rotate</span></button>
+      <button class="tile" data-v="mirror" aria-pressed="false"><span class="ti" data-ic="mirror"></span><span class="tl">Mirror</span></button>
+      <button class="tile" data-v="sequence" aria-pressed="false"><span class="ti" data-ic="sequence"></span><span class="tl">Fill the gap</span></button>
+      <button class="tile" data-v="pair" aria-pressed="false"><span class="ti" data-ic="pair"></span><span class="tl">Complete the pair</span></button>
+      <button class="tile" data-v="odd" aria-pressed="false"><span class="ti" data-ic="odd"></span><span class="tl">Odd one out</span></button>
+      <button class="tile" data-v="codes" aria-pressed="false"><span class="ti" data-ic="codes"></span><span class="tl">Codes</span></button>
+      <button class="tile" data-v="punch" aria-pressed="false"><span class="ti" data-ic="punch"></span><span class="tl">Fold &amp; punch</span></button>
+      <button class="tile" data-v="cube" aria-pressed="false"><span class="ti" data-ic="cube"></span><span class="tl">Cube nets</span></button>
+      <button class="tile" data-v="top" aria-pressed="false"><span class="ti" data-ic="top"></span><span class="tl">Top view</span></button>
+      <button class="tile" data-v="side" aria-pressed="false"><span class="ti" data-ic="side"></span><span class="tl">View from the right</span></button>
+      <button class="tile" data-v="ladder" aria-pressed="false"><span class="ti" data-ic="ladder"></span><span class="tl">Word ladders</span></button>
+      <button class="tile" data-v="mix" aria-pressed="false"><span class="ti" data-ic="mix"></span><span class="tl">Mix</span></button>
     </div>
   </div>
 
+  <div class="actrow" id="actrow">
+    <span class="score" id="score" aria-live="polite">0 / 10</span>
+    <span class="nowplaying" id="nowplaying"></span>
+    <div class="group actions">
+      <button class="btn" id="reveal">Show answers</button>
+      <button class="btn primary" id="new">New puzzles</button>
+    </div>
+  </div>
   <p class="tip" id="tip"></p>
   <div class="list" id="list"></div>
   <div class="done" id="done" hidden></div>
@@ -1354,6 +1368,7 @@ if(typeof document!=='undefined'){
     const gen=k=>{let p;for(let t=0;t<60;t++){p=gen1(k);const u=usesOf(p),sg=sigOf(p);if(u.some(x=>USED_ICONS.has(x))||sigs.has(sg))continue;break}
       usesOf(p).forEach(x=>USED_ICONS.add(x));sigs.add(sigOf(p));return p};
     set=kinds.map(k=>({...gen(k),done:false,pick:-1}));
+    {const t=document.querySelector(`#mode button[data-v="${mode}"] .tl`),l=document.querySelector(`#level button[data-v="${level}"]`);document.getElementById('nowplaying').textContent=(t?t.textContent:'')+(l?' · '+l.textContent:'')}
     right=0;revealed=false;document.getElementById('done').hidden=true;document.getElementById('tip').textContent=TIPS[mode];render();
   }
   const HINTS=3;
@@ -1393,7 +1408,7 @@ if(typeof document!=='undefined'){
   const HKEY='logic-puzzles-history-v1';
   const loadH=()=>{try{const v=JSON.parse(localStorage.getItem(HKEY)||'[]');return Array.isArray(v)?v:[]}catch(e){return []}};
   const saveH=h=>{try{localStorage.setItem(HKEY,JSON.stringify(h.slice(-300)));return true}catch(e){return false}};
-  const label=(grp,v)=>{const b=document.querySelector(`#${grp} button[data-v="${v}"]`);return b?b.textContent:v};
+  const label=(grp,v)=>{const b=document.querySelector(`#${grp} button[data-v="${v}"]`);return b?(b.querySelector('.tl')||b).textContent:v};
   const LVORD={easy:0,normal:1,hard:2,expert:3};
   let revealed=false,confirmClear=false;
   function renderProgress(){
@@ -1495,6 +1510,28 @@ if(typeof document!=='undefined'){
   document.getElementById('new').onclick=build;
   const seg=(id,fn)=>{const el=document.getElementById(id);el.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
     el.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));fn(b.dataset.v);build()})};
+  /* ---- puzzle tiles ---- */
+  const TS='style="fill:var(--card);stroke:var(--ink);stroke-width:3;stroke-linejoin:round;stroke-linecap:round"',TI='style="fill:var(--ink)"',TG='style="fill:var(--grey);stroke:var(--ink);stroke-width:3;stroke-linejoin:round"',TA='style="fill:none;stroke:var(--accent);stroke-width:4;stroke-linecap:round;stroke-linejoin:round"';
+  const nest=(svg,x,y,w,h)=>svg.replace('<svg ',`<svg x="${x}" y="${y}" width="${w}" height="${h}" `);
+  const TILE_ICONS={
+    count:()=>nest(isoSVG([{x:0,y:0,h:2},{x:1,y:0,h:1},{x:0,y:1,h:1},{x:1,y:1,h:3}]),5,5,90,90),
+    rotate:()=>`<g transform="translate(44 56) rotate(30) scale(.9)">${ICONS.flag(false)}</g><path d="M70 10 A40 40 0 0 1 94 46" ${TA}/><path d="M84 44 L94 49 L99 38" ${TA}/>`,
+    mirror:()=>`<g transform="translate(23 54) scale(.62)">${ICONS.flag(false)}</g><g transform="translate(77 54) scale(-.62 .62)">${ICONS.flag(false)}</g><path d="M50 6 V96" style="stroke:var(--accent);stroke-width:4;stroke-dasharray:7 6;stroke-linecap:round"/>`,
+    sequence:()=>[0,1,2].map(k=>`<rect x="${3+k*24}" y="28" width="23" height="44" ${k===2?'style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:3.5"':TS}/>`).join('')+`<rect x="75" y="28" width="23" height="44" ${TS}/>`+[[1,0],[2,1],[4,3]].map(([n,k])=>k===2?'':[...Array(n).keys()].map(i=>`<circle cx="${14.5+k*24}" cy="${50+(i-(n-1)/2)*10}" r="4" ${TI}/>`).join('')).join('')+[0,1,2,3].map(i=>`<circle cx="86.5" cy="${35+i*10}" r="4" ${TI}/>`).join('')+`<text x="62.5" y="62" text-anchor="middle" font-family="Baloo 2, sans-serif" font-weight="800" font-size="28" style="fill:var(--accent)">?</text>`,
+    pair:()=>`<path d="M6 18 H34 V46 H6 Z" ${TI}/><path d="M40 32 H56 M50 26 L56 32 L50 38" ${TA}/><path d="M62 18 H90 V46 H62 Z" ${TS}/><path d="M20 58 L36 86 H4 Z" ${TS}/><path d="M40 74 H56 M50 68 L56 74 L50 80" ${TA}/><path d="M62 58 H90 V90 H62 Z" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:3.5;stroke-dasharray:6 5"/><text x="76" y="84" text-anchor="middle" font-family="Baloo 2, sans-serif" font-weight="800" font-size="26" style="fill:var(--accent)">?</text>`,
+    odd:()=>`<circle cx="26" cy="30" r="13" ${TS}/><circle cx="74" cy="30" r="13" ${TS}/><circle cx="26" cy="74" r="13" ${TS}/><path d="M61 61 H87 V87 H61 Z" ${TS}/><circle cx="74" cy="74" r="22" ${TA}/>`,
+    codes:()=>`<path d="M50 10 L72 48 H28 Z" ${TG}/><text x="50" y="86" text-anchor="middle" font-family="Baloo 2, sans-serif" font-weight="800" font-size="30" letter-spacing="3" style="fill:var(--ink)">XA</text>`,
+    punch:()=>`<path d="M12 14 H88 V86 H12 Z" ${TS}/><path d="M50 14 V86" style="stroke:var(--accent);stroke-width:3.5;stroke-dasharray:7 6"/><circle cx="32" cy="36" r="6" ${TI}/><circle cx="68" cy="36" r="6" ${TI}/><circle cx="32" cy="64" r="6" ${TI}/><circle cx="68" cy="64" r="6" ${TI}/>`,
+    cube:()=>[[1,0],[0,1],[1,1],[2,1],[1,2],[1,3]].map(([x,y])=>`<rect x="${22+x*19}" y="${12+y*19}" width="19" height="19" ${x===1&&y===1?TG:TS}/>`).join(''),
+    top:()=>`<path d="M38 12 Q50 2 62 12 Q50 22 38 12 Z" ${TS}/><circle cx="50" cy="12" r="3.5" ${TI}/><path d="M50 24 V36 M45 31 L50 36 L55 31" ${TA}/>`+[[0,0],[1,0],[2,0],[0,1]].map(([x,y])=>`<rect x="${22+x*19}" y="${44+y*19}" width="19" height="19" ${TG}/>`).join(''),
+    side:()=>nest(isoSVG([{x:0,y:0,h:1,dark:[]},{x:1,y:0,h:2,dark:[1]},{x:0,y:1,h:1,dark:[]}]),0,14,66,66)+`<path d="M74 47 Q86 37 98 47 Q86 57 74 47 Z" ${TS}/><circle cx="86" cy="47" r="3.5" ${TI}/>`,
+    ladder:()=>`<text x="50" y="34" text-anchor="middle" font-family="Baloo 2, sans-serif" font-weight="800" font-size="25" letter-spacing="2" style="fill:var(--ink)">CAT</text><path d="M50 42 V54 M45 49 L50 54 L55 49" ${TA}/><text x="50" y="84" text-anchor="middle" font-family="Baloo 2, sans-serif" font-weight="800" font-size="25" letter-spacing="2" style="fill:var(--ink)">C<tspan style="fill:var(--accent)">O</tspan>T</text>`,
+    mix:()=>`<circle cx="28" cy="28" r="15" ${TI}/><path d="M72 13 L88 43 H56 Z" ${TG}/><path d="M14 58 H42 V86 H14 Z" ${TS}/><path d="${star(5,17,7)}" transform="translate(72 72)" style="fill:url(#pS);stroke:var(--ink);stroke-width:2.5;stroke-linejoin:round"/>`
+  };
+  document.querySelectorAll('.tile .ti').forEach(el=>{el.innerHTML=`<svg viewBox="0 0 100 100" aria-hidden="true">${TILE_ICONS[el.dataset.ic]()}</svg>`});
+  document.getElementById('mode').addEventListener('click',e=>{const b=e.target.closest('.tile');if(!b)return;
+    const r=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+    document.getElementById('actrow').scrollIntoView({behavior:r?'auto':'smooth',block:'start'})});
   seg('mode',v=>mode=v);seg('level',v=>level=v);
   build();
   renderProgress();
