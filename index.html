@@ -1670,7 +1670,7 @@ if(typeof document!=='undefined'){
   // remember the last puzzle type and level on this device; first visit starts on Easy
   const saved=k=>{try{return localStorage.getItem(k)}catch(e){return null}},keep=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
   const okVal=(grp,v)=>v&&document.querySelector(`#${grp} button[data-v="${v}"]`)?v:null;
-  let mode=okVal('mode',saved('pp-mode'))||'rotate',level=okVal('level',saved('pp-level'))||'easy',set=[],right=0;
+  let mode=okVal('mode',saved('pp-mode'))||'count',level=okVal('level',saved('pp-level'))||'easy',set=[],right=0;
   ['mode','level'].forEach(g=>{const v=g==='mode'?mode:level;document.querySelectorAll(`#${g} button`).forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===v))});
   const list=document.getElementById('list');
   const rotIcon=`<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M30 20a10 10 0 1 1-4-8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M27 4 L28 13 L19 13" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;

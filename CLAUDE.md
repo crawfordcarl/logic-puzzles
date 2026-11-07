@@ -45,7 +45,7 @@ These are over 110 checks using only Node 18+, and GitHub Actions runs them on e
 - **Text for 5–8 year olds:** Andika, large question text, short plain sentences, kind wording ("Good effort!", never "Wrong").
 - **Keep clear of Puffin Books** (Penguin Random House's children's imprint): don't use "Puffin Books", "Puffin stories", "Puffin Club" or similar names, and keep our logo (a round colourful badge, puffin holding a puzzle piece) visibly different from theirs.
 - **Never use the child's name on the site.** The footer credit stays "Made by a parent with Claude".
-- New visitors start on **Easy**. The level-up nudge suggests the next level after three sets in a row of nearly all right. Nothing ever suggests going down.
+- New visitors start on **Warm-up at Easy**. The level-up nudge suggests the next level after three sets in a row of nearly all right. Nothing ever suggests going down.
 
 ## To do next (in rough order)
 
