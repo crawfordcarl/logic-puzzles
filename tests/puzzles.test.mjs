@@ -369,6 +369,31 @@ test('rotate & mirror "Show me": the animation lands on the marked answer', () =
 
 // "Show me" for Top view and View from the right turns the real model with a small camera.
 // Where the camera ends must give exactly the marked answer.
+test('cube nets "Show me": the net folds into a closed cube that ends on the marked answer', () => {
+  const r = v => v.map(x => Math.round(x) || 0), near = (a, b) => a.every((x, i) => Math.abs(x - b[i]) < 1e-6);
+  // the camera at the end sees exactly the top, front and right faces, like the pictures
+  const cam = T.camAt(T.CUBE_CAM.yaw, T.CUBE_CAM.tilt);
+  for (const n of [[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]])
+    assert.equal(n[0]*cam.E[0] + n[1]*cam.E[1] + n[2]*cam.E[2] > 0, T.VIS.some(v => near(v, n)), `camera sees ${n}`);
+  for (const level of LEVELS) {
+    for (const p of make('cube', level, 150).puzzles) {
+      const { net, target, M } = T.cubeTurn(p);
+      assert.ok(M, `${level.name}: no turn of the folded net matches the answer`);
+      // a part-turn taken all the way lands exactly on the quarter-turns (also for half turns)
+      T.partTurn(M, 1).forEach((row, i) => assert.ok(near(row, M[i]), `${level.name}: partTurn(M,1) isn't M`));
+      const faces = T.cubeFaces(net, Math.PI / 2, T.partTurn(M, 1));
+      // closed cube: six different sides, each square sitting half a block out from the middle
+      assert.equal(new Set(faces.map(f => r(f.n).join())).size, 6, `${level.name}: two squares fold onto the same side`);
+      for (const f of faces) assert.ok(near(f.mid, f.n.map(v => v / 2)), `${level.name}: a square isn't on the cube`);
+      // the top, front and right faces show the answer's pictures, pointing the same way
+      T.VIS.forEach((n, i) => {
+        const f = faces.find(q => near(q.n, n));
+        assert.ok(T.sameFace({ g: f.c.g, up: r(f.up) }, target[i]), `${level.name}: face ${i} doesn't match the answer`);
+      });
+    }
+  }
+});
+
 test('block views "Show me": the camera ends on the marked answer', () => {
   const cellsAt = (faces, pick) => [...new Set(faces.filter(pick).map(f => {
     const cx = f.pts.reduce((a, q) => a + q[0], 0) / 4, cy = f.pts.reduce((a, q) => a + q[1], 0) / 4;
