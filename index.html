@@ -45,7 +45,7 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .q{display:flex;flex-direction:column;gap:12px;padding-block:20px;border-bottom:1px solid var(--rule)}
 .qhead{display:flex;align-items:center;gap:12px}
 .num{width:40px;height:40px;border:2px solid var(--ink);display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:1.2rem;flex:none}
-.prompt{margin:0;font-weight:700;max-width:60ch}
+.prompt{margin:0;font-weight:700;max-width:52ch;font-size:1.2rem;line-height:1.45;letter-spacing:.01em}
 .body{display:flex;flex-wrap:wrap;gap:16px 28px;align-items:center}
 .stem{display:flex;align-items:center;gap:12px;flex-wrap:wrap;min-width:0}
 .fig{width:88px;height:88px;color:var(--ink);flex:none}
@@ -57,7 +57,7 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .eye svg{width:100%;height:100%;display:block}
 .fig.netfig{width:150px;height:150px}
 .fig svg,.opt svg,.cell svg{width:100%;height:100%;display:block}
-.instr{display:flex;flex-direction:column;align-items:center;font-weight:700;font-size:.9rem;width:64px;text-align:center;line-height:1.15}
+.instr{display:flex;flex-direction:column;align-items:center;font-weight:700;font-size:.95rem;width:64px;text-align:center;line-height:1.15}
 .instr svg{width:36px;height:36px;margin-top:4px}
 .cells{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));border:1.5px solid var(--ink);background:var(--card);width:min(100%,440px)}
 .cell{aspect-ratio:1;max-width:100%;border-right:1.5px solid var(--ink);color:var(--ink);padding:4px}
@@ -75,7 +75,7 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .opt{font:inherit;background:var(--card);color:var(--ink);border:1.5px solid var(--rule);border-radius:10px;padding:6px 6px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:border-color .15s,background .15s;min-width:0}
 .opt .pic{width:100%;max-width:96px;aspect-ratio:1}
 .opt .codeopt{font-family:var(--display);font-weight:800;font-size:1.5rem;letter-spacing:.12em;padding-block:10px 4px}
-.opt .let{font-weight:700;font-size:.95rem;color:var(--muted)}
+.opt .let{font-weight:700;font-size:1.2rem;line-height:1.2;color:var(--muted)}
 .opt:hover:not([disabled]){border-color:var(--accent)}
 .opt.right{border-color:var(--good);background:var(--good-soft);border-width:2.5px}
 .opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
@@ -95,8 +95,8 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .pnote{color:var(--muted);font-size:.88rem}
 .ptable-wrap{overflow-x:auto}
 .ptable{border-collapse:collapse;width:100%;min-width:520px;font-variant-numeric:tabular-nums}
-.ptable th{font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);text-align:left;font-weight:700;padding:6px 10px;border-bottom:1px solid var(--rule)}
-.ptable td{padding:8px 10px;border-bottom:1px solid var(--rule);vertical-align:middle}
+.ptable th{font-size:.82rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);text-align:left;font-weight:700;padding:6px 10px;border-bottom:1px solid var(--rule)}
+.ptable td{font-size:1.06rem;padding:9px 10px;border-bottom:1px solid var(--rule);vertical-align:middle}
 .ptable td.pn{font-family:var(--display);font-weight:800;font-size:1.05rem}
 .spark{display:flex;gap:4px;align-items:flex-end;height:30px}
 .spark i{display:block;width:10px;background:var(--accent);border-radius:2px 2px 0 0;min-height:3px}
@@ -140,7 +140,7 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .logo{width:clamp(56px,12vw,76px);flex:none}
 .logo svg{width:100%;height:auto;display:block}
 .cel-card{position:relative;box-sizing:border-box}
-.tip{color:var(--muted);font-size:.92rem;max-width:65ch;margin:0}
+.tip{color:var(--muted);font-size:1rem;line-height:1.55;max-width:62ch;margin:0}
 .shape{fill:var(--card);stroke:currentColor;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
 .ink{fill:currentColor;stroke:none}
 .line{fill:none}
