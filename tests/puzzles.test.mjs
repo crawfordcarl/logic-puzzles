@@ -266,7 +266,7 @@ test('codes: every letter of the answer can be worked out from the examples', ()
 
 // ---------- puffin tips ----------
 
-test('puffin tips: two readable tips on the hard puzzle types, and the cube tip names a truly opposite pair', () => {
+test('puffin tips: readable, never give the answer away, and the cube tip names a truly opposite pair', () => {
   for (const type of ['cube', 'punch', 'top', 'side']) {
     for (const level of LEVELS) {
       const { puzzles } = make(type, level, 100);
@@ -275,9 +275,19 @@ test('puffin tips: two readable tips on the hard puzzle types, and the cube tip 
         assert.equal(tips.length, 2, `${type}: expected two tips`);
         tips.forEach(t => assert.doesNotMatch(t, /undefined|NaN|null|\[object/, `${type}: broken tip "${t}"`));
         assert.deepEqual(T.tipsFor(p), tips, 'a tip changed between redraws');
+        // the nudge must leave at least two answers that fit it, so it never gives the answer away
+        const nudge = tips[1], left = p.opts.filter(o => {
+          if (/(\d+) holes/.test(nudge)) return (o.holes || o.holes2).length === Number(nudge.match(/(\d+) holes/)[1]);
+          if (/has (\d+) squares/.test(nudge)) return o.plan.length === Number(nudge.match(/has (\d+) squares/)[1]);
+          if (/(\d+) wide and (\d+) tall/.test(nudge)) { const [, w, h] = nudge.match(/(\d+) wide and (\d+) tall/); return o.grid[0].length === +w && o.grid.length === +h; }
+          return true;
+        }).length;
+        assert.ok(left >= 2, `${type}: the tip "${nudge}" leaves only ${left} answer`);
         if (p.type === 'cube' && p.dir === 'toCube') {
           const cube = T.netToCube(p.net), name = g => T.GLYPHW[g];
           const named = cube.filter(f => tips[1].includes(name(f.g)));
+          // the fallback tip names no faces; otherwise it must name exactly two, and they must be opposite
+          if (named.length === 0) continue;
           assert.equal(named.length, 2, 'the tip should name two faces');
           assert.ok(named[0].n.every((x, i) => x === -named[1].n[i]), `${tips[1]} — those faces are not opposite`);
         }

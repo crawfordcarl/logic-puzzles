@@ -221,14 +221,12 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .cel-up-m{color:var(--ink);font-size:.98rem;max-width:30ch}
 .cel-up .btn{margin-top:4px}
 .tiprow{display:flex}
-.tipbtn{font:inherit;font-weight:700;font-size:.95rem;color:var(--ink);background:var(--accent-soft);border:1.5px dashed var(--accent);border-radius:999px;padding:4px 12px 4px 5px;display:inline-flex;align-items:center;gap:7px;cursor:pointer}
-.tipbtn:hover:not([disabled]){border-style:solid}
-.tipbtn[disabled]{opacity:.5;cursor:default}
-.tiplogo{width:26px;height:26px;display:block}
+.tipbtn{font:inherit;font-weight:700;font-size:.92rem;color:var(--accent);background:none;border:0;padding:2px 0;display:inline-flex;align-items:center;gap:6px;cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px}
+.tipbtn:hover{text-decoration-style:solid}
+.tiplogo{width:22px;height:22px;display:inline-block;flex:none;vertical-align:middle}
 .tiplogo svg{width:100%;height:100%;display:block}
-.tipleft{font-weight:400;font-size:.8rem;color:var(--muted)}
-.ptips{display:flex;flex-direction:column;gap:6px;max-width:62ch}
-.ptips p{margin:0;font-size:1.02rem;line-height:1.5;padding:8px 12px;border-radius:10px;background:var(--accent-soft)}
+.ptips{max-width:62ch}
+.ptips p{margin:0;font-size:1.02rem;line-height:1.5;padding:8px 12px;border-radius:10px;background:var(--accent-soft);display:flex;gap:8px;align-items:flex-start}
 .tip{color:var(--muted);font-size:1rem;line-height:1.55;max-width:62ch;margin:0}
 .shape{fill:var(--card);stroke:currentColor;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
 .ink{fill:currentColor;stroke:none}
@@ -1458,28 +1456,40 @@ const PUFF_MINI='<svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"
 const TIP_TYPES=new Set(['cube','punch','punch2','top','side']);
 // worked out once per question, so the tip doesn't change when the page redraws
 const tipsFor=p=>p._tips||(p._tips=tipsCalc(p));
+// a nudge is only used if at least two answers still fit it, so a tip never gives the answer away
 function tipsCalc(p){
+  const fits=(test)=>p.opts.filter(test).length>=2;
+  const oppositeIn=(cube,g1,g2)=>{const a=cube.find(f=>f.g===g1),b=cube.find(f=>f.g===g2);return a&&b&&a.n.every((x,i)=>x===-b.n[i])};
   switch(p.type){
     case 'cube':{
-      if(p.dir==='toNet'){const v=p.view.map(f=>GLYPHW[f.g]||'that picture');
+      if(p.dir==='toNet'){const g=p.view.map(f=>f.g),v=g.map(x=>GLYPHW[x]||'that picture');
+        const ok=o=>{const c=netToCube(o);return !oppositeIn(c,g[0],g[1])&&!oppositeIn(c,g[0],g[2])&&!oppositeIn(c,g[1],g[2])};
         return ['Faces that are opposite each other on a cube can never be seen at the same time. Find them in each net first.',
-          `This cube shows ${v[0]}, ${v[1]} and ${v[2]} all at once, so in the right net none of those three can be opposite each other.`];}
-      const c=netToCube(p.net),a=pick(c),b=c.find(f=>f.n.every((x,i)=>x===-a.n[i]));
+          fits(ok)?`This cube shows ${v[0]}, ${v[1]} and ${v[2]} all at once, so in the right net none of those three can be opposite each other.`
+                  :`Pick ${v[0]} and find which square ends up next to it on each side, then check the picture's direction too.`];}
+      const c=netToCube(p.net),pairs=[];
+      for(const a of c){const b=c.find(f=>f.n.every((x,i)=>x===-a.n[i]));if(a.g<b.g)pairs.push([a,b])}
+      const shows=(o,a,b)=>o.view.some(f=>f.g===a.g)&&o.view.some(f=>f.g===b.g);
+      const good=shuffle(pairs).find(([a,b])=>fits(o=>!shows(o,a,b)));
       return ['In a net, two squares with exactly one square between them in a straight line end up opposite each other.',
-        `In this net, ${GLYPHW[a.g]||'one picture'} and ${GLYPHW[b.g]||'another'} end up opposite each other, so no cube can show them both.`];}
+        good?`In this net, ${GLYPHW[good[0].g]||'one picture'} and ${GLYPHW[good[1].g]||'another'} end up opposite each other, so no cube can show them both.`
+            :'Pick one picture on each cube and check which way it points in the net. Letters and arrows are the easiest to check.'];}
     case 'punch':case 'punch2':{
-      const n=(p.opts[p.ans].holes||p.opts[p.ans].holes2).length;
+      const cnt=o=>(o.holes||o.holes2).length,n=cnt(p.opts[p.ans]);
       return ['Unfold the last fold first, then the one before. Each time, the holes get a mirror copy on the other side of the fold.',
-        `The holes go through every layer, so when the paper is opened out it will have ${n} holes.`];}
+        fits(o=>cnt(o)===n)?`The holes go through every layer, so when the paper is opened out it will have ${n} holes.`
+                          :'Look at the hole nearest the last fold line. When that fold opens, it gets a twin the same distance away on the other side.'];}
     case 'top':{const n=p.cols.length;
       return ['From straight above, a tall tower looks just like a single block. Ignore how tall the stacks are.',
-        `Count the stacks: there are ${n}, so the right answer has ${n} squares.`];}
+        fits(o=>o.plan.length===n)?`Count the stacks: there are ${n}, so the right answer has ${n} squares.`
+                                  :'Find the longest straight row of stacks, then look for that row in each answer. The answer may be turned round.'];}
     case 'side':{
       if(p.view3d)return ['Imagine walking round to where the eye is. The side the eye looks at becomes the front.',
         'Find the tallest stack first and work out where it ends up, then check the dark blocks.'];
-      const ys=p.cols.map(c=>c.y),wide=Math.max(...ys)-Math.min(...ys)+1,tall=Math.max(...p.cols.map(c=>c.h));
+      const g=p.opts[p.ans].grid,wide=g[0].length,tall=g.length;
       return ['From the right you only see the nearest block in each row. A dark block only shows if nothing is in front of it.',
-        `From where the eye is, the blocks are ${wide} wide and ${tall} tall.`];}
+        fits(o=>o.grid[0].length===wide&&o.grid.length===tall)?`From where the eye is, the blocks are ${wide} wide and ${tall} tall.`
+          :'Find the tallest stack first: from the eye, is it on the left or the right?'];}
   }
   return [];
 }
@@ -1584,6 +1594,8 @@ if(typeof document!=='undefined'){
     }
   }
   function render(){
+    // tips only show once a question in this set has been answered wrongly
+    const struggled=set.some(q=>q.done&&q.pick>=0&&q.pick!==q.ans);
     list.innerHTML=set.map((p,qi)=>{
       const opts=p.opts.map((o,oi)=>{
         let cls='opt';
@@ -1591,7 +1603,7 @@ if(typeof document!=='undefined'){
         const inner=typeof o==='string'?`<span class="codeopt${p.wordy?' wordopt':''}">${o}</span>`:`<span class="pic">${o.cols3?isoSVG(o.cols3):o.holes2?holes2SVG(o):o.grid?gridSVG(o):o.plan?planSVG(o):o.holes?holesSVG(o.holes):o.net?netSVG(o):o.view?cubeSVG(o.view):figSVG(o)}</span>`;
         return `<button class="${cls}" data-q="${qi}" data-o="${oi}" ${p.done?'disabled':''} aria-label="Answer ${LET[oi]}">${inner}<span class="let">${LET[oi]}</span></button>`;
       }).join('');
-      return `<section class="q"><div class="qhead"><div class="num">${qi+1}</div><p class="prompt">${p.prompt?p.prompt:p.type==='cube'?(p.dir==='toNet'?'Which net folds up to make this cube?':'Which cube can be made by folding up this net?'):PROMPT[p.type]}</p></div>${TIP_TYPES.has(p.type)&&!p.done?`<div class="tiprow"><button class="tipbtn" data-tipq="${qi}" ${(p.tips||0)>=2?'disabled':''}><span class="tiplogo" aria-hidden="true">${PUFF_MINI}</span>Puffin tip<span class="tipleft">${2-(p.tips||0)} left</span></button></div>`:''}${(p.tips||0)&&!p.done?`<div class="ptips">${tipsFor(p).slice(0,p.tips).map(t=>`<p>${t}</p>`).join('')}</div>`:''}
+      return `<section class="q"><div class="qhead"><div class="num">${qi+1}</div><p class="prompt">${p.prompt?p.prompt:p.type==='cube'?(p.dir==='toNet'?'Which net folds up to make this cube?':'Which cube can be made by folding up this net?'):PROMPT[p.type]}</p></div>${TIP_TYPES.has(p.type)&&!p.done&&struggled?(p.tips?`<div class="ptips"><p><span class="tiplogo" aria-hidden="true">${PUFF_MINI}</span>${tipsFor(p)[1]}</p></div>`:`<div class="tiprow"><button class="tipbtn" data-tipq="${qi}"><span class="tiplogo" aria-hidden="true">${PUFF_MINI}</span>Puffin tip</button></div>`):''}
         <div class="body">${stem(p,qi)}<div class="opts" style="grid-template-columns:repeat(${p.opts.length},minmax(0,1fr))">${opts}</div></div>${p.done&&p.pick>=0&&p.pick!==p.ans?`<p class="why"><b>Why?</b> ${explain(p,p.opts[p.pick])}</p>`:''}</section>`;
     }).join('');
     document.getElementById('score').textContent=`${right} / ${set.length}`;
@@ -1708,7 +1720,7 @@ if(typeof document!=='undefined'){
   }
   list.addEventListener('click',e=>{
     const tb=e.target.closest('[data-tipq]');
-    if(tb){const p=set[+tb.dataset.tipq];if(p.done||(p.tips||0)>=2)return;p.tips=(p.tips||0)+1;render();return}
+    if(tb){const p=set[+tb.dataset.tipq];if(p.done||p.tips)return;p.tips=1;render();return}
     const hb=e.target.closest('[data-hint]');
     if(hb){const qi=+hb.dataset.hint,p=set[qi];if(!p.done&&p.hints>=HINTS)return;
       p.turn+=p.step;if(!p.done)p.hints++;
