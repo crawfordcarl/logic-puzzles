@@ -191,7 +191,8 @@ button:focus-visible,a:focus-visible,.ptable-wrap:focus-visible{outline:3px soli
 .brand{flex-wrap:nowrap;align-items:center}
 .brand h1{min-width:0;line-height:1}
 .brandtext{display:flex;flex-direction:column;gap:8px;min-width:0}
-.colours{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.colours{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.colrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.modebtn{width:30px;height:30px;border-radius:50%;border:0;box-shadow:0 0 0 1.5px var(--rule);background:var(--card);color:var(--ink);cursor:pointer;padding:5px;margin-left:6px;display:grid;place-items:center}.modebtn svg{width:100%;height:100%;display:block}.modebtn .mb-moon path{fill:currentColor}.modebtn .mb-sun circle{fill:currentColor}.modebtn .mb-sun path{stroke:currentColor;stroke-width:2;stroke-linecap:round;fill:none}.modebtn .mb-sun{display:none}.modebtn.is-dark .mb-sun{display:inline}.modebtn.is-dark .mb-moon{display:none}
+
 .sw{width:30px;height:30px;border-radius:50%;border:2.5px solid var(--card);box-shadow:0 0 0 1.5px var(--rule);cursor:pointer;padding:0;transition:transform .15s}
 .sw:hover{transform:scale(1.12)}
 .sw[aria-pressed="true"]{box-shadow:0 0 0 3px var(--ink)}
@@ -300,7 +301,7 @@ a.linkbtn{display:inline-block}
 <body>
 
 
-<script>try{var c=localStorage.getItem("pp-colour");if(c&&c!=="blue")document.documentElement.setAttribute("data-color",c)}catch(e){}</script>
+<script>try{var c=localStorage.getItem("pp-colour");if(c&&c!=="blue")document.documentElement.setAttribute("data-color",c);var m=localStorage.getItem("pp-theme");if(m==="light"||m==="dark")document.documentElement.setAttribute("data-theme",m)}catch(e){}</script>
 <svg class="defs" aria-hidden="true" focusable="false"><defs>
   <pattern id="pS" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" style="fill:var(--card)"/><rect width="2.6" height="7" style="fill:var(--ink)"/></pattern>
   <pattern id="pD" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" style="fill:var(--card)"/><circle cx="4" cy="4" r="1.9" style="fill:var(--ink)"/></pattern>
@@ -331,7 +332,7 @@ a.linkbtn{display:inline-block}
     <path d="M0 0 H7 a4 4 0 1 1 6 0 H20 V7 a4 4 0 1 0 0 6 V20 H0 Z" fill="#ffd23f" stroke="#1c2430" stroke-width="2.2" stroke-linejoin="round"/>
   </g>
   <path d="M48 86 Q56 84 60 78" fill="none" stroke="#141a22" stroke-width="6" stroke-linecap="round"/>
-</svg></span><div class="brandtext"><h1>Puzzle Puffin</h1><div class="colours" id="colours" role="group" aria-label="Choose a colour"><button class="sw" data-c="blue" aria-pressed="true" aria-label="Puffin Blue" title="Puffin Blue" style="background:#2d6a8c"></button><button class="sw" data-c="orange" aria-pressed="false" aria-label="Beak Orange" title="Beak Orange" style="background:#e0701f"></button><button class="sw" data-c="green" aria-pressed="false" aria-label="Sea Green" title="Sea Green" style="background:#2f9a6e"></button><button class="sw" data-c="purple" aria-pressed="false" aria-label="Heather Purple" title="Heather Purple" style="background:#7c55b8"></button><button class="sw" data-c="yellow" aria-pressed="false" aria-label="Sunny Yellow" title="Sunny Yellow" style="background:#f2c230"></button></div></div></div>
+</svg></span><div class="brandtext"><h1>Puzzle Puffin</h1><div class="colrow"><div class="colours" id="colours" role="group" aria-label="Choose a colour"><button class="sw" data-c="blue" aria-pressed="true" aria-label="Puffin Blue" title="Puffin Blue" style="background:#2d6a8c"></button><button class="sw" data-c="orange" aria-pressed="false" aria-label="Beak Orange" title="Beak Orange" style="background:#e0701f"></button><button class="sw" data-c="green" aria-pressed="false" aria-label="Sea Green" title="Sea Green" style="background:#2f9a6e"></button><button class="sw" data-c="purple" aria-pressed="false" aria-label="Heather Purple" title="Heather Purple" style="background:#7c55b8"></button><button class="sw" data-c="yellow" aria-pressed="false" aria-label="Sunny Yellow" title="Sunny Yellow" style="background:#f2c230"></button></div><button class="modebtn" id="modebtn" aria-pressed="false" aria-label="Dark mode" title="Dark mode"><svg viewBox="0 0 24 24" aria-hidden="true"><g class="mb-moon"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></g><g class="mb-sun"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.6M12 18.9v2.6M2.5 12h2.6M18.9 12h2.6M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></g></svg></button></div></div></div>
     <p class="lede">Picture and word puzzles to give little brains a big workout. Pick a level and a puzzle, then tap an answer to check it.</p>
   </header>
 
@@ -2000,6 +2001,16 @@ if(typeof document!=='undefined'){
   const setColour=c=>{if(c==='blue')document.documentElement.removeAttribute('data-color');else document.documentElement.setAttribute('data-color',c);
     document.querySelectorAll('#colours .sw').forEach(b=>b.setAttribute('aria-pressed',b.dataset.c===c))};
   {let c='blue';try{c=localStorage.getItem('pp-colour')||'blue'}catch(e){}setColour(c)}
+  // light / dark: follows the device until tapped; choosing the device's own setting goes back to following it
+  {const mb=document.getElementById('modebtn'),root=document.documentElement,sysDark=()=>!!(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches);
+    const isDark=()=>root.dataset.theme?root.dataset.theme==='dark':sysDark();
+    const show=()=>{const d=isDark();mb.classList.toggle('is-dark',d);mb.setAttribute('aria-pressed',String(d));mb.title=d?'Dark mode is on':'Dark mode is off'};
+    mb.addEventListener('click',()=>{const want=isDark()?'light':'dark';
+      if((want==='dark')===sysDark()){delete root.dataset.theme;try{localStorage.removeItem('pp-theme')}catch(e){}}
+      else{root.dataset.theme=want;try{localStorage.setItem('pp-theme',want)}catch(e){}}
+      show()});
+    if(window.matchMedia)try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',show)}catch(e){}
+    show()}
   document.getElementById('colours').addEventListener('click',e=>{const b=e.target.closest('.sw');if(!b)return;setColour(b.dataset.c);try{localStorage.setItem('pp-colour',b.dataset.c)}catch(e){}});
   /* ---- sticker book: every sticker has a clear, fixed goal (nothing random) ---- */
   const MODES=[['count','Warm-up'],['rotate','Rotate'],['mirror','Mirror'],['sequence','Fill the gap'],['pair','Complete the pair'],['odd','Odd one out'],['codes','Codes'],['punch','Fold & punch'],['cube','Cube nets'],['top','Top view'],['side','View from the right'],['ladder','Word ladders'],['mix','Mix']];
