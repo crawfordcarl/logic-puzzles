@@ -21,6 +21,12 @@ Everything is in `localStorage`, per device, per address. Renaming a key silentl
 | `pp-colour` | Chosen colour theme |
 | `pp-mode` | Last puzzle type |
 | `pp-level` | Last level |
+| `pp-player` | Which animal is playing (`puffin` if never changed) |
+| `pp-theme` | `light` or `dark`, only when it differs from the device setting (light/dark is per device, not per animal) |
+
+**Animals (several children on one device).** Puffin is the first player and uses the keys above exactly as they always were, so existing progress never moved. The other animals (`seal`, `fox`, `owl`, `hedgehog`, `otter`) use the same keys with `@animal` on the end: `logic-puzzles-history-v1@seal`, `pp-colour@seal`, `pp-mode@seal`, `pp-level@seal`. Use `pk(key)` and `loadH(who)` in the page rather than building keys by hand.
+
+**Save a copy / Load a saved copy** (Progress section) writes a JSON file `{app:'Puzzle Puffin', kind:'progress', version:1, players:{puffin:{history,colour,mode,level},…}}`. Loading **merges**: it adds finished sets that aren't already there and fills in settings only where none are set, so it can never lose anything. Every record is checked (known puzzle types, levels and animals, numbers only) before it's stored. If the history format changes, bump `version` and keep reading version 1.
 
 If the history format ever has to change, read the old key and migrate it. Don't start a new one empty.
 
@@ -32,11 +38,12 @@ If the history format ever has to change, read the old key and migrate it. Don't
 npm test
 ```
 
-These are over 110 checks using only Node 18+, and GitHub Actions runs them on every push. They make hundreds of puzzles of every type at every level and check: exactly one right answer, no look-alike choices, readable explanations and tips, and offline files present. Each bug found so far has its own test (see the comments in `tests/puzzles.test.mjs`). **Add a test for any new puzzle type, and for any bug you fix.** Test "could another answer also be right?", not just "are the answers different?". Two real bugs got past the weaker check.
+These are over 120 checks using only Node 18+, and GitHub Actions runs them on every push. A second GitHub job (`browser`) installs Playwright and axe-core and runs `tests/a11y.mjs` (accessibility in all five colour themes, light and dark) and `tests/browser.mjs` (Back button, animals, save/load, light/dark). Those two need a browser, so they aren't part of `npm test`. They make hundreds of puzzles of every type at every level and check: exactly one right answer, no look-alike choices, readable explanations and tips, and offline files present. Each bug found so far has its own test (see the comments in `tests/puzzles.test.mjs`). **Add a test for any new puzzle type, and for any bug you fix.** Test "could another answer also be right?", not just "are the answers different?". Two real bugs got past the weaker check.
 
 ## Design rules agreed with the family
 
 - **Puzzles stay black, white and grey.** Colour themes only touch the frame (tiles, buttons, highlights), because in puzzles colour can be a clue.
+- **Light/dark** follows the device until the sun/moon button by the colour dots is tapped. Choosing the device's own setting goes back to following it.
 - **Respect `prefers-reduced-motion`** everywhere: confetti, balloons, shimmer, tile movement.
 - **No random rewards.** Every sticker has a visible goal, nothing can be lost, and there are no streaks to break. It must never feel like gambling.
 - **No sounds.** A deliberate choice, not an oversight.
@@ -53,10 +60,10 @@ These are over 110 checks using only Node 18+, and GitHub Actions runs them on e
 **Check it works everywhere** (so far only tested in Chrome-based browsers):
 - iPhone and iPad (Safari): especially offline mode, printing, and the colour dots fitting.
 - Amazon Fire tablets (Silk browser, built on Chrome): likely fine, but test offline mode and performance on a cheap Fire. **Amazon Kids profiles block websites that aren't approved**, so parents may need to add puzzlepuffin.com in the Amazon Parent Dashboard. A short "Using a Fire tablet?" note for parents might help.
-- Older or slower tablets: some Expert puzzles take a moment to generate, so check it never feels slow.
+- Older or slower tablets: timed in November 2026, the slowest set (View from the right, Expert) takes about 30 ms here after speeding up `lookKey`, so well under half a second on a cheap tablet. A test fails if any set takes over 400 ms.
 
 **Accessibility:**
-- Add an automatic check with axe-core (via Playwright) as a second GitHub Actions job. It catches missing labels, contrast and some keyboard problems in all five colour themes, light and dark.
+- ~~Automatic axe-core check~~ done (`tests/a11y.mjs`, GitHub job `browser`). It found and fixed: orange-theme contrast, keyboard access to the progress table.
 - One manual pass: keyboard only, then a phone screen reader (VoiceOver, TalkBack).
 
 **Privacy and compliance** (not legal advice; check the ICO's guidance):
@@ -65,15 +72,15 @@ These are over 110 checks using only Node 18+, and GitHub Actions runs them on e
 - Settings and progress are stored only to provide features the user chose, which is usually treated as not needing consent under PECR. Confirm before adding anything else to storage.
 
 **Security** (low risk, as the site is static with no logins and nothing sent anywhere):
-- Add a Content-Security-Policy `<meta>` tag allowing only the site's own files.
-- Set `permissions: contents: read` in `.github/workflows/test.yml`.
+- ~~Content-Security-Policy~~ done: a `<meta>` tag in `index.html` (added by the build) and `privacy.html` allows only the site's own files. Inline code is allowed because the app lives in one page; don't add hashes, as they'd break the site the moment anyone edits `index.html`.
+- ~~Read-only workflow permissions~~ done.
 - Account safety matters most: two-step login on GitHub and the domain seller, and the domain transfer lock on.
 - Anything a user types (e.g. names) must be escaped before it goes into `innerHTML`.
 
 **Features:**
-- **Several children on one device:** players picked by animal (Puffin, Seal, Fox…) rather than by name, chosen from the footer only. Each has its own history, stickers and settings. The existing `logic-puzzles-history-v1` data must become the first player, never lost.
+- ~~Several children on one device~~ done: six animals, chosen from "Playing as … Change" in the footer (see Saved progress above).
 - **Stories (a surprise extra, not a puzzle or a reward):** short original stories about our puffin and friends for 5–8 year olds (100–200 words, Andika, one simple picture each). **Always freely available, never unlocked or tied to scores**: the aim is for children to find them and choose to read on their own. On their own page behind a quiet link, so the puzzle screen stays calm. New stories can be added over time to be discovered. All characters original. Stories can touch on shapes and patterns, but never test the reader. **Naming:** don't call them "Puffin stories", a "Puffin library" or "Puffin books", which are too close to Puffin Books (Penguin Random House's children's imprint, whose first series was "Puffin Story Books"). Give our puffin a name and title them after it (e.g. "Pip's Tales").
-- **Back up progress:** a "save my progress" file or code from the footer, so clearing the browser or changing tablets doesn't lose stickers.
+- ~~Back up progress~~ done: Save a copy / Load a saved copy in the Progress section, with a note about Safari clearing data.
 
 ## Ideas not done yet
 

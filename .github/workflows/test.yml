@@ -20,7 +20,7 @@ jobs:
       - name: Check every puzzle type is fair
         run: npm test
 
-  accessibility:
+  browser:
     # axe-core in a real browser: labels, contrast and keyboard basics, in every colour theme, light and dark
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -35,3 +35,5 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Check accessibility
         run: node tests/a11y.mjs
+      - name: Check Back button, animals, save/load and light/dark in a real browser
+        run: node tests/browser.mjs

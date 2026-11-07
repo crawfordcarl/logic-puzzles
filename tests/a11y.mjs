@@ -59,7 +59,8 @@ for (const scheme of SCHEMES) for (const colour of COLOURS) {
   await page.waitForTimeout(300);
   await check(page, `${tag}: score screen`);
   await page.keyboard.press('Escape');
-  await check(page, `${tag}: answers and progress`);
+  await page.click('#who-change');
+  await check(page, `${tag}: answers, progress and animal chooser`);
   if (colour === 'blue') {
     const sm = page.locator('[data-showme]').first();
     if (await sm.count()) { await sm.click(); await page.waitForTimeout(3500); await check(page, `${tag}: Show me`); await page.keyboard.press('Escape'); }

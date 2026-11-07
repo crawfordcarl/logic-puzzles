@@ -191,7 +191,9 @@ button:focus-visible,a:focus-visible,.ptable-wrap:focus-visible{outline:3px soli
 .brand{flex-wrap:nowrap;align-items:center}
 .brand h1{min-width:0;line-height:1}
 .brandtext{display:flex;flex-direction:column;gap:8px;min-width:0}
-.colours{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.colrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.modebtn{width:30px;height:30px;border-radius:50%;border:0;box-shadow:0 0 0 1.5px var(--rule);background:var(--card);color:var(--ink);cursor:pointer;padding:5px;margin-left:6px;display:grid;place-items:center}.modebtn svg{width:100%;height:100%;display:block}.modebtn .mb-moon path{fill:currentColor}.modebtn .mb-sun circle{fill:currentColor}.modebtn .mb-sun path{stroke:currentColor;stroke-width:2;stroke-linecap:round;fill:none}.modebtn .mb-sun{display:none}.modebtn.is-dark .mb-sun{display:inline}.modebtn.is-dark .mb-moon{display:none}
+.colours{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.pbackup{margin-top:18px;padding-top:14px;border-top:1px solid var(--rule)}.pb-text{color:var(--muted);margin:0 0 10px;font-size:.95rem}.pb-text b{color:var(--ink)}.pb-btns{display:flex;gap:10px;flex-wrap:wrap;margin:0}.pb-msg{margin:8px 0 0;min-height:1.5em;font-weight:700;color:var(--accent)}@media print{.pbackup{display:none}}
+.who{margin:28px 0 6px;text-align:center}.who-now{margin:0;color:var(--muted)}.who-now b{color:var(--ink)}.who-pic{display:inline-block;width:26px;height:26px;vertical-align:-8px;margin:0 6px}.who-pic svg,.who-b svg,.ph-pic svg{width:100%;height:100%;display:block}.who-help{color:var(--muted);margin:10px auto 8px;max-width:34ch}.who-row{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;max-width:290px;margin:0 auto}.who-b{font:inherit;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:0;padding:4px;border-radius:12px;cursor:pointer;color:var(--ink);min-width:64px}.who-b span{width:48px;height:48px;border-radius:50%;box-shadow:0 0 0 1.5px var(--rule)}.who-b[aria-pressed="true"] span{box-shadow:0 0 0 3px var(--accent)}.who-b small{color:var(--muted);font-size:.8rem}.ph-pic{display:inline-block;width:28px;height:28px;vertical-align:-6px;margin-left:8px}.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.colrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.modebtn{width:30px;height:30px;border-radius:50%;border:0;box-shadow:0 0 0 1.5px var(--rule);background:var(--card);color:var(--ink);cursor:pointer;padding:5px;margin-left:6px;display:grid;place-items:center}.modebtn svg{width:100%;height:100%;display:block}.modebtn .mb-moon path{fill:currentColor}.modebtn .mb-sun circle{fill:currentColor}.modebtn .mb-sun path{stroke:currentColor;stroke-width:2;stroke-linecap:round;fill:none}.modebtn .mb-sun{display:none}.modebtn.is-dark .mb-sun{display:inline}.modebtn.is-dark .mb-moon{display:none}
 
 .sw{width:30px;height:30px;border-radius:50%;border:2.5px solid var(--card);box-shadow:0 0 0 1.5px var(--rule);cursor:pointer;padding:0;transition:transform .15s}
 .sw:hover{transform:scale(1.12)}
@@ -301,7 +303,7 @@ a.linkbtn{display:inline-block}
 <body>
 
 
-<script>try{var c=localStorage.getItem("pp-colour");if(c&&c!=="blue")document.documentElement.setAttribute("data-color",c);var m=localStorage.getItem("pp-theme");if(m==="light"||m==="dark")document.documentElement.setAttribute("data-theme",m)}catch(e){}</script>
+<script>try{var w=localStorage.getItem("pp-player"),c=localStorage.getItem(w&&w!=="puffin"?"pp-colour@"+w:"pp-colour");if(c&&c!=="blue")document.documentElement.setAttribute("data-color",c);var m=localStorage.getItem("pp-theme");if(m==="light"||m==="dark")document.documentElement.setAttribute("data-theme",m)}catch(e){}</script>
 <svg class="defs" aria-hidden="true" focusable="false"><defs>
   <pattern id="pS" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" style="fill:var(--card)"/><rect width="2.6" height="7" style="fill:var(--ink)"/></pattern>
   <pattern id="pD" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" style="fill:var(--card)"/><circle cx="4" cy="4" r="1.9" style="fill:var(--ink)"/></pattern>
@@ -411,8 +413,20 @@ a.linkbtn{display:inline-block}
     <p class="psum" id="psum" hidden></p>
     <div id="prog"></div>
     <div class="pclear" id="pclear"></div>
+    <div class="pbackup">
+      <p class="pb-text"><b>Keep it safe.</b> Progress lives only in this browser. Save a copy now and then, so clearing the browser or changing tablets doesn't lose any stickers. <span class="pb-ios">On iPhone and iPad, Safari can clear a site's saved data if it isn't used for a while; adding Puzzle Puffin to the Home Screen helps too.</span></p>
+      <p class="pb-btns"><button class="btn small" id="pb-save">Save a copy</button><button class="btn small" id="pb-load">Load a saved copy</button><input type="file" id="pb-file" accept=".json,application/json" hidden></p>
+      <p class="pb-msg" id="pb-msg" role="status"></p>
+    </div>
   </section>
 
+  <div class="who" id="who">
+    <p class="who-now">Playing as <span class="who-pic" id="who-pic" aria-hidden="true"></span><b id="who-name">Puffin</b> <button class="linkbtn" id="who-change" aria-expanded="false" aria-controls="who-pick">Change</button></p>
+    <div class="who-pick" id="who-pick" hidden>
+      <p class="who-help">Sharing this device? Each animal keeps its own stickers, scores and colour.</p>
+      <div class="who-row" id="who-row" role="group" aria-label="Choose your animal"></div>
+    </div>
+  </div>
   <p class="printlink"><button class="linkbtn" id="printbtn">Print a worksheet of these puzzles</button><span class="linksep" aria-hidden="true"> · </span><a class="linkbtn" href="privacy.html">Privacy</a></p>
   <footer class="credit">Made by a parent with <a href="https://claude.ai" target="_blank" rel="noopener">Claude</a>, an AI assistant made by Anthropic.</footer>
 </div>
@@ -1773,9 +1787,15 @@ const TIPS={
 if(typeof document!=='undefined'){
   // remember the last puzzle type and level on this device; first visit starts on Easy
   const saved=k=>{try{return localStorage.getItem(k)}catch(e){return null}},keep=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+  // players: Puffin is the first player and keeps the original keys; the others add "@animal" to each key
+  const ANIMALS={"puffin": {"name": "Puffin", "svg": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><circle cx=\"20\" cy=\"20\" r=\"19\" fill=\"#cfe4ee\"/><path d=\"M8 25c0-9 5-16 12-16s12 7 12 16c0 5-5 9-12 9s-12-4-12-9Z\" fill=\"#1c2430\"/><path d=\"M11 24c1-6 4-9 8-9 2 4 1 10-2 14-4 0-6-2-6-5Z\" fill=\"#fff\"/><circle cx=\"16\" cy=\"21\" r=\"2.6\" fill=\"#1c2430\"/><circle cx=\"16.9\" cy=\"20.1\" r=\"0.8320000000000001\" fill=\"#fff\"/><path d=\"M19 20c5-3 11-2 13 2-2 4-8 5-13 2Z\" fill=\"#f08a24\"/><path d=\"M19 22h12\" stroke=\"#c5531a\" stroke-width=\"1.2\"/></svg>"}, "seal": {"name": "Seal", "svg": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><circle cx=\"20\" cy=\"20\" r=\"19\" fill=\"#dfe6ea\"/><ellipse cx=\"20\" cy=\"22\" rx=\"13\" ry=\"11.5\" fill=\"#8d9aa6\"/><circle cx=\"15\" cy=\"19\" r=\"2.6\" fill=\"#1c2430\"/><circle cx=\"15.9\" cy=\"18.1\" r=\"0.8320000000000001\" fill=\"#fff\"/><circle cx=\"25\" cy=\"19\" r=\"2.6\" fill=\"#1c2430\"/><circle cx=\"25.9\" cy=\"18.1\" r=\"0.8320000000000001\" fill=\"#fff\"/><ellipse cx=\"20\" cy=\"26\" rx=\"5.5\" ry=\"4\" fill=\"#b8c2ca\"/><ellipse cx=\"20\" cy=\"24.4\" rx=\"2\" ry=\"1.4\" fill=\"#1c2430\"/><path d=\"M14 27l-6-1M14 29l-6 1M26 27l6-1M26 29l6 1\" stroke=\"#5d6a78\" stroke-width=\".9\" stroke-linecap=\"round\"/></svg>"}, "fox": {"name": "Fox", "svg": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><circle cx=\"20\" cy=\"20\" r=\"19\" fill=\"#fbe3cf\"/><path d=\"M8 9l7 6M32 9l-7 6\" stroke=\"#d4621c\" stroke-width=\"5\" stroke-linecap=\"round\"/><path d=\"M7 15c3 9 7 15 13 18 6-3 10-9 13-18-4-3-9-4-13-4s-9 1-13 4Z\" fill=\"#e2702a\"/><path d=\"M8 17c4 1 8 5 12 16-6-3-10-9-12-16ZM32 17c-4 1-8 5-12 16 6-3 10-9 12-16Z\" fill=\"#fff\"/><circle cx=\"15\" cy=\"19\" r=\"2.3\" fill=\"#1c2430\"/><circle cx=\"15.9\" cy=\"18.1\" r=\"0.736\" fill=\"#fff\"/><circle cx=\"25\" cy=\"19\" r=\"2.3\" fill=\"#1c2430\"/><circle cx=\"25.9\" cy=\"18.1\" r=\"0.736\" fill=\"#fff\"/><circle cx=\"20\" cy=\"31\" r=\"2\" fill=\"#1c2430\"/></svg>"}, "owl": {"name": "Owl", "svg": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><circle cx=\"20\" cy=\"20\" r=\"19\" fill=\"#ece3d6\"/><path d=\"M8 12l5 4M32 12l-5 4\" stroke=\"#8a6a46\" stroke-width=\"3.5\" stroke-linecap=\"round\"/><ellipse cx=\"20\" cy=\"22\" rx=\"13\" ry=\"12\" fill=\"#a07a50\"/><circle cx=\"14.5\" cy=\"20\" r=\"5.5\" fill=\"#fff\"/><circle cx=\"25.5\" cy=\"20\" r=\"5.5\" fill=\"#fff\"/><circle cx=\"14.5\" cy=\"20\" r=\"2.8\" fill=\"#1c2430\"/><circle cx=\"15.4\" cy=\"19.1\" r=\"0.8959999999999999\" fill=\"#fff\"/><circle cx=\"25.5\" cy=\"20\" r=\"2.8\" fill=\"#1c2430\"/><circle cx=\"26.4\" cy=\"19.1\" r=\"0.8959999999999999\" fill=\"#fff\"/><path d=\"M18 25h4l-2 4Z\" fill=\"#f2b33d\"/></svg>"}, "hedgehog": {"name": "Hedgehog", "svg": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><circle cx=\"20\" cy=\"20\" r=\"19\" fill=\"#efe6da\"/><path d=\"M5 22l3-5-1-6 5 1 3-5 4 3 4-3 3 5 5-1-1 6 3 5-5 2 1 5-5-1-4 3-4-3-5 1 1-5Z\" fill=\"#6f5640\"/><ellipse cx=\"20\" cy=\"23\" rx=\"9\" ry=\"8\" fill=\"#e6cfa8\"/><circle cx=\"16.5\" cy=\"21\" r=\"2\" fill=\"#1c2430\"/><circle cx=\"17.4\" cy=\"20.1\" r=\"0.64\" fill=\"#fff\"/><circle cx=\"23.5\" cy=\"21\" r=\"2\" fill=\"#1c2430\"/><circle cx=\"24.4\" cy=\"20.1\" r=\"0.64\" fill=\"#fff\"/><circle cx=\"20\" cy=\"26\" r=\"1.9\" fill=\"#1c2430\"/></svg>"}, "otter": {"name": "Otter", "svg": "<svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><circle cx=\"20\" cy=\"20\" r=\"19\" fill=\"#e3ebe4\"/><circle cx=\"10.5\" cy=\"13\" r=\"3.2\" fill=\"#7a5a3e\"/><circle cx=\"29.5\" cy=\"13\" r=\"3.2\" fill=\"#7a5a3e\"/><ellipse cx=\"20\" cy=\"21\" rx=\"12\" ry=\"11.5\" fill=\"#8b6646\"/><ellipse cx=\"20\" cy=\"26\" rx=\"7.5\" ry=\"5.5\" fill=\"#d9c0a0\"/><circle cx=\"15\" cy=\"19\" r=\"2.6\" fill=\"#1c2430\"/><circle cx=\"15.9\" cy=\"18.1\" r=\"0.8320000000000001\" fill=\"#fff\"/><circle cx=\"25\" cy=\"19\" r=\"2.6\" fill=\"#1c2430\"/><circle cx=\"25.9\" cy=\"18.1\" r=\"0.8320000000000001\" fill=\"#fff\"/><ellipse cx=\"20\" cy=\"23.6\" rx=\"2.2\" ry=\"1.5\" fill=\"#1c2430\"/><path d=\"M18 27q2 1.6 4 0\" stroke=\"#1c2430\" stroke-width=\"1\" fill=\"none\" stroke-linecap=\"round\"/></svg>"}};
+  let player=ANIMALS[saved('pp-player')]?saved('pp-player'):'puffin';
+  const pk=k=>player==='puffin'?k:k+'@'+player;
   const okVal=(grp,v)=>v&&document.querySelector(`#${grp} button[data-v="${v}"]`)?v:null;
-  let mode=okVal('mode',saved('pp-mode'))||'count',level=okVal('level',saved('pp-level'))||'easy',set=[],right=0;
-  ['mode','level'].forEach(g=>{const v=g==='mode'?mode:level;document.querySelectorAll(`#${g} button`).forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===v))});
+  let mode,level,set=[],right=0;
+  const loadSettings=()=>{mode=okVal('mode',saved(pk('pp-mode')))||'count';level=okVal('level',saved(pk('pp-level')))||'easy';
+    ['mode','level'].forEach(g=>{const v=g==='mode'?mode:level;document.querySelectorAll(`#${g} button`).forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===v))})};
+  loadSettings();
   const list=document.getElementById('list');
   const rotIcon=`<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M30 20a10 10 0 1 1-4-8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M27 4 L28 13 L19 13" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
   const mirIcon=ax=>`<svg viewBox="0 0 40 40" aria-hidden="true"><path d="${{h:'M4 20 H36',v:'M20 4 V36',d1:'M6 34 L34 6',d2:'M6 6 L34 34'}[ax]}" stroke="currentColor" stroke-width="3" stroke-dasharray="5 4"/></svg>`;
@@ -1842,8 +1862,9 @@ if(typeof document!=='undefined'){
   }
   /* ---- progress, kept in this browser ---- */
   const HKEY='logic-puzzles-history-v1';
-  const loadH=()=>{try{const v=JSON.parse(localStorage.getItem(HKEY)||'[]');return Array.isArray(v)?v:[]}catch(e){return []}};
-  const saveH=h=>{try{localStorage.setItem(HKEY,JSON.stringify(h.slice(-300)));return true}catch(e){return false}};
+  const hkeyOf=who=>who==='puffin'?HKEY:HKEY+'@'+who;
+  const loadH=(who=player)=>{try{const v=JSON.parse(localStorage.getItem(hkeyOf(who))||'[]');return Array.isArray(v)?v:[]}catch(e){return []}};
+  const saveH=h=>{try{localStorage.setItem(hkeyOf(player),JSON.stringify(h.slice(-300)));return true}catch(e){return false}};
   const label=(grp,v)=>{const b=document.querySelector(`#${grp} button[data-v="${v}"]`);return b?(b.querySelector('.tl')||b).textContent:v};
   const LVORD={easy:0,normal:1,hard:2,expert:3};
   let revealed=false,confirmClear=false;
@@ -1865,10 +1886,10 @@ if(typeof document!=='undefined'){
     el.innerHTML=`<div class="ptable-wrap" tabindex="0" role="region" aria-label="Progress table (scrolls sideways)"><table class="ptable"><thead><tr><th>Puzzle</th><th>Level</th><th>Sets</th><th>Best</th><th>Average</th><th>Last 8</th><th>Last played</th></tr></thead><tbody>${rows.map(g=>{
       const last=g.slice(-8),best=Math.max(...g.map(r=>r.s)),avg=g.reduce((a,r)=>a+r.s,0)/g.length,n=g[0].n||10;
       return `<tr><td>${label('mode',g[0].m)}</td><td>${label('level',g[0].l)}</td><td class="pn">${g.length}</td><td class="pn">${best}/${n}</td><td class="pn">${avg.toFixed(1)}</td><td><div class="spark" title="${last.map(r=>r.s).join(', ')}">${last.map(r=>`<i class="${r.s===n?'full':''}" style="height:${Math.max(3,r.s/n*30)}px"></i>`).join('')}</div></td><td>${fmt(g[g.length-1].t)}</td></tr>`}).join('')}</tbody></table></div>`;
-    cl.innerHTML=confirmClear?'<span>Delete all saved scores and stickers on this device?</span><button class="btn small danger" id="pyes">Delete</button><button class="btn small" id="pno">Keep them</button>':'<button class="btn small" id="pask">Clear history</button>';
+    cl.innerHTML=confirmClear?`<span>Delete ${Object.keys(ANIMALS).some(id=>id!=='puffin'&&loadH(id).length>0)||player!=='puffin'?ANIMALS[player].name+'’s':'all saved'} scores and stickers on this device?</span>`+'<button class="btn small danger" id="pyes">Delete</button><button class="btn small" id="pno">Keep them</button>':'<button class="btn small" id="pask">Clear history</button>';
   }
   document.getElementById('pclear').addEventListener('click',e=>{
-    const id=e.target.id;if(id==='pask')confirmClear=true;else if(id==='pno')confirmClear=false;else if(id==='pyes'){saveH([]);confirmClear=false}else return;renderProgress();
+    const id=e.target.id;if(id==='pask')confirmClear=true;else if(id==='pno')confirmClear=false;else if(id==='pyes'){saveH([]);confirmClear=false}else return;renderProgress();showWho();
   });
   function finished(){
     const el=document.getElementById('done');
@@ -1877,7 +1898,7 @@ if(typeof document!=='undefined'){
       const ok=saveH([...loadH(),{t:Date.now(),m:mode,l:level,s:right,n:set.length}]);
       const fresh=ok?STICKERS.filter(st=>!before.has(st.id)&&st.test(loadH())):[];
       el.innerHTML=`<strong>${right} out of ${set.length}</strong><span>${right===set.length?'Every one right. Brilliant!':right>=set.length*.7?'Great work.':'Good try. Look back at the ones in red.'} ${ok?'Saved to Progress below.':''}</span><button class="btn primary" id="again">New puzzles</button>`;
-      el.hidden=false;renderProgress();
+      el.hidden=false;renderProgress();showWho();
       celebrate(right,set.length,fresh,ok?levelUpFor(mode,level):null);
     }
   }
@@ -2000,7 +2021,7 @@ if(typeof document!=='undefined'){
   /* ---- colour themes ---- */
   const setColour=c=>{if(c==='blue')document.documentElement.removeAttribute('data-color');else document.documentElement.setAttribute('data-color',c);
     document.querySelectorAll('#colours .sw').forEach(b=>b.setAttribute('aria-pressed',b.dataset.c===c))};
-  {let c='blue';try{c=localStorage.getItem('pp-colour')||'blue'}catch(e){}setColour(c)}
+  const loadColour=()=>setColour(saved(pk('pp-colour'))||'blue');loadColour();
   // light / dark: follows the device until tapped; choosing the device's own setting goes back to following it
   {const mb=document.getElementById('modebtn'),root=document.documentElement,sysDark=()=>!!(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches);
     const isDark=()=>root.dataset.theme?root.dataset.theme==='dark':sysDark();
@@ -2011,7 +2032,7 @@ if(typeof document!=='undefined'){
       show()});
     if(window.matchMedia)try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',show)}catch(e){}
     show()}
-  document.getElementById('colours').addEventListener('click',e=>{const b=e.target.closest('.sw');if(!b)return;setColour(b.dataset.c);try{localStorage.setItem('pp-colour',b.dataset.c)}catch(e){}});
+  document.getElementById('colours').addEventListener('click',e=>{const b=e.target.closest('.sw');if(!b)return;setColour(b.dataset.c);keep(pk('pp-colour'),b.dataset.c)});
   /* ---- sticker book: every sticker has a clear, fixed goal (nothing random) ---- */
   const MODES=[['count','Warm-up'],['rotate','Rotate'],['mirror','Mirror'],['sequence','Fill the gap'],['pair','Complete the pair'],['odd','Odd one out'],['codes','Codes'],['punch','Fold & punch'],['cube','Cube nets'],['top','Top view'],['side','View from the right'],['ladder','Word ladders'],['mix','Mix']];
   const RING=['--c4','--c2','--c3','--c5','--c1','--c6','--gold2'];
@@ -2241,7 +2262,59 @@ if(typeof document!=='undefined'){
     if(window.scrollY>120){window.scrollTo({top:0,behavior:reduce()?'auto':'smooth'});return}
     history.back(); // already at the top: carry on back as normal
   });
-  seg('mode',v=>{mode=v;keep('pp-mode',v)});seg('level',v=>{level=v;keep('pp-level',v)});
+  seg('mode',v=>{mode=v;keep(pk('pp-mode'),v)});seg('level',v=>{level=v;keep(pk('pp-level'),v)});
+  /* ---- choosing an animal (footer only) ---- */
+  const row=document.getElementById('who-row'),whoPick=document.getElementById('who-pick'),whoChg=document.getElementById('who-change');
+  function showWho(){const a=ANIMALS[player];document.getElementById('who-pic').innerHTML=a.svg;document.getElementById('who-name').textContent=a.name;
+    row.innerHTML=Object.entries(ANIMALS).map(([id,b])=>{const n=earnedIds(loadH(id)).size;return `<button class="who-b" data-p="${id}" aria-pressed="${id===player}"><span>${b.svg}</span>${b.name}<small>${n?n+' sticker'+(n>1?'s':''):'new'}</small></button>`}).join('');
+    // name the sticker book only once more than one animal is in use
+    const many=player!=='puffin'||Object.keys(ANIMALS).some(id=>id!=='puffin'&&loadH(id).length>0);
+    document.getElementById('sh').innerHTML='Sticker book'+(many?`<span class="ph-pic" aria-hidden="true">${a.svg}</span><span class="vh"> for ${a.name}</span>`:'')}
+  whoChg.addEventListener('click',()=>{whoPick.hidden=!whoPick.hidden;whoChg.setAttribute('aria-expanded',String(!whoPick.hidden));whoChg.textContent=whoPick.hidden?'Change':'Done'});
+  function setPlayer(id){player=id;keep('pp-player',id);loadSettings();loadColour();build();renderProgress();showWho()}
+  row.addEventListener('click',e=>{const b=e.target.closest('.who-b');if(!b||b.dataset.p===player)return;setPlayer(b.dataset.p);row.querySelector(`[data-p="${player}"]`).focus()});
+  showWho();
+
+  /* ---- save and load a copy of progress (a small file; nothing is sent anywhere) ---- */
+  const BK_MODES=[...document.querySelectorAll('#mode button')].map(b=>b.dataset.v),BK_LEVELS=[...document.querySelectorAll('#level button')].map(b=>b.dataset.v);
+  const BK_COLS=[...document.querySelectorAll('#colours .sw')].map(b=>b.dataset.c);
+  const recKey=r=>[r.t,r.m,r.l,r.s,r.n].join('|');
+  // only well-formed records come in: known puzzle types and levels, sensible numbers
+  const cleanRec=r=>r&&typeof r==='object'&&Number.isFinite(+r.t)&&BK_MODES.includes(r.m)&&BK_LEVELS.includes(r.l)&&Number.isFinite(+r.s)&&Number.isFinite(+(r.n??10))
+    ?{t:+r.t,m:r.m,l:r.l,s:Math.max(0,Math.min(+r.s,+(r.n??10))),n:+(r.n??10)}:null;
+  function backupData(){
+    const players={};
+    for(const id of Object.keys(ANIMALS)){const k=x=>id==='puffin'?x:x+'@'+id,h=loadH(id);
+      const st={colour:saved(k('pp-colour')),mode:saved(k('pp-mode')),level:saved(k('pp-level'))};
+      if(h.length||st.colour||st.mode||st.level)players[id]={history:h,...st}}
+    return {app:'Puzzle Puffin',kind:'progress',version:1,saved:new Date().toISOString(),current:player,players};
+  }
+  function mergeBackup(d){
+    if(!d||d.app!=='Puzzle Puffin'||d.kind!=='progress'||typeof d.players!=='object')return null;
+    const added=[];
+    for(const [id,pl] of Object.entries(d.players)){if(!ANIMALS[id]||!pl||typeof pl!=='object')continue;
+      const k=x=>id==='puffin'?x:x+'@'+id,have=loadH(id),seen=new Set(have.map(recKey));
+      const fresh=(Array.isArray(pl.history)?pl.history:[]).map(cleanRec).filter(r=>r&&!seen.has(recKey(r))&&seen.add(recKey(r)));
+      if(fresh.length){try{localStorage.setItem(id==='puffin'?HKEY:HKEY+'@'+id,JSON.stringify([...have,...fresh].sort((a,b)=>a.t-b.t).slice(-300)))}catch(e){return null}added.push([id,fresh.length])}
+      // settings only fill gaps: anything already chosen on this device stays
+      if(BK_COLS.includes(pl.colour)&&!saved(k('pp-colour')))keep(k('pp-colour'),pl.colour);
+      if(BK_MODES.includes(pl.mode)&&!saved(k('pp-mode')))keep(k('pp-mode'),pl.mode);
+      if(BK_LEVELS.includes(pl.level)&&!saved(k('pp-level')))keep(k('pp-level'),pl.level)}
+    return added;
+  }
+  {const msg=document.getElementById('pb-msg'),file=document.getElementById('pb-file');
+    document.getElementById('pb-save').addEventListener('click',()=>{
+      const blob=new Blob([JSON.stringify(backupData(),null,1)],{type:'application/json'}),a=document.createElement('a');
+      a.href=URL.createObjectURL(blob);a.download=`puzzle-puffin-progress-${new Date().toISOString().slice(0,10)}.json`;
+      document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+      msg.textContent='Saved. Keep the file somewhere safe, like your Files or Downloads.'});
+    document.getElementById('pb-load').addEventListener('click',()=>{file.value='';file.click()});
+    file.addEventListener('change',async()=>{const f=file.files&&file.files[0];if(!f)return;
+      let d=null;try{if(f.size<2e6)d=JSON.parse(await f.text())}catch(e){}
+      const added=mergeBackup(d);
+      if(!added){msg.textContent='That file isn’t a Puzzle Puffin progress copy, so nothing was changed.';return}
+      loadSettings();loadColour();renderProgress();showWho();
+      msg.textContent=added.length?'Done! Added '+added.map(([id,n])=>`${n} finished set${n>1?'s':''} for ${ANIMALS[id].name}`).join(', ')+'.':'Everything in that copy is already here.'})}
   build();
   renderProgress();
 }else{globalThis.__T={pairSteps,seqFill,figSVG,foldNet,cubeTurn,cubeFaces,partTurn,CUBE_CAM,camAt,VIS,sameFace,faceAt,projectBlocks,blockTarget,BLOCK_START,showTurn,MIRROR_AXIS,unfoldSteps,nearEdge,HR,explain,tipsFor,GLYPHW,side3dPuzzle,lookKey,turnRight,matPair,applyMat,matKey,punch2Puzzle,holesSimilar,insideP,reflectPt,sideOf,TR,usesOf,sigOf,resetUsed:()=>USED_ICONS=new Set(),USED:()=>USED_ICONS,canonTurn,setXP:v=>XP=v,chainOK,viewGrid,gridKey,canonAll,GEN,key,valid,holeKey,netToCube,showsView,viewOf,cubeKey,unfold}}
