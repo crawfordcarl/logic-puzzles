@@ -37,3 +37,20 @@ Each type has four levels: Easy, Normal, Tricky and Expert. **Mix** gives one of
 ## Updating
 
 Replace `index.html` with the new version and commit. GitHub Pages republishes it automatically.
+
+## Tests
+
+`tests/puzzles.test.mjs` makes hundreds of puzzles of every type at every level and checks that each one is fair: exactly one answer is right, no two answers look the same, and every wrong answer gets a readable explanation. It also has a test for each bug found so far:
+
+- **Rotate:** no wrong answer may be the picture simply turned a different amount, since that would also be correct.
+- **Complete the pair:** flips go across the screen whatever angle the picture is at, and no other rule may turn the first picture into the second while giving a different answer.
+- **Fold & punch:** the right answer is checked by unfolding the paper independently, and is never "every hole".
+- **Cube nets, Top view, View from the right, Word ladders, Codes and Warm-up:** the marked answer is worked out a second way and must be the only one that fits.
+
+Run them with Node.js 18 or later:
+
+```
+npm test
+```
+
+GitHub runs them automatically on every change (see the Actions tab). Set `PUZZLE_TEST_COUNT` to make more puzzles per check, or `PUZZLE_PAGE` to test another copy of the page.
