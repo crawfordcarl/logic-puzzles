@@ -1590,7 +1590,11 @@ const TIPS={
 
 /* ---------- page ---------- */
 if(typeof document!=='undefined'){
-  let mode='rotate',level='normal',set=[],right=0;
+  // remember the last puzzle type and level on this device; first visit starts on Easy
+  const saved=k=>{try{return localStorage.getItem(k)}catch(e){return null}},keep=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+  const okVal=(grp,v)=>v&&document.querySelector(`#${grp} button[data-v="${v}"]`)?v:null;
+  let mode=okVal('mode',saved('pp-mode'))||'rotate',level=okVal('level',saved('pp-level'))||'easy',set=[],right=0;
+  ['mode','level'].forEach(g=>{const v=g==='mode'?mode:level;document.querySelectorAll(`#${g} button`).forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===v))});
   const list=document.getElementById('list');
   const rotIcon=`<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M30 20a10 10 0 1 1-4-8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M27 4 L28 13 L19 13" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
   const mirIcon=ax=>`<svg viewBox="0 0 40 40" aria-hidden="true"><path d="${{h:'M4 20 H36',v:'M20 4 V36',d1:'M6 34 L34 6',d2:'M6 6 L34 34'}[ax]}" stroke="currentColor" stroke-width="3" stroke-dasharray="5 4"/></svg>`;
@@ -1855,7 +1859,7 @@ if(typeof document!=='undefined'){
   }
   document.getElementById('printbtn').addEventListener('click',()=>{buildWorksheet();try{window.print()}catch(e){}});
   window.addEventListener('beforeprint',buildWorksheet);
-  seg('mode',v=>mode=v);seg('level',v=>level=v);
+  seg('mode',v=>{mode=v;keep('pp-mode',v)});seg('level',v=>{level=v;keep('pp-level',v)});
   build();
   renderProgress();
 }else{globalThis.__T={explain,tipsFor,GLYPHW,side3dPuzzle,lookKey,turnRight,matPair,applyMat,matKey,punch2Puzzle,holesSimilar,insideP,reflectPt,sideOf,TR,usesOf,sigOf,resetUsed:()=>USED_ICONS=new Set(),USED:()=>USED_ICONS,canonTurn,setXP:v=>XP=v,chainOK,viewGrid,gridKey,canonAll,GEN,key,valid,holeKey,netToCube,showsView,viewOf,cubeKey,unfold}}
