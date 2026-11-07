@@ -138,11 +138,8 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){.spin{transition:none}}
 .brand{display:flex;align-items:center;gap:14px;margin-bottom:6px}
 .logo{width:clamp(56px,12vw,76px);flex:none}
-.logo svg,.cel-puffin svg{width:100%;height:auto;display:block}
+.logo svg{width:100%;height:auto;display:block}
 .cel-card{position:relative;box-sizing:border-box}
-.cel-puffin{position:absolute;left:10px;top:-34px;width:72px;transform:rotate(-10deg);animation:bob 1.6s ease-in-out infinite alternate}
-@keyframes bob{from{transform:rotate(-10deg) translateY(0)}to{transform:rotate(-4deg) translateY(-6px)}}
-@media (prefers-reduced-motion:reduce){.cel-puffin{animation:none}}
 .tip{color:var(--muted);font-size:.92rem;max-width:65ch;margin:0}
 .shape{fill:var(--card);stroke:currentColor;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
 .ink{fill:currentColor;stroke:none}
@@ -237,29 +234,6 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 
   <div class="celebrate" id="celebrate" hidden role="dialog" aria-modal="true" aria-labelledby="cel-title">
     <div class="cel-card">
-      <div class="cel-puffin" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">
-  <circle cx="60" cy="60" r="57" fill="#cfe6f4" stroke="#1c2430" stroke-width="3"/>
-  <path d="M8 84 Q34 76 60 84 T112 84 A57 57 0 0 1 8 84 Z" fill="#9fcbe6"/>
-  <ellipse cx="47" cy="104" rx="8" ry="4" fill="#f47b20" stroke="#1c2430" stroke-width="2"/>
-  <ellipse cx="66" cy="105" rx="8" ry="4" fill="#f47b20" stroke="#1c2430" stroke-width="2"/>
-  <ellipse cx="56" cy="74" rx="29" ry="31" fill="#1f2733"/>
-  <ellipse cx="63" cy="80" rx="18" ry="23" fill="#ffffff"/>
-  <circle cx="62" cy="42" r="22" fill="#1f2733"/>
-  <ellipse cx="68" cy="43" rx="14" ry="13" fill="#ffffff"/>
-  <path d="M80 34 Q104 38 106 47 Q100 55 80 54 Z" fill="#f47b20" stroke="#1c2430" stroke-width="2.4" stroke-linejoin="round"/>
-  <path d="M80 34 Q87 35 88 44 Q87 53 80 54 Z" fill="#ffd23f"/>
-  <path d="M80 34 L80 54" stroke="#9aa7b4" stroke-width="4"/>
-  <path d="M93 41 Q95 45 93 50" fill="none" stroke="#c4410f" stroke-width="2" stroke-linecap="round"/>
-  <circle cx="71" cy="40" r="5.2" fill="#e8553d"/>
-  <circle cx="71" cy="40" r="3.4" fill="#1c2430"/>
-  <circle cx="72.2" cy="38.8" r="1.1" fill="#ffffff"/>
-  <path d="M66.5 40.5 Q62 41 58.5 44" fill="none" stroke="#1f2733" stroke-width="2" stroke-linecap="round"/><path d="M69 34.2 L71 31.5 L73 34.2 Z" fill="#1f2733"/>
-  <path d="M34 66 Q30 90 50 98 Q42 82 44 66 Z" fill="#141a22"/>
-  <g transform="translate(58 72) rotate(-12)">
-    <path d="M0 0 H7 a4 4 0 1 1 6 0 H20 V7 a4 4 0 1 0 0 6 V20 H0 Z" fill="#ffd23f" stroke="#1c2430" stroke-width="2.2" stroke-linejoin="round"/>
-  </g>
-  <path d="M48 86 Q56 84 60 78" fill="none" stroke="#141a22" stroke-width="6" stroke-linecap="round"/>
-</svg></div>
       <div class="cel-star" id="cel-star"></div>
       <div class="cel-stars" id="cel-stars" aria-hidden="true"></div>
       <h2 id="cel-title"></h2>
