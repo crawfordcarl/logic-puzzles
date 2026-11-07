@@ -267,6 +267,15 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .uf-ghost svg,.uf-layer svg{width:100%;height:100%;display:block;overflow:visible}
 .uf-cap{margin:0;height:6em;display:flex;align-items:center;justify-content:center;text-align:center;max-width:32ch;line-height:1.5}
 @media (prefers-reduced-motion:reduce){.uf-layer{transition:none}}
+.uf-card{max-height:100%;overflow-y:auto}
+.uf-opts{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:6px;width:100%}
+.uf-opts .opt{cursor:default;padding:3px 3px 2px;border-radius:8px}
+.uf-opts .opt .pic{max-width:56px}
+.uf-opts .opt .let{font-size:.85rem}
+.uf-opts .opt .codeopt{font-size:1rem;padding-block:6px 2px}
+.uf-opts .opt.lit{animation:okpop .4s ease-out}
+.uf-opts .opt.wrong .let::after,.uf-opts .opt.right .let::after{font-size:.8em}
+@media (max-height:640px){.uf-stage{width:min(60vw,240px)}}
 .linksep{color:var(--muted)}
 a.linkbtn{display:inline-block}
 .tip{color:var(--muted);font-size:1rem;line-height:1.55;max-width:62ch;margin:0}
@@ -365,6 +374,7 @@ a.linkbtn{display:inline-block}
 
   <div class="unfold" id="unfold" hidden role="dialog" aria-modal="true" aria-labelledby="uf-cap">
     <div class="uf-card">
+      <div class="uf-opts" id="uf-opts" aria-hidden="true"></div>
       <div class="uf-stage" id="uf-stage" aria-hidden="true"></div>
       <p class="uf-cap" id="uf-cap" aria-live="polite"></p>
       <div class="cel-actions"><button class="btn" id="uf-again">Watch again</button><button class="btn primary" id="uf-close">Close</button></div>
@@ -1933,6 +1943,7 @@ if(typeof document!=='undefined'){
   const ufLayer=(poly,holes,fill)=>`<svg viewBox="-6 -6 112 112"><polygon points="${pts(poly)}" style="fill:${fill};stroke:var(--ink);stroke-width:1.8;stroke-linejoin:round"/>${holes.map(holeMark).join('')}</svg>`;
   function ufPlay(){
     ufTimers.forEach(clearTimeout);ufTimers=[];
+    document.querySelectorAll('#uf-opts .uf-o').forEach(e=>e.classList.remove('right','lit'));
     if(ufPuzzle.type==='rotate')return ufRotate();
     if(ufPuzzle.type==='mirror')return ufMirror();
     return ufPunch();
@@ -1948,6 +1959,7 @@ if(typeof document!=='undefined'){
     ufLater(()=>{el.style.transform=`rotate(${turn}deg)`},still?600:900);
     ufLater(()=>{
       const flipped=pick&&pick.m,changed=pick&&pick.v;
+      ufReveal();
       ufCap.textContent=`It's ${turnWords(turn)}: that's answer ${LET[p.ans]}.`+(flipped?` Answer ${LET[p.pick]} is flipped over, which turning can never do.`:changed?` Answer ${LET[p.pick]} has a small change, so it isn't the same picture.`:'');
     },still?1400:3000);
   }
@@ -1962,7 +1974,7 @@ if(typeof document!=='undefined'){
     ufStage.appendChild(flap);flap.getBoundingClientRect();
     ufCap.textContent='The dashed line is the mirror. Watch the picture flip over it, like turning a page.';
     ufLater(()=>{flap.style.transform=`rotate3d(${dx},${dy},0,180deg)`},still?600:1000);
-    ufLater(()=>{ufCap.textContent=`That's the mirror image: answer ${LET[p.ans]}. ${p.axis==='h'?'Top and bottom have swapped.':p.axis==='v'?'Left and right have swapped.':'Each part is the same distance from the line, on the other side.'}`},still?1400:2600);
+    ufLater(()=>{ufReveal();ufCap.textContent=`That's the mirror image: answer ${LET[p.ans]}. ${p.axis==='h'?'Top and bottom have swapped.':p.axis==='v'?'Left and right have swapped.':'Each part is the same distance from the line, on the other side.'}`},still?1400:2600);
   }
   function ufPunch(){
     ufTimers.forEach(clearTimeout);ufTimers=[];
@@ -1988,10 +2000,15 @@ if(typeof document!=='undefined'){
     ufLater(()=>{
       ufStage.querySelectorAll('.uf-layer').forEach(l=>l.remove());
       const all=document.createElement('div');all.className='uf-layer';all.innerHTML=ufLayer(r.paper,r.holes,'var(--accent-soft)');ufStage.appendChild(all);
+      ufReveal();
       ufCap.textContent=`Opened out: ${r.holes.length} hole${r.holes.length===1?'':'s'}${tri?'. See which way each triangle points.':'.'}`;
     },t);
   }
-  function ufOpen(p,from){ufPuzzle=p;ufReturn=from;ufBox.hidden=false;ufPlay();document.getElementById('uf-close').focus()}
+  function ufOpen(p,from){ufPuzzle=p;ufReturn=from;
+    document.getElementById('uf-opts').innerHTML=p.opts.map((o,oi)=>`<div class="opt uf-o${oi===p.pick?' wrong':''}" data-o="${oi}">${optInner(p,o)}<span class="let">${LET[oi]}</span></div>`).join('');
+    ufBox.hidden=false;ufPlay();document.getElementById('uf-close').focus()}
+  // light up the right answer when the animation finishes
+  const ufReveal=()=>{const r=document.querySelector(`#uf-opts .uf-o[data-o="${ufPuzzle.ans}"]`);if(r)r.classList.add('right','lit')};
   function ufShut(){ufTimers.forEach(clearTimeout);ufBox.hidden=true;if(ufReturn)ufReturn.focus()}
   document.getElementById('uf-again').onclick=ufPlay;
   document.getElementById('uf-close').onclick=ufShut;
