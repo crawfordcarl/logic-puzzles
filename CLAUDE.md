@@ -32,7 +32,7 @@ If the history format ever has to change, read the old key and migrate it. Don't
 npm test
 ```
 
-These are 112 checks using only Node 18+, and GitHub Actions runs them on every push. They make hundreds of puzzles of every type at every level and check: exactly one right answer, no look-alike choices, readable explanations and tips, and offline files present. Each bug found so far has its own test (see the comments in `tests/puzzles.test.mjs`). **Add a test for any new puzzle type, and for any bug you fix.** Test "could another answer also be right?", not just "are the answers different?". Two real bugs got past the weaker check.
+These are over 110 checks using only Node 18+, and GitHub Actions runs them on every push. They make hundreds of puzzles of every type at every level and check: exactly one right answer, no look-alike choices, readable explanations and tips, and offline files present. Each bug found so far has its own test (see the comments in `tests/puzzles.test.mjs`). **Add a test for any new puzzle type, and for any bug you fix.** Test "could another answer also be right?", not just "are the answers different?". Two real bugs got past the weaker check.
 
 ## Design rules agreed with the family
 

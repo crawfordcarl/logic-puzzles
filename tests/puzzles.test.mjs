@@ -295,3 +295,17 @@ test('puffin tips: readable, never give the answer away, and the cube tip names 
     }
   }
 });
+
+// Bug found 2026-11-07: a punched hole could sit on the edge of a folded-over flap, so it looked
+// half off the paper. Every punched hole must keep clear of every drawn edge.
+test('fold & punch (any shape): no punched hole touches the edge of the paper or of a folded flap', () => {
+  for (const level of LEVELS.filter(l => l.lvl === 'hard')) {
+    T.setXP(level.xp);
+    for (let i = 0; i < N; i++) {
+      const p = T.punch2Puzzle('hard');
+      if (!p) continue;
+      for (const h of p.punched) assert.ok(!T.nearEdge([p.final, ...p.layers], h.c, T.HR + 2.9), `${level.name}: a hole sits on an edge`);
+    }
+    T.setXP(false);
+  }
+});
