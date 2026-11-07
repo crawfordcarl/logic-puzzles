@@ -44,6 +44,32 @@ These are 112 checks using only Node 18+, and GitHub Actions runs them on every 
 - **Never use the child's name on the site.** The footer credit stays "Made by a parent with Claude".
 - New visitors start on **Easy**. The level-up nudge suggests the next level after three sets in a row of nearly all right. Nothing ever suggests going down.
 
+## To do next (in rough order)
+
+**Check it works everywhere** (so far only tested in Chrome-based browsers):
+- iPhone and iPad (Safari): especially offline mode, printing, and the colour dots fitting.
+- Amazon Fire tablets (Silk browser, built on Chrome): likely fine, but test offline mode and performance on a cheap Fire. **Amazon Kids profiles block websites that aren't approved**, so parents may need to add puzzlepuffin.com in the Amazon Parent Dashboard. A short "Using a Fire tablet?" note for parents might help.
+- Older or slower tablets: some Expert puzzles take a moment to generate, so check it never feels slow.
+
+**Accessibility:**
+- Add an automatic check with axe-core (via Playwright) as a second GitHub Actions job. It catches missing labels, contrast and some keyboard problems in all five colour themes, light and dark.
+- One manual pass: keyboard only, then a phone screen reader (VoiceOver, TalkBack).
+
+**Privacy and compliance** (not legal advice; check the ICO's guidance):
+- No cookies, analytics or tracking; settings and progress stay on the device; fonts are self-hosted. Keep it that way.
+- Add a short plain-English privacy note linked from the footer: what's stored on the device and why, that nothing is collected, and that GitHub (the host) keeps standard server logs. This fits the UK Children's Code (Age Appropriate Design Code).
+- Settings and progress are stored only to provide features the user chose, which is usually treated as not needing consent under PECR. Confirm before adding anything else to storage.
+
+**Security** (low risk, as the site is static with no logins and nothing sent anywhere):
+- Add a Content-Security-Policy `<meta>` tag allowing only the site's own files.
+- Set `permissions: contents: read` in `.github/workflows/test.yml`.
+- Account safety matters most: two-step login on GitHub and the domain seller, and the domain transfer lock on.
+- Anything a user types (e.g. names) must be escaped before it goes into `innerHTML`.
+
+**Features:**
+- **Several children on one device:** players picked by animal (Puffin, Seal, Fox…) rather than by name, chosen from the footer only. Each has its own history, stickers and settings. The existing `logic-puzzles-history-v1` data must become the first player, never lost.
+- **Back up progress:** a "save my progress" file or code from the footer, so clearing the browser or changing tablets doesn't lose stickers.
+
 ## Ideas not done yet
 
 - Accessibility pass: keyboard, screen readers, contrast in all five themes.
