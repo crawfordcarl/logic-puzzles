@@ -76,6 +76,20 @@ await check("animals: Puffin keeps the original progress; others get their own",
   assert.equal(await page.getAttribute('#mode [aria-pressed="true"]', 'data-v'), 'cube');
 });
 
+await check('switching animal halfway through a set asks first, in the panel', async page => {
+  await page.goto(base);
+  await page.click('.tile[data-v="rotate"]');
+  await page.locator('section').filter({ has: page.locator('.opts') }).first().locator('.opt').first().click();
+  await page.click('#who-change'); await page.click('.who-b[data-p="fox"]');
+  assert.equal(await page.textContent('#who-name'), 'Puffin', 'should not switch straight away');
+  assert.match(await page.textContent('#who-ask'), /Switch to Fox\?/);
+  await page.click('#who-ask [data-stay]');
+  assert.equal(await page.textContent('#who-name'), 'Puffin');
+  await page.click('.who-b[data-p="fox"]'); await page.click('#who-ask [data-go]');
+  assert.equal(await page.textContent('#who-name'), 'Fox');
+  assert.equal(await page.isVisible('#who-pick'), false, 'the chooser closes after switching');
+});
+
 await check('save a copy, clear the browser, load it back; bad files change nothing', async page => {
   await page.goto(base + 'privacy.html');
   await seed(page, { 'logic-puzzles-history-v1': JSON.stringify(H(12, 'rotate')), 'logic-puzzles-history-v1@fox': JSON.stringify(H(3, 'cube')), 'pp-colour@fox': 'orange' });

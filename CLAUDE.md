@@ -43,6 +43,7 @@ These are over 120 checks using only Node 18+, and GitHub Actions runs them on e
 ## Design rules agreed with the family
 
 - **Puzzles stay black, white and grey.** Colour themes only touch the frame (tiles, buttons, highlights), because in puzzles colour can be a clue.
+- **Your animal is always shown** top right. Tapping it opens the chooser underneath (not a pop-up), with each animal's sticker count so children can see their stickers stay with their animal. Switching halfway through a set asks first, in the panel. Agreed with the family: showing it always makes it feel like their own record; if children start switching for fun, going back to a quieter footer-only chooser is the fallback.
 - **Light/dark** follows the device until the sun/moon button by the colour dots is tapped. Choosing the device's own setting goes back to following it.
 - **Respect `prefers-reduced-motion`** everywhere: confetti, balloons, shimmer, tile movement.
 - **No random rewards.** Every sticker has a visible goal, nothing can be lost, and there are no streaks to break. It must never feel like gambling.
@@ -78,7 +79,7 @@ These are over 120 checks using only Node 18+, and GitHub Actions runs them on e
 - Anything a user types (e.g. names) must be escaped before it goes into `innerHTML`.
 
 **Features:**
-- ~~Several children on one device~~ done: six animals, chosen from "Playing as … Change" in the footer (see Saved progress above).
+- ~~Several children on one device~~ done: six animals (see Saved progress above).
 - **Stories (a surprise extra, not a puzzle or a reward):** short original stories about our puffin and friends for 5–8 year olds (100–200 words, Andika, one simple picture each). **Always freely available, never unlocked or tied to scores**: the aim is for children to find them and choose to read on their own. On their own page behind a quiet link, so the puzzle screen stays calm. New stories can be added over time to be discovered. All characters original. Stories can touch on shapes and patterns, but never test the reader. **Naming:** don't call them "Puffin stories", a "Puffin library" or "Puffin books", which are too close to Puffin Books (Penguin Random House's children's imprint, whose first series was "Puffin Story Books"). Give our puffin a name and title them after it (e.g. "Pip's Tales").
 - ~~Back up progress~~ done: Save a copy / Load a saved copy in the Progress section, with a note about Safari clearing data.
 

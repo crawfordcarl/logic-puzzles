@@ -192,7 +192,7 @@ button:focus-visible,a:focus-visible,.ptable-wrap:focus-visible{outline:3px soli
 .brand h1{min-width:0;line-height:1}
 .brandtext{display:flex;flex-direction:column;gap:8px;min-width:0}
 .colours{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.pbackup{margin-top:18px;padding-top:14px;border-top:1px solid var(--rule)}.pb-text{color:var(--muted);margin:0 0 10px;font-size:.95rem}.pb-text b{color:var(--ink)}.pb-btns{display:flex;gap:10px;flex-wrap:wrap;margin:0}.pb-msg{margin:8px 0 0;min-height:1.5em;font-weight:700;color:var(--accent)}@media print{.pbackup{display:none}}
-.who{margin:28px 0 6px;text-align:center}.who-now{margin:0;color:var(--muted)}.who-now b{color:var(--ink)}.who-pic{display:inline-block;width:26px;height:26px;vertical-align:-8px;margin:0 6px}.who-pic svg,.who-b svg,.ph-pic svg{width:100%;height:100%;display:block}.who-help{color:var(--muted);margin:10px auto 8px;max-width:34ch}.who-row{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;max-width:250px;margin:0 auto}.who-b{font:inherit;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:0;padding:4px;border-radius:12px;cursor:pointer;color:var(--ink);min-width:64px}.who-b span{width:48px;height:48px;border-radius:50%;box-shadow:0 0 0 1.5px var(--rule)}.who-b[aria-pressed="true"] span{box-shadow:0 0 0 3px var(--accent)}.who-b small{color:var(--muted);font-size:.8rem}.ph-pic{display:inline-block;width:28px;height:28px;vertical-align:-6px;margin-left:8px}.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.me{margin-left:auto;align-self:flex-start;flex:none;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:0;padding:2px;cursor:pointer;font:inherit;font-size:.78rem;font-weight:700;color:var(--muted);border-radius:12px}.me-pic{width:44px;height:44px;border-radius:50%;box-shadow:0 0 0 2.5px var(--accent);display:block}.me[aria-expanded="true"] .me-pic{box-shadow:0 0 0 3.5px var(--accent)}.who-pick{margin:6px 0 14px;padding:14px 12px;border-radius:14px;background:var(--accent-soft);text-align:center}.who-pick .who-help{margin-top:0}.who-ask{margin-top:10px}.who-ask:empty{display:none}.who-ask p{margin:0 0 8px;font-weight:700}.who-ask .btn{margin:0 4px}.me-pic svg,.who-b svg,.ph-pic svg{width:100%;height:100%;display:block}.who-help{color:var(--muted);margin:10px auto 8px;max-width:34ch}.who-row{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;max-width:250px;margin:0 auto}.who-b{font:inherit;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:0;padding:4px;border-radius:12px;cursor:pointer;color:var(--ink);min-width:64px}.who-b span{width:48px;height:48px;border-radius:50%;box-shadow:0 0 0 1.5px var(--rule)}.who-b[aria-pressed="true"] span{box-shadow:0 0 0 3px var(--accent)}.who-b small{color:var(--muted);font-size:.8rem}.ph-pic{display:inline-block;width:28px;height:28px;vertical-align:-6px;margin-left:8px}.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .colrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.modebtn{width:30px;height:30px;border-radius:50%;border:0;box-shadow:0 0 0 1.5px var(--rule);background:var(--card);color:var(--ink);cursor:pointer;padding:5px;margin-left:6px;display:grid;place-items:center}.modebtn svg{width:100%;height:100%;display:block}.modebtn .mb-moon path{fill:currentColor}.modebtn .mb-sun circle{fill:currentColor}.modebtn .mb-sun path{stroke:currentColor;stroke-width:2;stroke-linecap:round;fill:none}.modebtn .mb-sun{display:none}.modebtn.is-dark .mb-sun{display:inline}.modebtn.is-dark .mb-moon{display:none}
 
 .sw{width:30px;height:30px;border-radius:50%;border:2.5px solid var(--card);box-shadow:0 0 0 1.5px var(--rule);cursor:pointer;padding:0;transition:transform .15s}
@@ -298,6 +298,7 @@ a.linkbtn{display:inline-block}
   .actions{margin-left:0}
 }
 @media (prefers-reduced-motion:reduce){.opt{transition:none}}
+@media (max-width:400px){.brand{gap:10px}.colrow,.colours{gap:5px}.sw,.modebtn{width:26px;height:26px}.modebtn{margin-left:4px;padding:4px}.me-pic{width:40px;height:40px}}
 </style>
 </head>
 <body>
@@ -334,7 +335,12 @@ a.linkbtn{display:inline-block}
     <path d="M0 0 H7 a4 4 0 1 1 6 0 H20 V7 a4 4 0 1 0 0 6 V20 H0 Z" fill="#ffd23f" stroke="#1c2430" stroke-width="2.2" stroke-linejoin="round"/>
   </g>
   <path d="M48 86 Q56 84 60 78" fill="none" stroke="#141a22" stroke-width="6" stroke-linecap="round"/>
-</svg></span><div class="brandtext"><h1>Puzzle Puffin</h1><div class="colrow"><div class="colours" id="colours" role="group" aria-label="Choose a colour"><button class="sw" data-c="blue" aria-pressed="true" aria-label="Puffin Blue" title="Puffin Blue" style="background:#2d6a8c"></button><button class="sw" data-c="orange" aria-pressed="false" aria-label="Beak Orange" title="Beak Orange" style="background:#e0701f"></button><button class="sw" data-c="green" aria-pressed="false" aria-label="Sea Green" title="Sea Green" style="background:#2f9a6e"></button><button class="sw" data-c="purple" aria-pressed="false" aria-label="Heather Purple" title="Heather Purple" style="background:#7c55b8"></button><button class="sw" data-c="yellow" aria-pressed="false" aria-label="Sunny Yellow" title="Sunny Yellow" style="background:#f2c230"></button></div><button class="modebtn" id="modebtn" aria-pressed="false" aria-label="Dark mode" title="Dark mode"><svg viewBox="0 0 24 24" aria-hidden="true"><g class="mb-moon"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></g><g class="mb-sun"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.6M12 18.9v2.6M2.5 12h2.6M18.9 12h2.6M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></g></svg></button></div></div></div>
+</svg></span><div class="brandtext"><h1>Puzzle Puffin</h1><div class="colrow"><div class="colours" id="colours" role="group" aria-label="Choose a colour"><button class="sw" data-c="blue" aria-pressed="true" aria-label="Puffin Blue" title="Puffin Blue" style="background:#2d6a8c"></button><button class="sw" data-c="orange" aria-pressed="false" aria-label="Beak Orange" title="Beak Orange" style="background:#e0701f"></button><button class="sw" data-c="green" aria-pressed="false" aria-label="Sea Green" title="Sea Green" style="background:#2f9a6e"></button><button class="sw" data-c="purple" aria-pressed="false" aria-label="Heather Purple" title="Heather Purple" style="background:#7c55b8"></button><button class="sw" data-c="yellow" aria-pressed="false" aria-label="Sunny Yellow" title="Sunny Yellow" style="background:#f2c230"></button></div><button class="modebtn" id="modebtn" aria-pressed="false" aria-label="Dark mode" title="Dark mode"><svg viewBox="0 0 24 24" aria-hidden="true"><g class="mb-moon"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></g><g class="mb-sun"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.6M12 18.9v2.6M2.5 12h2.6M18.9 12h2.6M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></g></svg></button></div></div><button class="me" id="who-change" aria-expanded="false" aria-controls="who-pick"><span class="me-pic" id="who-pic" aria-hidden="true"></span><span class="me-name"><span class="vh">Playing as </span><span id="who-name">Puffin</span></span></button></div>
+    <div class="who-pick" id="who-pick" hidden>
+      <p class="who-help">Pick the same animal every time, so your stickers stay together. Sharing this device? Each person picks their own.</p>
+      <div class="who-row" id="who-row" role="group" aria-label="Choose your animal"></div>
+      <div class="who-ask" id="who-ask" role="status"></div>
+    </div>
     <p class="lede">Picture and word puzzles to give little brains a big workout. Pick a level and a puzzle, then tap an answer to check it.</p>
   </header>
 
@@ -420,13 +426,6 @@ a.linkbtn{display:inline-block}
     </div>
   </section>
 
-  <div class="who" id="who">
-    <p class="who-now">Playing as <span class="who-pic" id="who-pic" aria-hidden="true"></span><b id="who-name">Puffin</b> <button class="linkbtn" id="who-change" aria-expanded="false" aria-controls="who-pick">Change</button></p>
-    <div class="who-pick" id="who-pick" hidden>
-      <p class="who-help">Sharing this device? Each animal keeps its own stickers, scores and colour.</p>
-      <div class="who-row" id="who-row" role="group" aria-label="Choose your animal"></div>
-    </div>
-  </div>
   <p class="printlink"><button class="linkbtn" id="printbtn">Print a worksheet of these puzzles</button><span class="linksep" aria-hidden="true"> · </span><a class="linkbtn" href="privacy.html">Privacy</a></p>
   <footer class="credit">Made by a parent with <a href="https://claude.ai" target="_blank" rel="noopener">Claude</a>, an AI assistant made by Anthropic.</footer>
 </div>
@@ -2270,9 +2269,20 @@ if(typeof document!=='undefined'){
     // name the sticker book only once more than one animal is in use
     const many=player!=='puffin'||Object.keys(ANIMALS).some(id=>id!=='puffin'&&loadH(id).length>0);
     document.getElementById('sh').innerHTML='Sticker book'+(many?`<span class="ph-pic" aria-hidden="true">${a.svg}</span><span class="vh"> for ${a.name}</span>`:'')}
-  whoChg.addEventListener('click',()=>{whoPick.hidden=!whoPick.hidden;whoChg.setAttribute('aria-expanded',String(!whoPick.hidden));whoChg.textContent=whoPick.hidden?'Change':'Done'});
+  const whoAsk=document.getElementById('who-ask');
+  const openWho=open=>{whoPick.hidden=!open;whoChg.setAttribute('aria-expanded',String(open));whoAsk.innerHTML=''};
+  whoChg.addEventListener('click',()=>openWho(whoPick.hidden));
   function setPlayer(id){player=id;keep('pp-player',id);loadSettings();loadColour();build();renderProgress();showWho()}
-  row.addEventListener('click',e=>{const b=e.target.closest('.who-b');if(!b||b.dataset.p===player)return;setPlayer(b.dataset.p);row.querySelector(`[data-p="${player}"]`).focus()});
+  // switching halfway through a set starts the puzzles again, so check first (in the panel, not a pop-up)
+  const midSet=()=>set.some(p=>p.done)&&!set.every(p=>p.done);
+  const switchTo=id=>{setPlayer(id);openWho(false);whoChg.focus()};
+  row.addEventListener('click',e=>{const b=e.target.closest('.who-b');if(!b)return;
+    if(b.dataset.p===player){openWho(false);whoChg.focus();return}
+    if(!midSet())return switchTo(b.dataset.p);
+    const to=ANIMALS[b.dataset.p].name;
+    whoAsk.innerHTML=`<p>Switch to ${to}? These puzzles will start again.</p><button class="btn small primary" data-go="${b.dataset.p}">Switch</button><button class="btn small" data-stay="1">Stay as ${ANIMALS[player].name}</button>`;
+    whoAsk.querySelector('[data-go]').focus()});
+  whoAsk.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)return switchTo(g.dataset.go);if(e.target.closest('[data-stay]')){whoAsk.innerHTML='';row.querySelector(`[data-p="${player}"]`).focus()}});
   showWho();
 
   /* ---- save and load a copy of progress (a small file; nothing is sent anywhere) ---- */
