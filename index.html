@@ -1,0 +1,1477 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Free reasoning puzzles for children: rotate, mirror, sequences, codes, fold and punch, cube nets, 3D views and word ladders.">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Logic Puzzles</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Baloo+2:wght@600;800&display=swap">
+<style>
+/* Layout: an exercise-book page; each puzzle is a ruled block — number + question, the puzzle, then lettered choices */
+:root{
+  --paper:#f7f8f5; --card:#ffffff; --ink:#1c2430; --muted:#5d6a78; --rule:#d6dde4; --grey:#aab3bc;
+  --gold1:#ffe27a; --gold2:#f5b301; --gold3:#c98a00; --scrim:rgba(20,26,34,.55); --c1:#ff5d73; --c2:#ffb627; --c3:#3ecf8e; --c4:#3ba7ff; --c5:#a26bff; --c6:#ff7ac6; --flap:#c9dbe6; --d1:#5a636e; --d2:#3a424c; --d3:#262c33; --accent:#2d6a8c; --accent-soft:#e3eef4; --good:#2b7a4b; --good-soft:#e2f2e8; --bad:#b83a2e; --bad-soft:#f8e4e1;
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --body:"Andika","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#14181e; --card:#1d232b; --ink:#e8ece9; --muted:#9aa6b2; --rule:#323b46; --grey:#66717d;
+  --scrim:rgba(0,0,0,.72); --flap:#2c4556; --d1:#e8ece9; --d2:#c4ccd3; --d3:#9fa9b3; --accent:#7fb6d4; --accent-soft:#223442; --good:#6cc890; --good-soft:#1d3427; --bad:#ef8a7e; --bad-soft:#3c2422; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#14181e; --card:#1d232b; --ink:#e8ece9; --muted:#9aa6b2; --rule:#323b46; --grey:#66717d;
+  --scrim:rgba(0,0,0,.72); --flap:#2c4556; --d1:#e8ece9; --d2:#c4ccd3; --d3:#9fa9b3; --accent:#7fb6d4; --accent-soft:#223442; --good:#6cc890; --good-soft:#1d3427; --bad:#ef8a7e; --bad-soft:#3c2422; color-scheme:dark}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
+.wrap{max-width:980px;margin:0 auto;padding-block:28px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:18px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(1.9rem,5vw,2.6rem);line-height:1.05;margin:0;text-wrap:balance}
+.lede{margin:4px 0 0;color:var(--muted);max-width:62ch}
+.bar{display:flex;flex-direction:column;gap:12px;border-top:2px solid var(--ink);border-bottom:1px solid var(--rule);padding-block:14px}
+.row{display:flex;flex-wrap:wrap;gap:10px 20px;align-items:center}
+.group{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.lbl{font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-right:4px;min-width:3.6em}
+.chip{font:inherit;font-size:.95rem;background:var(--card);color:var(--ink);border:1.5px solid var(--rule);border-radius:999px;padding:5px 13px;cursor:pointer}
+.chip:hover{border-color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.btn{font:inherit;font-weight:700;border:1.5px solid var(--ink);background:var(--card);color:var(--ink);border-radius:8px;padding:7px 14px;cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--paper)}
+.actions{margin-left:auto}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.score{font-family:var(--display);font-weight:800;font-size:1.25rem;font-variant-numeric:tabular-nums;margin-right:4px}
+.list{display:flex;flex-direction:column}
+.q{display:flex;flex-direction:column;gap:12px;padding-block:20px;border-bottom:1px solid var(--rule)}
+.qhead{display:flex;align-items:center;gap:12px}
+.num{width:40px;height:40px;border:2px solid var(--ink);display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:1.2rem;flex:none}
+.prompt{margin:0;font-weight:700;max-width:60ch}
+.body{display:flex;flex-wrap:wrap;gap:16px 28px;align-items:center}
+.stem{display:flex;align-items:center;gap:12px;flex-wrap:wrap;min-width:0}
+.fig{width:88px;height:88px;color:var(--ink);flex:none}
+.fig.sm{width:68px;height:68px}
+.fig.fp{width:84px;height:84px}
+.fig.cubefig{width:110px;height:110px}
+.fig.isofig{width:160px;height:160px}
+.eye{width:64px;height:30px}
+.eye svg{width:100%;height:100%;display:block}
+.fig.netfig{width:150px;height:150px}
+.fig svg,.opt svg,.cell svg{width:100%;height:100%;display:block}
+.instr{display:flex;flex-direction:column;align-items:center;font-weight:700;font-size:.9rem;width:64px;text-align:center;line-height:1.15}
+.instr svg{width:36px;height:36px;margin-top:4px}
+.cells{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));border:1.5px solid var(--ink);background:var(--card);width:min(100%,440px)}
+.cell{aspect-ratio:1;max-width:100%;border-right:1.5px solid var(--ink);color:var(--ink);padding:4px}
+.cell:last-child{border-right:0}
+.blank{display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);font-family:var(--display);font-weight:800;font-size:1.8rem}
+.fig.blank{border:2px dashed var(--accent);border-radius:8px}
+.pair{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.pair .sym{font-family:var(--display);font-weight:800;font-size:1.5rem;color:var(--muted);padding-inline:2px}
+.codes{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
+.ex{display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--card);border:1.5px solid var(--rule);border-radius:8px;padding:6px 8px}
+.ex.test{border:2px dashed var(--accent)}
+.code{font-family:var(--display);font-weight:800;font-size:1.2rem;letter-spacing:.12em;line-height:1}
+.ex.test .code{color:var(--accent)}
+.opts{display:grid;gap:10px;flex:1 1 300px;min-width:0;max-width:560px}
+.opt{font:inherit;background:var(--card);color:var(--ink);border:1.5px solid var(--rule);border-radius:10px;padding:6px 6px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:border-color .15s,background .15s;min-width:0}
+.opt .pic{width:100%;max-width:96px;aspect-ratio:1}
+.opt .codeopt{font-family:var(--display);font-weight:800;font-size:1.5rem;letter-spacing:.12em;padding-block:10px 4px}
+.opt .let{font-weight:700;font-size:.95rem;color:var(--muted)}
+.opt:hover:not([disabled]){border-color:var(--accent)}
+.opt.right{border-color:var(--good);background:var(--good-soft);border-width:2.5px}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt[disabled]{cursor:default}
+.opt.right .let{color:var(--good)}
+.opt.right .let::after{content:" ✓"}
+.opt.wrong .let{color:var(--bad)}
+.opt.wrong .let::after{content:" ✗"}
+.ladder{display:flex;flex-wrap:wrap;align-items:center;gap:10px;font-family:var(--display);font-weight:800;font-size:1.6rem;letter-spacing:.1em}
+.ladder .gap{display:inline-block;width:4.2em;height:1.5em;border-bottom:3px solid var(--accent);background:var(--accent-soft);border-radius:4px 4px 0 0}
+.opt .wordopt{white-space:pre-line;font-size:1.15rem;line-height:1.35;letter-spacing:.08em;padding-block:8px 4px}
+.done{border:2px solid var(--good);background:var(--good-soft);border-radius:10px;padding:14px 16px;display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.done strong{font-family:var(--display);font-size:1.3rem}
+.progress{display:flex;flex-direction:column;gap:12px;border-top:2px solid var(--ink);padding-top:16px;margin-top:8px}
+.phead{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px}
+.phead h2{font-family:var(--display);font-weight:800;font-size:1.5rem;margin:0}
+.pnote{color:var(--muted);font-size:.88rem}
+.ptable-wrap{overflow-x:auto}
+.ptable{border-collapse:collapse;width:100%;min-width:520px;font-variant-numeric:tabular-nums}
+.ptable th{font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);text-align:left;font-weight:700;padding:6px 10px;border-bottom:1px solid var(--rule)}
+.ptable td{padding:8px 10px;border-bottom:1px solid var(--rule);vertical-align:middle}
+.ptable td.pn{font-family:var(--display);font-weight:800;font-size:1.05rem}
+.spark{display:flex;gap:4px;align-items:flex-end;height:30px}
+.spark i{display:block;width:10px;background:var(--accent);border-radius:2px 2px 0 0;min-height:3px}
+.spark i.full{background:var(--good)}
+.pempty{color:var(--muted);margin:0;max-width:60ch}
+.pclear{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn.small{font-size:.88rem;padding:5px 11px;font-weight:600}
+.btn.danger{border-color:var(--bad);color:var(--bad)}
+.celebrate{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:var(--scrim);padding-block:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));animation:fadeIn .25s ease-out}
+.cel-card{background:var(--card);color:var(--ink);border-radius:20px;padding:24px 24px 20px;width:min(100%,420px);text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:cardUp .45s cubic-bezier(.2,1.4,.4,1)}
+.cel-star{width:min(62vw,230px);aspect-ratio:1;max-width:100%;animation:starPop .8s cubic-bezier(.2,1.6,.4,1) .1s both}
+.cel-star svg{width:100%;height:100%;display:block;overflow:visible}
+.cel-star .shine{transform-origin:50% 50%;animation:spin 12s linear infinite}
+.cel-stars{display:flex;gap:8px;margin-top:-6px}
+.cel-stars svg{width:34px;height:34px;animation:starPop .5s cubic-bezier(.2,1.6,.4,1) both}
+.cel-card h2{font-family:var(--display);font-weight:800;font-size:clamp(1.7rem,6vw,2.2rem);line-height:1.1;margin:4px 0 0;text-wrap:balance}
+.cel-card p{margin:0;color:var(--muted);max-width:32ch}
+.cel-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:10px}
+.confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:60}
+.balloons{position:fixed;inset:0;pointer-events:none;z-index:55;overflow:hidden}
+.balloon{position:absolute;bottom:-160px;width:64px;pointer-events:auto;cursor:pointer;touch-action:manipulation;animation:rise var(--dur) cubic-bezier(.35,.1,.6,1) var(--delay) forwards}
+.balloon svg{width:100%;display:block;animation:sway 2.6s ease-in-out infinite alternate}
+@keyframes popAnim{to{transform:scale(1.6);opacity:0}}
+.balloon.popped svg{animation:popAnim .16s ease-out forwards}
+.balloon.popped{pointer-events:none}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes cardUp{from{transform:translateY(40px) scale(.9);opacity:0}to{transform:none;opacity:1}}
+@keyframes starPop{0%{transform:scale(0) rotate(-40deg)}100%{transform:scale(1) rotate(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes rise{to{transform:translateY(calc(-100vh - 260px))}}
+@keyframes sway{from{transform:translateX(-14px) rotate(-6deg)}to{transform:translateX(14px) rotate(6deg)}}
+@media (prefers-reduced-motion:reduce){.celebrate,.cel-card,.cel-star,.cel-stars svg,.cel-star .shine{animation:none}}
+[hidden]{display:none!important}
+.spin{width:100%;height:100%;transition:transform .45s cubic-bezier(.3,1.3,.5,1)}
+.hintbtn{font:inherit;font-weight:700;font-size:.9rem;color:var(--ink);background:var(--accent-soft);border:1.5px dashed var(--accent);border-radius:10px;padding:6px 4px;cursor:pointer;width:72px}
+.hintbtn:hover:not([disabled]){border-style:solid}
+.hintbtn[disabled]{opacity:.45;cursor:default}
+.hintbtn .hl{font-weight:400;font-size:.75rem;color:var(--muted);margin-top:2px}
+@media (prefers-reduced-motion:reduce){.spin{transition:none}}
+.tip{color:var(--muted);font-size:.92rem;max-width:65ch;margin:0}
+.shape{fill:var(--card);stroke:currentColor;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
+.ink{fill:currentColor;stroke:none}
+.line{fill:none}
+.defs{position:absolute;width:0;height:0;overflow:hidden}
+@media (max-width:640px){
+  .opts{gap:6px}
+  .fig{width:76px;height:76px}
+  .fig.sm{width:56px;height:56px}
+  .fig.fp{width:70px;height:70px}
+  .fig.netfig{width:120px;height:120px}
+  .actions{margin-left:0}
+}
+@media (prefers-reduced-motion:reduce){.opt{transition:none}}
+</style>
+</head>
+<body>
+
+
+<svg class="defs" aria-hidden="true" focusable="false"><defs>
+  <pattern id="pS" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" style="fill:var(--card)"/><rect width="2.6" height="7" style="fill:var(--ink)"/></pattern>
+  <pattern id="pD" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" style="fill:var(--card)"/><circle cx="4" cy="4" r="1.9" style="fill:var(--ink)"/></pattern>
+  <marker id="mA" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" style="fill:var(--ink)"/></marker>
+</defs></svg>
+
+<div class="wrap">
+  <header>
+    <h1>Logic Puzzles</h1>
+    <p class="lede">Reasoning puzzles like the ones in school homework and practice books, from turning and mirroring pictures to folding paper, cube nets and word ladders. Choose a kind of puzzle and a level, then tap an answer to check it. Every tap of "New puzzles" makes a fresh set.</p>
+  </header>
+
+  <div class="bar">
+    <div class="row">
+      <span class="lbl">Puzzle</span>
+      <div class="group" id="mode" role="group" aria-label="Kind of puzzle">
+        <button class="chip" data-v="count" aria-pressed="false">Warm-up</button>
+        <button class="chip" data-v="rotate" aria-pressed="true">Rotate</button>
+        <button class="chip" data-v="mirror" aria-pressed="false">Mirror</button>
+        <button class="chip" data-v="sequence" aria-pressed="false">Fill the gap</button>
+        <button class="chip" data-v="pair" aria-pressed="false">Complete the pair</button>
+        <button class="chip" data-v="odd" aria-pressed="false">Odd one out</button>
+        <button class="chip" data-v="codes" aria-pressed="false">Codes</button>
+        <button class="chip" data-v="punch" aria-pressed="false">Fold &amp; punch</button>
+        <button class="chip" data-v="cube" aria-pressed="false">Cube nets</button>
+        <button class="chip" data-v="top" aria-pressed="false">Top view</button>
+        <button class="chip" data-v="side" aria-pressed="false">View from the right</button>
+        <button class="chip" data-v="ladder" aria-pressed="false">Word ladders</button>
+        <button class="chip" data-v="mix" aria-pressed="false">Mix</button>
+      </div>
+    </div>
+    <div class="row">
+      <span class="lbl">Level</span>
+      <div class="group" id="level" role="group" aria-label="Difficulty">
+        <button class="chip" data-v="easy" aria-pressed="false">Easy</button>
+        <button class="chip" data-v="normal" aria-pressed="true">Normal</button>
+        <button class="chip" data-v="hard" aria-pressed="false">Tricky</button>
+        <button class="chip" data-v="expert" aria-pressed="false">Expert</button>
+      </div>
+      <div class="group actions">
+        <span class="score" id="score" aria-live="polite">0 / 10</span>
+        <button class="btn" id="reveal">Show answers</button>
+        <button class="btn primary" id="new">New puzzles</button>
+      </div>
+    </div>
+  </div>
+
+  <p class="tip" id="tip"></p>
+  <div class="list" id="list"></div>
+  <div class="done" id="done" hidden></div>
+
+  <div class="celebrate" id="celebrate" hidden role="dialog" aria-modal="true" aria-labelledby="cel-title">
+    <div class="cel-card">
+      <div class="cel-star" id="cel-star"></div>
+      <div class="cel-stars" id="cel-stars" aria-hidden="true"></div>
+      <h2 id="cel-title"></h2>
+      <p id="cel-msg"></p>
+      <div class="cel-actions">
+        <button class="btn" id="cel-review">Look at my answers</button>
+        <button class="btn primary" id="cel-again">New puzzles</button>
+      </div>
+    </div>
+  </div>
+  <canvas class="confetti" id="confetti" aria-hidden="true"></canvas>
+  <div class="balloons" id="balloons" aria-hidden="true"></div>
+
+  <section class="progress" aria-labelledby="ph">
+    <div class="phead"><h2 id="ph">Progress</h2><span class="pnote">Saved in this browser on this device</span></div>
+    <div id="prog"></div>
+    <div class="pclear" id="pclear"></div>
+  </section>
+</div>
+
+<script>
+/* ---------- helpers ---------- */
+let XP=false,USED_ICONS=new Set();
+const pickIcon=pool=>{const f=pool.filter(k=>!USED_ICONS.has(k));return pick(f.length?f:pool)};
+const rnd=n=>Math.floor(Math.random()*n);
+const pick=a=>a[rnd(a.length)];
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]]}return a};
+const sample=(a,k)=>shuffle(a).slice(0,k);
+const mod=(x,n)=>((x%n)+n)%n;
+const gcd=(a,b)=>b?gcd(b,a%b):a;
+const lcm=(a,b)=>Math.min(360,a*b/gcd(a,b));
+const range=(step)=>{const o=[];for(let x=0;x<360;x+=step)o.push(x);return o};
+
+/* ---------- picture icons (drawn to be lopsided, so flips are visible) ---------- */
+const S='class="shape"', I='class="ink"', L='class="shape line"';
+const ICONS={
+  train:v=>`<rect ${S} x="-32" y="-4" width="40" height="18" rx="3"/><path ${L} d="M-32 9 H-38"/>
+    <rect ${S} x="-26" y="-16" width="8" height="12"/><rect ${S} x="-29" y="-20" width="14" height="4"/>
+    <rect ${S} x="6" y="-20" width="26" height="34"/><rect ${S} x="2" y="-25" width="34" height="5" rx="1"/>
+    ${v?`<rect ${S} x="11" y="-15" width="16" height="9"/>`:`<rect ${S} x="10" y="-15" width="7" height="9"/><rect ${S} x="21" y="-15" width="7" height="9"/>`}
+    <path ${L} d="M-12 -4 V14"/><circle ${I} cx="-22" cy="20" r="6"/><circle ${I} cx="-7" cy="20" r="6"/>
+    <circle ${S} cx="19" cy="19" r="9"/><circle ${I} cx="19" cy="19" r="3"/>`,
+  board:v=>`<path ${L} d="M0 14 L-20 38 M0 14 V38 M0 14 L20 38"/>
+    <rect ${S} x="-38" y="-30" width="76" height="44" rx="2"/><rect ${S} x="-34" y="-26" width="68" height="36" style="stroke-width:1.4"/>
+    <text x="0" y="-1" text-anchor="middle" dominant-baseline="middle" font-family="Baloo 2, sans-serif" font-weight="800" font-size="19" letter-spacing="2" class="ink">${v?'123':'ABC'}</text>
+    <rect ${I} x="18" y="14" width="13" height="3.5"/>`,
+  glass:v=>`${v?'':`<path ${L} d="M4 -10 L12 -36 L22 -40"/>`}
+    <path ${S} d="M-17 -26 C-17 -2 -8 10 0 12 C8 10 17 -2 17 -26 Z"/><path ${L} d="M-15 -17 H15"/><path ${L} d="M0 12 V32 M-12 33 H12"/>
+    <circle ${S} cx="17" cy="-28" r="10"/><circle ${S} cx="17" cy="-28" r="6" style="stroke-width:1.4"/>
+    <path ${L} style="stroke-width:1.4" d="M11 -28 H23 M17 -34 V-22"/>`,
+  flag:v=>`<path ${L} d="M-24 -40 V36"/><rect ${I} x="-33" y="35" width="18" height="5"/>
+    <path ${S} d="M-24 -38 L26 -24 L-24 -10 Z"/>${v?`<path ${L} d="M-24 -24 H8"/>`:`<circle ${I} cx="-12" cy="-24" r="4.5"/>`}`,
+  snail:v=>`<path ${S} d="M-38 26 Q-38 22 -30 22 H26 V0 Q26 -6 32 -6 Q38 -6 38 0 V22 Q38 30 28 30 H-30 Q-38 30 -38 26 Z"/>
+    <path ${L} d="M29 -6 L25 -18 M35 -6 L39 -18"/><circle ${I} cx="25" cy="-19" r="2.6"/><circle ${I} cx="39" cy="-19" r="2.6"/>
+    <circle ${S} cx="-4" cy="2" r="20"/>
+    ${v?`<path ${L} d="M-21 -6 Q-4 -1 13 -10 M-23 4 Q-4 10 15 2 M-19 14 Q-4 20 10 13"/>`:`<path ${L} d="M-4 2 m-3 0 a3 3 0 1 1 6 0 a6 6 0 1 1 -12 0 a10 10 0 1 1 20 0 a13 13 0 1 1 -26 0"/>`}`,
+  teapot:v=>`<path ${S} d="M-21 10 Q-32 6 -38 -14 L-33 -15 Q-28 0 -20 -2 Z"/><path ${L} style="stroke-width:4" d="M20 -6 Q38 -6 34 10 Q32 18 20 16"/>
+    <ellipse ${S} cx="0" cy="4" rx="24" ry="19"/><path ${S} d="M-12 -13 Q0 -22 12 -13 Z"/><circle ${I} cx="0" cy="-20" r="3.5"/>
+    <rect ${I} x="-14" y="21" width="28" height="4" rx="1"/>${v?`<path ${L} d="M-23 0 Q0 7 23 0"/>`:`<circle ${I} cx="0" cy="6" r="4"/>`}`,
+  key:v=>`<rect ${S} x="-12" y="-3" width="46" height="6"/><circle ${S} cx="-24" cy="0" r="13"/><circle ${S} cx="-24" cy="0" r="5"/>
+    <rect ${I} x="4" y="-7" width="4" height="4"/>${(v?[[18,7],[27,13]]:[[18,13],[27,7]]).map(([x,h])=>`<rect ${I} x="${x}" y="3" width="6" height="${h}"/>`).join('')}`,
+  house:v=>`<rect ${S} x="12" y="-30" width="8" height="16"/><rect ${S} x="-26" y="-6" width="52" height="36"/>
+    <path ${S} d="M-32 -6 L0 -32 L32 -6 Z"/><rect ${S} x="-19" y="8" width="12" height="22"/><circle ${I} cx="-10" cy="19" r="1.6"/>
+    ${v?`<circle ${S} cx="12" cy="9" r="7"/>`:`<rect ${S} x="4" y="2" width="15" height="13"/><path ${L} style="stroke-width:1.6" d="M11.5 2 V15 M4 8.5 H19"/>`}`,
+  boat:v=>`<path ${L} d="M-4 10 V-38"/><path ${S} d="M-1 -34 L26 4 H-1 Z"/>
+    ${v?'':`<path ${I} d="M-4 -38 L-17 -33 L-4 -28 Z"/>`}<path ${S} d="M-36 10 H36 L25 26 H-25 Z"/>
+    <circle ${S} cx="-16" cy="17" r="2.5" style="stroke-width:1.6"/><circle ${S} cx="-6" cy="17" r="2.5" style="stroke-width:1.6"/>`,
+  bird:v=>`<path ${S} d="M-22 0 L-38 -8 L-34 8 Z"/><path ${L} d="M-4 20 V31 M6 20 V31"/><ellipse ${S} cx="0" cy="4" rx="24" ry="16"/>
+    <circle ${S} cx="20" cy="-14" r="10"/><path ${S} d="M29 -17 L40 -12 L29 -9 Z"/><circle ${I} cx="22" cy="-16" r="2.2"/>
+    <path ${v?I:S} d="M-12 0 Q0 -6 8 4 Q-4 11 -12 0 Z"/>`,
+  umbrella:v=>`<path ${L} d="M0 -36 V-41"/><path ${L} d="M0 -2 V26 Q0 34 -8 34 Q-14 34 -14 28"/>
+    <path ${S} d="M-36 -2 Q-34 -34 0 -36 Q34 -34 36 -2 Q30 -8 24 -2 Q18 -8 12 -2 Q6 -8 0 -2 Q-6 -8 -12 -2 Q-18 -8 -24 -2 Q-30 -8 -36 -2 Z"/>${v?`<path ${I} d="M12 -2 Q14 -26 0 -36 Q24 -32 30 -12 Q36 -6 36 -2 Q30 -8 24 -2 Q18 -8 12 -2 Z"/>`:''}`,
+  car:v=>`<path ${S} d="M-36 14 V2 Q-36 -2 -30 -2 H-18 L-8 -16 H14 L24 -2 H32 Q36 -2 36 4 V14 Z"/>
+    ${v?`<path ${S} d="M-13 -3 L-5 -12 H12 L18 -3 Z" style="stroke-width:1.8"/>`:`<path ${S} style="stroke-width:1.8" d="M-13 -3 L-5 -12 H2 V-3 Z M6 -12 H12 L18 -3 H6 Z"/>`}
+    <rect ${I} x="30" y="2" width="5" height="4"/><circle ${S} cx="-20" cy="16" r="7"/><circle ${I} cx="-20" cy="16" r="2.5"/>
+    <circle ${S} cx="20" cy="16" r="7"/><circle ${I} cx="20" cy="16" r="2.5"/>`,
+  boot:v=>`<path ${S} d="M-12 -34 H10 V6 L28 12 Q38 16 36 26 H-16 V-4 Q-12 -14 -12 -34 Z"/><rect ${I} x="-17" y="26" width="54" height="6" rx="1"/>
+    <path ${L} style="stroke-width:2" d="${v?'M-8 -22 H6 M-8 -12 H6':'M-8 -24 H6 M-8 -16 H6 M-8 -8 H6'}"/>`,
+  fish:v=>`<path ${S} d="M-26 0 L-42 -14 L-40 0 L-42 14 Z"/><path ${S} d="M-8 -14 Q0 -32 14 -16 Z"/>
+    <ellipse ${S} cx="4" cy="0" rx="30" ry="17"/><circle ${I} cx="22" cy="-5" r="3"/><path ${L} d="M33 4 Q28 8 24 6"/>
+    ${v?`<circle ${I} cx="-6" cy="5" r="3"/><circle ${I} cx="5" cy="-6" r="3"/><circle ${I} cx="8" cy="7" r="3"/>`:`<path ${L} d="M-8 -14 V14 M3 -16 V16"/>`}`,
+  rocket:v=>`<path ${S} d="M-12 14 L-24 32 L-12 26 Z M12 14 L24 32 L12 26 Z"/><path ${S} d="M-7 28 L0 42 L7 28 Z"/>
+    <rect ${S} x="-22" y="-2" width="9" height="24" rx="4"/>
+    <path ${S} d="M-12 28 V-14 Q-12 -32 0 -42 Q12 -32 12 -14 V28 Z"/>
+    ${v?`<circle ${S} cx="0" cy="-16" r="5"/><circle ${S} cx="0" cy="2" r="5"/>`:`<circle ${S} cx="0" cy="-10" r="6"/>`}`,
+  can:v=>`<path ${S} d="M12 12 L34 -18 L39 -14 L17 18 Z"/>${v?'':`<path ${S} d="M31 -24 L44 -11 L40 -7 L27 -20 Z"/>`}
+    <path ${L} style="stroke-width:4" d="M-24 -8 Q-26 -32 -6 -32 Q10 -32 8 -8"/>
+    <path ${S} d="M-28 -8 H14 L17 28 H-31 Z"/><path ${L} style="stroke-width:1.8" d="M-28 6 H15"/>`,
+  kite:v=>`<path ${L} d="M0 12 Q-4 26 8 31 Q18 35 30 30"/>
+    ${(v?[[3,24],[20,34]]:[[1,20],[11,32],[25,32]]).map(([x,y])=>`<circle ${I} cx="${x}" cy="${y}" r="3.5"/>`).join('')}
+    <path ${S} d="M0 -40 L22 -12 L0 12 L-22 -12 Z"/><path ${L} style="stroke-width:1.6" d="M0 -40 V12 M-22 -12 H22"/>`,
+  mug:v=>`<path ${L} style="stroke-width:5" d="M20 -8 Q38 -8 36 6 Q34 18 20 18"/>
+    <path ${S} d="M-24 -18 H22 V22 Q22 30 14 30 H-16 Q-24 30 -24 22 Z"/>
+    <path ${L} d="M-12 -24 Q-16 -30 -12 -36 M2 -24 Q-2 -30 2 -36"/>
+    ${v?`<path ${L} d="M-24 4 H22 M-24 12 H22"/>`:`<path ${I} d="M-1 16 C-14 8 -10 -4 -1 2 C8 -4 12 8 -1 16 Z"/>`}`,
+  sock:v=>`<path ${S} d="M-14 -32 H8 V8 L26 10 Q38 12 38 24 Q38 34 26 34 H-6 Q-14 34 -14 24 Z"/>
+    <rect ${S} x="-17" y="-40" width="28" height="10"/>
+    ${v?`<path ${I} d="M28 11 Q38 13 38 24 Q38 34 28 34 Z"/>`:`<path ${L} d="M-14 -18 H8 M-14 -9 H8"/>`}`,
+  tree:v=>`<rect ${S} x="-5" y="22" width="10" height="14"/>
+    <path ${S} d="M0 -40 L16 -18 H8 L22 2 H12 L28 22 H-28 L-12 2 H-22 L-8 -18 H-16 Z"/>
+    ${v?`<circle ${I} cx="-15" cy="10" r="4.5"/>`:`<circle ${I} cx="12" cy="-22" r="4.5"/>`}`,
+  clock:v=>`<path ${L} d="M-20 28 L-28 38 M20 28 L28 38"/>
+    <path ${S} d="M-34 -22 A14 14 0 0 1 -16 -38 Z M34 -22 A14 14 0 0 0 16 -38 Z"/>
+    <circle ${S} cx="0" cy="2" r="31"/><path ${L} style="stroke-width:2" d="M0 -25 V-20 M27 2 H22 M0 29 V24 M-27 2 H-22"/>
+    <path ${L} style="stroke-width:3.2" d="M0 2 V-20 ${v?'M0 2 H15':'M0 2 L12 -5'}"/><circle ${I} cx="0" cy="2" r="3"/>`,
+  lamp:v=>`<rect ${S} x="-36" y="28" width="32" height="8" rx="2"/>
+    <path ${L} style="stroke-width:4" d="M-20 28 L-6 -4 L16 -22"/><circle ${S} cx="-6" cy="-4" r="3.5"/>
+    ${v?`<path ${L} style="stroke-width:1.8" d="M30 6 L36 18 M20 6 L20 20"/>`:''}
+    <path ${S} d="M10 -30 L26 -26 L38 2 L12 2 Z"/>`,
+  mitten:v=>`<path ${S} d="M-14 4 Q-34 2 -33 -12 Q-31 -24 -14 -16 Z"/>
+    <path ${S} d="M-16 28 V-14 Q-16 -38 4 -38 Q22 -38 22 -14 V28 Z"/>
+    <rect ${S} x="-20" y="22" width="46" height="14" rx="2"/>
+    ${v?`<circle ${I} cx="3" cy="-12" r="4.5"/><circle ${I} cx="10" cy="4" r="3"/>`:`<path ${L} d="M-20 29 H26"/>`}`,
+  icecream:v=>`<path ${S} d="M-18 -2 L0 40 L18 -2 Z"/><path ${L} style="stroke-width:1.5" d="M-12 10 L10 -2 M-6 24 L16 2"/>
+    <path ${S} d="M-22 0 Q-26 -30 0 -32 Q26 -30 22 0 Q14 6 8 0 Q2 6 -4 0 Q-12 6 -22 0 Z"/>
+    <path ${L} d="M8 -32 Q12 -42 20 -44"/><circle ${I} cx="7" cy="-33" r="5"/>
+    ${v?`<path ${S} d="M-17 2 Q-19 16 -14 16 Q-9 16 -11 3 Z"/>`:`<path ${L} style="stroke-width:2.2" d="M-12 -18 l4 3 M-1 -24 l-3 4 M-4 -10 l5 1"/>`}`,
+  bike:v=>`<circle ${S} cx="-24" cy="14" r="13"/><circle ${S} cx="24" cy="14" r="13"/>
+    <path ${L} d="M-24 14 L-8 -10 L16 -10 L24 14 M-8 -10 L0 14 L16 -10 M0 14 L-24 14"/><path ${L} d="M-14 -16 H-3"/><path ${L} d="M16 -10 L12 -22 H22"/>
+    ${v?`<rect ${S} x="24" y="-30" width="14" height="11"/>`:''}`,
+  mouse:v=>`<path ${L} d="M-26 12 Q-42 14 -41 0 Q-40 -10 -31 -7"/><ellipse ${S} cx="-2" cy="8" rx="26" ry="16"/>
+    ${v?`<circle ${S} cx="0" cy="-10" r="8"/>`:''}<circle ${S} cx="13" cy="-9" r="8"/>
+    <path ${S} d="M14 -4 L40 8 L14 20 Z"/><circle ${I} cx="24" cy="4" r="2.6"/><circle ${I} cx="40" cy="8" r="2.4"/>`,
+  swan:v=>`<path ${L} style="stroke-width:5" d="M20 10 Q30 -10 18 -22 Q8 -32 16 -38"/>
+    <path ${S} d="M-36 4 Q-32 28 0 28 Q26 28 30 8 Q14 14 -4 10 Q-22 6 -36 4 Z"/>
+    <circle ${S} cx="18" cy="-36" r="5"/><path ${I} d="M22 -38 L33 -35 L22 -32 Z"/>${v?`<path ${L} d="M-20 14 Q-4 4 12 16"/>`:''}`,
+  pinwheel:v=>`<path ${L} d="M0 0 V44"/>${[0,1,2,3].map(k=>`<path ${k===(v?1:0)?I:S} transform="rotate(${k*90})" d="M0 0 L0 -32 L16 -14 Z"/>`).join('')}<circle ${S} cx="0" cy="0" r="4"/>`,
+  jelly:v=>`<path ${S} d="M-28 0 Q-28 -30 0 -30 Q28 -30 28 0 Z"/>
+    ${[-18,-6,6,18].slice(0,v?3:4).map(x=>`<path ${L} d="M${x} 2 q6 7 0 14 q-6 7 0 14 q6 7 0 12"/>`).join('')}
+    <circle ${I} cx="-8" cy="-12" r="3"/><circle ${I} cx="4" cy="-12" r="3"/>`,
+  page:v=>`<path ${S} d="M-26 -38 H12 L28 -22 V38 H-26 Z"/><path ${I} d="M12 -38 L28 -22 H12 Z"/>
+    <path ${L} style="stroke-width:2.2" d="${v?'M-18 -20 H4 M-18 -8 H20 M-18 4 H20 M-18 16 H20 M-18 28 H6':'M-18 -20 H4 M-18 -8 H20 M-18 4 H20 M-18 16 H8'}"/>`,
+  bar:v=>{const b=v?['grey','card','ink']:['ink','card','grey'];return `<path ${S} d="M-30 -12 L-18 -24 H26 L14 -12 Z"/><path ${S} style="fill:var(--grey)" d="M14 -12 L26 -24 V2 L14 14 Z"/>
+    ${b.map((c,i)=>`<rect x="${-30+i*14.67}" y="-12" width="14.67" height="26" style="fill:var(--${c});stroke:var(--ink);stroke-width:2.6;stroke-linejoin:round"/>`).join('')}`},
+  blocks:v=>`<rect x="-38" y="2" width="14" height="14" style="fill:var(--${v?'grey':'ink'});stroke:var(--ink);stroke-width:2.6"/>
+    <path ${S} d="M-4 -20 L14 -2 L-4 16 L-22 -2 Z"/>
+    <rect x="17" y="-10" width="26" height="26" style="fill:var(--${v?'ink':'grey'});stroke:var(--ink);stroke-width:2.6"/>`,
+  path:v=>`<circle ${S} cx="-28" cy="28" r="5"/>${v?`<path ${L} d="M-28 23 V-22 H8 V26"/><path ${I} d="M8 36 L1 25 H15 Z"/>`:`<path ${L} d="M-28 23 V-22 H8 V12 H28"/><path ${I} d="M38 12 L27 5 V19 Z"/>`}`,
+  letR:v=>`<text x="0" y="5" text-anchor="middle" dominant-baseline="middle" font-family="Baloo 2, Arial, sans-serif" font-weight="800" font-size="86" class="ink">${v?'P':'R'}</text>`,
+  let2:v=>`<text x="0" y="5" text-anchor="middle" dominant-baseline="middle" font-family="Baloo 2, Arial, sans-serif" font-weight="800" font-size="86" class="ink">${v?'Z':'2'}</text>`,
+  let7:v=>`<text x="0" y="5" text-anchor="middle" dominant-baseline="middle" font-family="Baloo 2, Arial, sans-serif" font-weight="800" font-size="86" class="ink">${v?'1':'7'}</text>`
+};
+const KEYS=Object.keys(ICONS);
+
+/* ---------- plain shapes ---------- */
+const poly=(n,r)=>{let d='';for(let k=0;k<n;k++){const t=-Math.PI/2+k*2*Math.PI/n;d+=(k?'L':'M')+(r*Math.cos(t)).toFixed(1)+' '+(r*Math.sin(t)).toFixed(1)+' '}return d+'Z'};
+const star=(n,R,r)=>{let d='';for(let k=0;k<2*n;k++){const t=-Math.PI/2+k*Math.PI/n,q=k%2?r:R;d+=(k?'L':'M')+(q*Math.cos(t)).toFixed(1)+' '+(q*Math.sin(t)).toFixed(1)+' '}return d+'Z'};
+const GEO={
+  circle:'M-31 0 a31 31 0 1 0 62 0 a31 31 0 1 0 -62 0',
+  square:'M-27 -27 H27 V27 H-27 Z',
+  triangle:'M0 -32 L31 24 H-31 Z',
+  diamond:'M0 -35 L26 0 L0 35 L-26 0 Z',
+  pentagon:poly(5,32), hexagon:poly(6,32), heptagon:poly(7,32),
+  star:star(5,35,14),
+  heart:'M0 30 C-44 2 -32 -34 0 -14 C32 -34 44 2 0 30 Z',
+  cross:'M-10 -32 H10 V-10 H32 V10 H10 V32 H-10 V10 H-32 V-10 H-10 Z',
+  arrow:'M0 -34 L24 -6 H9 V32 H-9 V-6 H-24 Z'
+};
+const SYM={circle:1,square:90,triangle:120,diamond:180,pentagon:72,hexagon:60,heptagon:360,star:72,heart:360,cross:90,arrow:360};
+const SOLIDS=['circle','square','triangle','diamond','pentagon','hexagon','star','heart','cross'];
+const FILL={white:'var(--card)',grey:'var(--grey)',black:'var(--ink)',stripes:'url(#pS)',dots:'url(#pD)'};
+const LAY={1:[[0,0]],2:[[-21,0],[21,0]],3:[[0,-19],[-21,17],[21,17]],4:[[-20,-20],[20,-20],[-20,20],[20,20]],5:[[-23,-23],[23,-23],[0,0],[-23,23],[23,23]]};
+const SC={1:1,2:.56,3:.5,4:.46,5:.4};
+
+const iconFig=(shape,o={})=>({kind:'icon',shape,a:0,m:false,v:false,size:1,count:1,fill:'white',inner:null,innerFill:null,dot:null,...o});
+const geoFig=(o={})=>({kind:'geo',shape:'circle',a:0,m:false,v:false,size:1,count:1,fill:'white',inner:null,innerFill:null,dot:null,...o});
+const inFill=p=>p.innerFill||(p.fill==='black'?'white':'black');
+function key(p){
+  if(p.kind==='mat')return 'mat|'+matKey(p);
+  if(p.kind==='quad')return ['q',p.frame,p.outer.join(''),p.inner?p.inner.join(''):''].join('|');
+  if(p.kind==='slide')return ['s',mod(p.pos,3),p.fill,+p.up].join('|');
+  if(p.kind==='icon')return ['i',p.shape,+!!p.v,mod(p.a,360),+!!p.m].join('|');
+  let a=p.a, s=SYM[p.shape]; if(p.inner)s=lcm(s,SYM[p.inner]);
+  a=s===1?0:mod(a,s);
+  return ['g',p.shape,p.fill,a,p.count,(+p.size).toFixed(2),p.inner||'',p.inner?inFill(p):'',p.dot??''].join('|');
+}
+const valid=p=>!!p&&(p.kind==='mat'||p.kind==='quad'||p.kind==='slide'||!!p.shape&&(p.kind==='icon'?!!ICONS[p.shape]:!!GEO[p.shape])&&p.count>=1&&p.count<=5&&p.size>=.3&&p.size<=1.16);
+
+function figSVG(p){
+  let g;
+  if(p.kind==='mat')return matSVG(p);
+  if(p.kind==='quad')return quadSVG(p);
+  if(p.kind==='slide')return slideSVG(p);
+  if(p.kind==='icon')g=`<g transform="rotate(${p.a}) scale(${p.m?-1:1},1)">${ICONS[p.shape](p.v)}</g>`;
+  else{
+    const sc=SC[p.count]*p.size, w=sc=>(2.4/sc).toFixed(2);
+    g=LAY[p.count].map(([x,y])=>`<g transform="translate(${x} ${y}) rotate(${p.a}) scale(${sc})"><path d="${GEO[p.shape]}" style="fill:${FILL[p.fill]};stroke:var(--ink);stroke-width:${w(sc)};stroke-linejoin:round"/>${p.inner?`<path d="${GEO[p.inner]}" transform="scale(.42)" style="fill:${FILL[inFill(p)]};stroke:var(--ink);stroke-width:${w(sc*.42)};stroke-linejoin:round"/>`:''}</g>`).join('');
+  }
+  if(p.dot!=null){const t=p.dot*Math.PI/4;g+=`<circle cx="${(42*Math.sin(t)).toFixed(1)}" cy="${(-42*Math.cos(t)).toFixed(1)}" r="5.5" style="fill:var(--ink)"/>`}
+  return `<svg viewBox="-50 -50 100 100" aria-hidden="true">${g}</svg>`;
+}
+
+function perturb(p){
+  const c={...p},ch=[];
+  if(p.kind==='mat'){const w=JSON.parse(JSON.stringify(p)),i=rnd(w.items.length),j=(i+1)%w.items.length;[w.items[i].f,w.items[j].f]=[w.items[j].f,w.items[i].f];return w}
+  if(p.kind==='quad'){c.outer=p.outer.map((_,j)=>p.outer[mod(j-pick([1,2,3]),4)]);return c}
+  if(p.kind==='slide'){pick([()=>c.pos=mod(p.pos+pick([1,2]),3),()=>c.fill=p.fill==='black'?'white':'black',()=>c.up=!p.up])();return c}
+  if(p.kind==='icon')ch.push(()=>c.a+=pick([90,-90,180,45]),()=>c.m=!c.m,()=>c.v=!c.v);
+  else{
+    ch.push(()=>c.fill=pick(['white','black','grey','stripes'].filter(f=>f!==p.fill)),()=>c.a+=pick([90,180,45]),()=>c.count=Math.max(1,Math.min(5,p.count+pick([1,-1]))));
+    if(p.inner)ch.push(()=>c.inner=pick(['circle','square','triangle','star'].filter(s=>s!==p.inner)));
+    if(p.dot!=null)ch.push(()=>c.dot=mod(p.dot+pick([1,2,-1,-2]),8));
+    if(p.size!==1)ch.push(()=>c.size=+(p.size+pick([.15,-.15])).toFixed(2));
+  }
+  pick(ch)();return c;
+}
+function finish(correct,cands,n){
+  const seen=new Set([key(correct)]),out=[];
+  for(const c of cands){if(out.length>=n-1)break;if(!valid(c))continue;const k=key(c);if(seen.has(k))continue;seen.add(k);out.push(c)}
+  let t=0;while(out.length<n-1&&t++<400){const c=perturb(correct);if(!valid(c))continue;const k=key(c);if(!seen.has(k)){seen.add(k);out.push(c)}}
+  const opts=shuffle([correct,...out]);return {opts,ans:opts.indexOf(correct)};
+}
+const nOpts=l=>l==='easy'?4:5;
+
+/* ---------- Rotate ---------- */
+function rotatePuzzle(lvl){
+  const ic=pickIcon(KEYS),step={easy:90,normal:45,hard:30}[lvl];
+  const correct=iconFig(ic,{a:pick(range(step).slice(1))});
+  const kinds=XP?[{m:true},{m:true},{m:true},{m:true}]:lvl==='easy'?[{m:true},{m:true},{v:true}]:[{m:true},{m:true},{v:true},{v:true,m:true}];
+  const cands=kinds.map(k=>iconFig(ic,{a:pick(range(step)),m:!!k.m,v:!!k.v}));
+  const r=finish(correct,cands,nOpts(lvl));
+  return {type:'rotate',src:iconFig(ic),step,turn:0,hints:0,...r};
+}
+/* ---------- Mirror ---------- */
+function mirrorPuzzle(lvl){
+  const ic=pickIcon(KEYS),axis=XP?pick(['d1','d2']):lvl==='hard'&&Math.random()<.5?'h':'v',base={v:0,h:180,d1:90,d2:270}[axis];
+  const correct=iconFig(ic,{a:base,m:true});
+  const d=XP?[{a:base+180,m:true},{a:base+180},{a:base},{a:mod(base+90,360)===90?0:180,m:true}]:lvl==='easy'?[{a:180},{a:base,m:true,v:true},{a:0}]
+    :[{a:180},{a:base+180,m:true},{a:base,m:true,v:true},{a:base+90,m:true}];
+  return {type:'mirror',axis,src:iconFig(ic),...finish(correct,d.map(o=>iconFig(ic,o)),nOpts(lvl))};
+}
+/* ---------- Fill the gap ---------- */
+function seqPuzzle(lvl){
+  const t=pick(['rot','count','orbit','grow','sides','quad','quad','slide','slide']);
+  const alt2=i=>mod(i,2)?'black':'white', cyc3=i=>['white','grey','black'][mod(i,3)];
+  let base,attrs={},extras=[];
+  if(t==='rot'){
+    const step=lvl==='easy'?pick([90,-90]):lvl==='normal'?pick([90,-90,45,-45]):pick([45,-45,135,-135]);
+    const a0=pick([0,90,180,270]);base=iconFig(pickIcon(KEYS));attrs.a=i=>a0+i*step;
+    extras=[c=>({...c,m:true}),c=>({...c,v:true})];
+  }else if(t==='quad'){
+    const rotA=(a,k)=>a.map((_,j)=>a[mod(j-k,4)]);
+    const s1=pick([1,-1]),o0=lvl==='hard'?['black','grey','white','white']:['black','white','white','white'];
+    base={kind:'quad',frame:pick(['circle','square']),outer:o0,inner:null};
+    attrs.outer=i=>rotA(o0,i*s1);
+    if(lvl!=='easy'){const in0=lvl==='hard'?['black','white','white','white']:['grey','white','white','white'],s2=lvl==='hard'?pick([2,-s1]):-s1;attrs.inner=i=>rotA(in0,i*s2)}
+    extras=[c=>({...c,outer:c.inner||rotA(c.outer,2),inner:c.inner?c.outer:null})];
+  }else if(t==='slide'){
+    const path=pick([[0,1,2,1,0],[0,1,2,0,1],[2,1,0,1,2],[2,1,0,2,1]]);
+    base={kind:'slide',pos:0,fill:'black',up:true};
+    attrs.pos=i=>path[mod(i,5)];
+    if(lvl!=='easy')attrs.fill=lvl==='hard'?i=>['black','stripes','white'][mod(i,3)]:alt2;
+    if(lvl==='hard')attrs.up=i=>mod(i,2)===0;
+    extras=[c=>({...c,up:!c.up}),c=>({...c,fill:c.fill==='black'?'white':'black'})];
+  }else if(t==='count'){
+    base=geoFig({shape:lvl==='hard'?pick(['arrow','heart']):pick(SOLIDS),fill:lvl==='easy'?pick(['white','black','grey']):'white'});
+    attrs.count=i=>i+1;if(lvl!=='easy')attrs.fill=alt2;if(lvl==='hard')attrs.a=i=>i*90;
+  }else if(t==='orbit'){
+    base=geoFig({shape:lvl==='hard'?'arrow':pick(SOLIDS),size:.78,fill:pick(['white','black','grey'])});
+    const d0=rnd(8),ds=lvl==='easy'?pick([1,2]):pick([1,3,-1,-3]);attrs.dot=i=>mod(d0+i*ds,8);
+    if(lvl==='normal')attrs.fill=alt2;
+    if(lvl==='hard'){attrs.a=i=>i*90;attrs.fill=cyc3}
+  }else if(t==='grow'){
+    base=geoFig({shape:lvl==='hard'?pick(['arrow','heart','triangle']):pick(SOLIDS)});
+    attrs.size=i=>+(0.45+i*0.15).toFixed(2);if(lvl!=='easy')attrs.fill=cyc3;if(lvl==='hard')attrs.a=i=>i*90;
+  }else{
+    const SH=['triangle','square','pentagon','hexagon','heptagon'];base=geoFig();
+    attrs.shape=i=>SH[i];if(lvl!=='easy')attrs.fill=alt2;
+    if(lvl==='hard'){base.size=.78;const d0=rnd(8);attrs.dot=i=>mod(d0+i*2,8)}
+    extras=[c=>({...c,shape:'circle'})];
+  }
+  if(XP&&!attrs.dot&&t!=='quad'&&t!=='slide'){if(base.kind==='geo'&&base.size===1)base.size=.78;const d0=rnd(8),ds=pick([1,3,-1,-3]);attrs.dot=i=>mod(d0+i*ds,8)}
+  const b=lvl==='easy'?pick([2,3,4]):rnd(5),names=Object.keys(attrs);
+  const make=(idx={})=>{const p={...base};for(const k of names)p[k]=attrs[k](idx[k]??b);return p};
+  const cells=[0,1,2,3,4].map(i=>make(Object.fromEntries(names.map(k=>[k,i]))));
+  const correct=make();
+  let cands=[];for(const k of names)for(const j of [b-1,b+1,b-2,b+2])cands.push(make({[k]:j}));
+  cands=[...extras.map(f=>f(correct)),...shuffle(cands)];
+  return {type:'sequence',cells,blank:b,...finish(correct,cands,nOpts(lvl))};
+}
+/* ---------- Complete the pair ---------- */
+const INV={white:'black',black:'white'};
+const ROTS=['arrow','heart','triangle'];
+const TR={
+  rot90:{icon:1,geo:ROTS,f:p=>({...p,a:p.a+90}),w:[p=>({...p,a:p.a-90}),p=>({...p,a:p.a+180}),p=>({...p,m:!p.m}),p=>p]},
+  rot180:{icon:1,geo:ROTS,f:p=>({...p,a:p.a+180}),w:[p=>({...p,a:p.a+90}),p=>({...p,a:p.a-90}),p=>({...p,m:!p.m}),p=>p]},
+  rot45:{icon:1,geo:['arrow','heart','square'],f:p=>({...p,a:p.a+45}),w:[p=>({...p,a:p.a-45}),p=>({...p,a:p.a+90}),p=>({...p,a:p.a+135})]},
+  flip:{icon:1,f:p=>({...p,a:-p.a,m:!p.m}),w:[p=>({...p,a:180-p.a,m:!p.m}),p=>({...p,a:p.a+180}),p=>p,p=>({...p,v:!p.v}),p=>({...p,a:p.a+90})]},
+  flipV:{icon:1,f:p=>({...p,a:180-p.a,m:!p.m}),w:[p=>({...p,a:-p.a,m:!p.m}),p=>({...p,a:p.a+180}),p=>p,p=>({...p,v:!p.v}),p=>({...p,a:p.a+90})]},
+  invert:{geo:[...SOLIDS,'arrow'],f:p=>({...p,fill:INV[p.fill],innerFill:p.inner?INV[inFill(p)]:null}),w:[p=>({...p,fill:'grey'}),p=>p,p=>p.inner?{...p,innerFill:INV[inFill(p)]}:{...p,fill:'stripes'},p=>({...p,a:p.a+90})]},
+  countUp:{geo:[...SOLIDS,'arrow'],f:p=>({...p,count:p.count+1}),w:[p=>({...p,count:p.count+2}),p=>({...p,count:p.count-1}),p=>p,p=>({...p,fill:INV[p.fill]})]},
+  swapIn:{geo:SOLIDS,needInner:1,f:p=>({...p,shape:p.inner,inner:p.shape,fill:inFill(p),innerFill:p.fill}),
+    w:[p=>({...p,shape:p.inner,inner:p.shape}),p=>({...p,fill:inFill(p),innerFill:p.fill}),p=>p,p=>({...p,inner:null})]}
+};
+function pairFig(trs,useIcon,avoid){
+  if(useIcon)return iconFig(pickIcon(KEYS.filter(k=>k!==avoid)),{a:pick([0,90,180,270])});
+  let shapes=SOLIDS;for(const t of trs)if(TR[t].geo)shapes=shapes.filter(s=>TR[t].geo.includes(s));
+  const shape=pick(shapes.filter(s=>s!==avoid)),p=geoFig({shape,fill:pick(['white','black']),a:pick([0,90,180,270])});
+  if(trs.includes('countUp'))p.count=1+rnd(3);
+  if(trs.includes('swapIn')){p.inner=pick(['circle','square','triangle','star','heart'].filter(s=>s!==shape));p.innerFill=INV[p.fill]}
+  else if(trs.includes('invert')&&Math.random()<.5)p.inner=pick(['circle','square','star']);
+  return p;
+}
+function pairPuzzle(lvl){
+  if(Math.random()<({easy:.25,normal:.35,hard:.45}[lvl]+(XP?.1:0))){const p=matPair(lvl);if(p)return p}
+  for(let tries=0;tries<200;tries++){
+    let trs;
+    if(lvl==='easy')trs=[pick(['rot180','flip','invert','countUp'])];
+    else if(lvl==='normal')trs=[pick(['rot90','rot180','flip','flipV','invert','countUp','swapIn'])];
+    else if(XP)trs=[pick(['rot90','rot180','rot45']),...sample(['invert','countUp','swapIn'],2)];
+    else trs=Math.random()<.3?[pick(['rot90','rot45']),pick(['flip','flipV'])]:[pick(['rot90','rot180','rot45']),pick(['invert','countUp'])];
+    const iconOK=trs.every(t=>TR[t].icon),geoOK=trs.every(t=>TR[t].geo);
+    const useIcon=iconOK&&(!geoOK||Math.random()<.5);
+    const A=pairFig(trs,useIcon),C=pairFig(trs,useIcon,A.shape);
+    const apply=(p,list)=>list.reduce((q,f)=>f(q),p);
+    const fs=trs.map(t=>TR[t].f);
+    const B=apply(A,fs),correct=apply(C,fs);
+    if(!valid(B)||!valid(correct)||key(A)===key(B)||key(C)===key(correct))continue;
+    let cands=[];
+    trs.forEach((t,j)=>{if(trs.length>1)cands.push(apply(C,fs.filter((_,i)=>i!==j)));for(const w of TR[t].w)cands.push(apply(C,fs.map((f,i)=>i===j?w:f)))});
+    return {type:'pair',A,B,C,...finish(correct,shuffle(cands),nOpts(lvl))};
+  }
+}
+/* ---------- Complete the pair: shapes and patterns moving round a picture ---------- */
+const MATLAY={grid4:4,free4:4,tri3:3,seg4:4};
+const MATPOS={grid4:[[-22,-22],[22,-22],[22,22],[-22,22]],free4:[[-25,-25],[25,-25],[25,25],[-25,25]],tri3:[[0,-24],[26,20],[-26,20]]};
+const matPerms=n=>{const out=[];for(let k=0;k<n;k++){out.push({id:'r'+k,p:[...Array(n).keys()].map(j=>(j+k)%n)});out.push({id:'m'+k,p:[...Array(n).keys()].map(j=>mod(k-j,n))})}return out};
+// rule: shapes at position j go to P[j]; patterns at position j go to Q[j]; each shape turns by spin; black/white swap if inv
+function applyMat(fig,rule){
+  const n=fig.items.length,out=fig.items.map(()=>({}));
+  fig.items.forEach((it,j)=>{out[rule.P[j]].s=it.s;out[rule.P[j]].a=mod((it.a||0)+(it.s?rule.spin:0),360);out[rule.Q[j]].f=it.f});
+  if(rule.inv)out.forEach(o=>{o.f=INV[o.f]||o.f});
+  return {...fig,items:out};
+}
+const matKey=fig=>fig.lay+':'+fig.frame+':'+fig.items.map(it=>{const y=SYM[it.s]||360;return (it.s||'')+'|'+it.f+'|'+(it.s&&y!==1?mod(it.a||0,y):0)}).join(',');
+function matPair(lvl){
+  const want=nOpts(lvl);
+  for(let tries=0;tries<300;tries++){
+    let lay=lvl==='easy'?'seg4':pick(['grid4','grid4','free4','tri3','seg4']);
+    const n=MATLAY[lay],rot=k=>[...Array(n).keys()].map(j=>mod(j+k,n)),id=rot(0),dir=pick([1,-1]);
+    const segs=lay==='seg4',spinOK=!segs;
+    let rule;
+    if(lvl==='easy')rule={P:id,Q:rot(dir),spin:0,inv:false,d:'fill'+dir};
+    else if(lvl==='normal'){const r=segs?pick(['fill','fill2']):pick(['move','fill','spin']);
+      rule=r==='move'?{P:rot(dir),Q:rot(dir),spin:0,inv:false}:r==='fill'?{P:id,Q:rot(dir),spin:0,inv:false}:r==='fill2'?{P:id,Q:rot(2),spin:0,inv:false}:{P:id,Q:id,spin:pick([90,270]),inv:false};rule.d=r+dir}
+    else if(!XP){const r=segs?pick(['fillInv','fill2Inv']):pick(['moveFillBack','moveSpin','moveInv','fillOnlyBack']);
+      rule=r==='fillInv'?{P:id,Q:rot(dir),spin:0,inv:true}:r==='fill2Inv'?{P:id,Q:rot(2),spin:0,inv:true}:r==='moveFillBack'?{P:rot(dir),Q:rot(-dir),spin:0,inv:false}:r==='moveSpin'?{P:rot(dir),Q:rot(dir),spin:pick([90,270]),inv:false}:r==='moveInv'?{P:rot(dir),Q:rot(dir),spin:0,inv:true}:{P:rot(dir),Q:id,spin:0,inv:false};rule.d=r+dir}
+    else{if(segs)lay='grid4';const m=MATLAY[lay];
+      rule={P:rot(dir),Q:pick([rot(-dir),id,rot(2)]),spin:pick([90,180,270]),inv:Math.random()<.5,d:'xp'+dir}}
+    const N=MATLAY[lay],shapePool=rule.spin?['arrow','heart','triangle','pentagon','star']:['circle','square','triangle','star','pentagon','hexagon','heart','cross','diamond'];
+    if(rule.spin&&N>3&&shapePool.length<N){/* allow one repeat-free set by adding cross */}
+    const fills=['white','black','grey','stripes','dots'];
+    const mk=()=>{const sh=segs?Array(N).fill(null):sample(shapePool,N);
+      const fl=sample(fills,N);if(rule.inv&&!fl.includes('black')&&!fl.includes('white'))fl[0]='black';
+      return {kind:'mat',lay,frame:segs?pick(['xsq','diamond','circle','grid']):'',items:sh.map((s,i)=>({s,f:fl[i],a:s&&rule.spin?pick([0,90,180,270]):0}))}};
+    const A=mk(),C=mk();C.frame=A.frame;
+    const B=applyMat(A,rule),D=applyMat(C,rule);
+    if(matKey(A)===matKey(B)||matKey(C)===matKey(D))continue;
+    // make sure no other simple rule turns A into B but gives a different answer
+    const perms=matPerms(N),answers=new Set();
+    for(const P of perms)for(const Q of perms)for(const spin of spinOK?[0,90,180,270]:[0])for(const inv of [false,true]){
+      const r={P:P.p,Q:Q.p,spin,inv};if(matKey(applyMat(A,r))===matKey(B))answers.add(matKey(applyMat(C,r)))}
+    if(answers.size!==1)continue;
+    const cands=[],flip=a=>a.map(x=>x),inverse=p=>{const q=[];p.forEach((t,j)=>q[t]=j);return q};
+    cands.push(applyMat(C,{...rule,P:inverse(rule.P),Q:inverse(rule.Q)}));
+    cands.push(applyMat(C,{...rule,P:id}),applyMat(C,{...rule,Q:id}),applyMat(C,{...rule,Q:rule.P}),applyMat(C,{...rule,P:rule.Q}));
+    if(rule.spin)cands.push(applyMat(C,{...rule,spin:0}),applyMat(C,{...rule,spin:mod(-rule.spin,360)}));
+    cands.push(applyMat(C,{...rule,inv:!rule.inv}));
+    cands.push(applyMat(C,{...rule,P:rot(2),Q:rule.Q===id?id:rot(2)}));
+    {const w=JSON.parse(JSON.stringify(D));const i=rnd(N),j=(i+1)%N;[w.items[i].f,w.items[j].f]=[w.items[j].f,w.items[i].f];cands.push(w)}
+    {const w=JSON.parse(JSON.stringify(D));const i=rnd(N);if(w.items[i].s){[w.items[i].s,w.items[(i+1)%N].s]=[w.items[(i+1)%N].s,w.items[i].s]}cands.push(w)}
+    const seen=new Set([matKey(D)]),out=[];
+    for(const c of shuffle(cands)){if(out.length>=want-1)break;const k=matKey(c);if(seen.has(k))continue;seen.add(k);out.push(c)}
+    if(out.length<want-1)continue;
+    const opts=shuffle([D,...out]);
+    return {type:'pair',A,B,C,opts,ans:opts.indexOf(D),matSig:lay+':'+rule.d+':'+A.items.map(i=>i.s).join(',')};
+  }
+}
+function matSVG(p){
+  const st='stroke:var(--ink);stroke-width:2.2;stroke-linejoin:round';
+  if(p.lay==='seg4'){
+    if(p.frame==='circle'||p.frame==='grid')return quadSVG({kind:'quad',frame:p.frame==='grid'?'square':'circle',outer:p.items.map(i=>i.f),inner:null});
+    const V=p.frame==='diamond'?[[0,-44],[44,0],[0,44],[-44,0]]:[[-40,-40],[40,-40],[40,40],[-40,40]];
+    const segs=p.frame==='diamond'?[0,1,2,3].map(k=>[[0,0],V[k],V[(k+1)%4]]):[0,1,2,3].map(k=>[[0,0],V[k],V[(k+1)%4]]);
+    return `<svg viewBox="-50 -50 100 100" aria-hidden="true">${segs.map((sg,k)=>`<polygon points="${sg.map(q=>q.join(',')).join(' ')}" style="fill:${FILL[p.items[k].f]};${st}"/>`).join('')}</svg>`;
+  }
+  const pos=MATPOS[p.lay],sc=p.lay==='tri3'?.36:p.lay==='grid4'?.48:.4;
+  let g=p.lay==='grid4'?`<rect x="-44" y="-44" width="88" height="88" style="fill:var(--card);${st}"/><path d="M0 -44 V44 M-44 0 H44" style="fill:none;${st}"/>`:'';
+  g+=p.items.map((it,k)=>`<g transform="translate(${pos[k][0]} ${pos[k][1]}) rotate(${it.a||0}) scale(${sc})"><path d="${GEO[it.s]}" style="fill:${FILL[it.f]};stroke:var(--ink);stroke-width:${(2.2/sc).toFixed(2)};stroke-linejoin:round"/></g>`).join('');
+  return `<svg viewBox="-50 -50 100 100" aria-hidden="true">${g}</svg>`;
+}
+
+/* ---------- Odd one out ---------- */
+function oddPuzzle(lvl){
+  for(let tries=0;tries<200;tries++){
+    const t=XP?pick(['mirror','mirror','variant']):pick(lvl==='easy'?['mirror','fill','count']:['mirror','variant','inner','count']);
+    const step={easy:90,normal:45,hard:30}[lvl];let figs;
+    if(t==='mirror'||t==='variant'){
+      const ic=XP?pickIcon(['tree','umbrella','clock','letR','let2','let7','mug','kite','house','flag','key']):pickIcon(KEYS);figs=sample(range(step),5).map(a=>iconFig(ic,{a}));
+      figs[0]=t==='mirror'?{...figs[0],m:true}:{...figs[0],v:true};
+    }else if(t==='inner'){
+      const sh=sample(SOLIDS,5),rot=lvl==='hard';
+      figs=sh.map(s=>geoFig({shape:s,inner:s,innerFill:pick(['black','grey']),a:rot?pick([0,30,45,90]):0}));
+      figs[0].inner=pick(['square','triangle','star','heart','cross'].filter(x=>x!==sh[0]&&!(sh[0]==='diamond'&&x==='square')));
+    }else if(t==='fill'){
+      figs=sample(SOLIDS,5).map(s=>{const f=pick(['white','black']);return geoFig({shape:s,fill:f,inner:s,innerFill:INV[f]})});
+      figs[0]={...figs[0],fill:'white',innerFill:'white'};
+    }else{
+      const k=pick([2,3,4]);
+      figs=sample(SOLIDS,5).map(s=>geoFig({shape:s,count:k,fill:pick(['white','black','grey']),a:lvl==='hard'?pick([0,45,90]):0}));
+      figs[0].count=k+pick([-1,1]);
+    }
+    const keys=new Set(figs.map(key));if(keys.size<5)continue;
+    const odd=figs[0],opts=shuffle(figs);
+    return {type:'odd',opts,ans:opts.indexOf(odd)};
+  }
+}
+/* ---------- Codes ---------- */
+const POOL={shape:['circle','square','triangle','star','heart','hexagon','cross'],fill:['white','black','grey','stripes','dots'],count:[1,2,3],dir:[0,90,180,270],inner:['circle','square','triangle','star'],size:[1,.6],dot:[0,2,4,6]};
+function codesPuzzle(lvl){
+  for(let tries=0;tries<500;tries++){
+    const nA=lvl==='hard'?3:2;
+    const names=sample(Object.keys(POOL),nA);
+    if(names.includes('dir')&&(names.includes('shape')||names.includes('inner')))continue;
+    if(names.includes('size')&&names.includes('count'))continue;
+    const sizes=(XP?shuffle([2,3,3]):lvl==='normal'?shuffle([2,3]):Array(nA).fill(2)).map((z,k)=>Math.min(z,POOL[names[k]].length));
+    const vals=names.map((nm,k)=>sample(POOL[nm],sizes[k]));
+    const groups=shuffle(['XYZ','PQR','JKL','STU','GHI','DEF','MNO','ABC']);
+    const letters=names.map((_,k)=>shuffle(groups[k].split('')).slice(0,sizes[k]));
+    let combos=[[]];for(let k=0;k<nA;k++)combos=combos.flatMap(c=>[...Array(sizes[k]).keys()].map(v=>[...c,v]));
+    if(combos.length<nOpts(lvl))continue;
+    const test=pick(combos),exN=XP?5:lvl==='hard'?4:3;
+    const exs=sample(combos.filter(c=>c.join()!==test.join()),exN);
+    if(!names.every((_,k)=>exs.some(e=>e[k]===test[k])))continue;
+    const canon=k=>{const m=new Map();return exs.map(e=>{if(!m.has(e[k]))m.set(e[k],m.size);return m.get(e[k])}).join('')};
+    const parts=names.map((_,k)=>canon(k));
+    if(new Set(parts).size<nA||parts.some(p=>!/[1-9]/.test(p)))continue;
+    const base=geoFig({shape:names.includes('dir')?'arrow':pick(names.includes('inner')?['circle','square']:['circle','square','hexagon','heart']),fill:'white'});
+    const SET={shape:'shape',fill:'fill',count:'count',dir:'a',inner:'inner',size:'size',dot:'dot'};
+    const fig=c=>{const p={...base};c.forEach((v,k)=>p[SET[names[k]]]=vals[k][v]);return p};
+    let herring=null;
+    if(XP){const hn=shuffle(['fill','dot','size','count']).find(h=>!names.includes(h)&&!(h==='size'&&names.includes('count'))&&!(h==='count'&&names.includes('size')));
+      if(hn){const hv=sample(POOL[hn],2),hs=[...exs,test].map(()=>pick(hv));const hc=(()=>{const m=new Map();return hs.slice(0,-1).map(v=>{if(!m.has(v))m.set(v,m.size);return m.get(v)}).join('')})();
+        if(parts.includes(hc)||!/[1-9]/.test(hc))continue;herring={n:SET[hn],hs}}}
+    const figH=(c,i)=>{const p=fig(c);if(herring)p[herring.n]=herring.hs[i];return p};
+    if(new Set(combos.map(c=>key(fig(c)))).size<combos.length)continue;
+    const code=c=>c.map((v,k)=>letters[k][v]).join('');
+    const correct=code(test);
+    const others=sample(combos.filter(c=>c.join()!==test.join()).map(code),nOpts(lvl)-1);
+    const opts=shuffle([correct,...others]);
+    return {type:'codes',examples:exs.map((c,i)=>({fig:figH(c,i),code:code(c)})),test:figH(test,exs.length),opts,ans:opts.indexOf(correct)};
+  }
+}
+
+/* ---------- Fold & punch (4×4 hole grid, paper 0..100) ---------- */
+const CC=c=>12.5+25*c;
+const sideOf=(l,p)=>(l.b[0]-l.a[0])*(p[1]-l.a[1])-(l.b[1]-l.a[1])*(p[0]-l.a[0]);
+function clipPoly(poly,l,k){
+  const out=[];
+  for(let i=0;i<poly.length;i++){
+    const p=poly[i],q=poly[(i+1)%poly.length],sp=sideOf(l,p)*k,sq=sideOf(l,q)*k;
+    if(sp>=0)out.push(p);
+    if((sp>0&&sq<0)||(sp<0&&sq>0)){const t=sp/(sp-sq);out.push([p[0]+t*(q[0]-p[0]),p[1]+t*(q[1]-p[1])])}
+  }
+  return out;
+}
+const area=P=>Math.abs(P.reduce((s,p,i)=>{const q=P[(i+1)%P.length];return s+p[0]*q[1]-q[0]*p[1]},0))/2;
+const centroid=P=>[P.reduce((s,p)=>s+p[0],0)/P.length,P.reduce((s,p)=>s+p[1],0)/P.length];
+function reflectPt(p,l){
+  const dx=l.b[0]-l.a[0],dy=l.b[1]-l.a[1],t=((p[0]-l.a[0])*dx+(p[1]-l.a[1])*dy)/(dx*dx+dy*dy);
+  const fx=l.a[0]+t*dx,fy=l.a[1]+t*dy;return [2*fx-p[0],2*fy-p[1]];
+}
+const toCell=p=>{const r=Math.round((p[1]-12.5)/25),c=Math.round((p[0]-12.5)/25);return r>=0&&r<4&&c>=0&&c<4&&Math.abs(CC(c)-p[0])<.5&&Math.abs(CC(r)-p[1])<.5?r*4+c:null};
+const cellPt=i=>[CC(i%4),CC(Math.floor(i/4))];
+function lineFor(kind,P){
+  const xs=P.map(p=>p[0]),ys=P.map(p=>p[1]),x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys),mx=(x0+x1)/2,my=(y0+y1)/2;
+  return {V:{a:[mx,y0],b:[mx,y1]},H:{a:[x0,my],b:[x1,my]},D:{a:[x0,y0],b:[x1,y1]},A:{a:[x1,y0],b:[x0,y1]}}[kind];
+}
+const PLANS={
+  easy:[['V'],['H']],
+  normal:[['V'],['H'],['D'],['A'],['V','V'],['H','H'],['V','H'],['H','V'],['D','A'],['A','D']],
+  hard:[['V','H','D'],['V','H','A'],['H','V','D'],['V','V','H'],['H','H','V'],['D','A'],['A','D'],['V','H']]
+};
+const holeKey=h=>[...new Set([...h].filter(c=>Number.isInteger(c)&&c>=0&&c<16))].sort((a,b)=>a-b).join(',');
+function punchPuzzle(lvl){
+  if(lvl==='hard'&&Math.random()<(XP?.75:.5)){const p=punch2Puzzle(lvl);if(p)return p}
+  for(let tries=0;tries<300;tries++){
+    const plan=pick(XP?PLANS.hard.filter(p=>p.length===3):PLANS[lvl]);
+    let region=[[0,0],[100,0],[100,100],[0,100]];const folds=[];
+    for(const kind of plan){
+      const line=lineFor(kind,region),keep=pick([1,-1]);
+      const kept=clipPoly(region,line,keep),away=clipPoly(region,line,-keep);
+      if(area(kept)<1||area(away)<1)break;
+      const ck=centroid(kept),ca=centroid(away);
+      folds.push({kind,line,keep,before:region,shift:[reflectPt(ck,line)[0]-ck[0],reflectPt(ck,line)[1]-ck[1]],arrowFrom:ca});
+      region=kept;
+    }
+    if(folds.length<plan.length)continue;
+    const punchable=[...Array(16).keys()].filter(i=>folds.every(f=>sideOf(f.line,cellPt(i))*f.keep>1));
+    if(!punchable.length)continue;
+    const n=Math.min(punchable.length,XP?2:folds.length===3?1:lvl==='hard'?2+rnd(2):1+rnd(2));
+    const punched=sample(punchable,n);
+    const unfold=(mapFor)=>{let h=new Set(punched);for(let i=folds.length-1;i>=0;i--){const m=mapFor(i);if(!m)continue;for(const c of [...h]){const t=m(cellPt(c));if(t!=null)h.add(t)}}return h};
+    const refl=i=>p=>toCell(reflectPt(p,folds[i].line));
+    const correct=unfold(refl);
+    if(correct.size>=16)continue;
+    const cands=[];
+    // stopped unfolding early (some folds not opened)
+    for(let mask=0;mask<(1<<folds.length)-1;mask++)cands.push(unfold(i=>mask>>i&1?refl(i):null));
+    // flipped the wrong way at one fold
+    folds.forEach((f,j)=>{const alt={V:'H',H:'V',D:'A',A:'D'}[f.kind],al=lineFor(alt,f.before);
+      cands.push(unfold(i=>i===j?(p=>toCell(reflectPt(p,al))):refl(i)))});
+    // slid instead of flipped
+    folds.forEach((f,j)=>cands.push(unfold(i=>i===j?(p=>toCell([p[0]+f.shift[0],p[1]+f.shift[1]])):refl(i))));
+    // one hole too many / too few
+    {const free=[...Array(16).keys()].filter(x=>!correct.has(x));if(free.length){const c=new Set(correct);c.add(pick(free));cands.push(c)}}
+    if(correct.size>1){const c=new Set(correct);c.delete(pick([...correct]));cands.push(c)}
+    const want=nOpts(lvl),seen=new Set([holeKey(correct)]),out=[];
+    for(const c of shuffle(cands)){if(out.length>=want-1)break;const k=holeKey(c);if(!k||seen.has(k))continue;seen.add(k);out.push(c)}
+    let t=0;while(out.length<want-1&&t++<200){const c=new Set(correct);const x=rnd(16);c.has(x)?c.delete(x):c.add(x);const k=holeKey(c);if(k&&!seen.has(k)){seen.add(k);out.push(c)}}
+    if(out.length<want-1)continue;
+    const clean=c=>holeKey(c).split(',').map(Number);
+    const cor={holes:clean(correct)},opts=shuffle([cor,...out.map(c=>({holes:clean(c)}))]);
+    return {type:'punch',folds,final:region,punched,opts,ans:opts.indexOf(cor)};
+  }
+}
+const pts=P=>P.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ');
+/* ---------- Fold & punch, free style (any paper shape, any fold, holes anywhere) ---------- */
+const PAPERS={
+  square:[[0,0],[100,0],[100,100],[0,100]],
+  circle:[...Array(48).keys()].map(i=>{const t=i/48*2*Math.PI;return [50+50*Math.cos(t),50+50*Math.sin(t)]}),
+  triangle:[[50,6.7],[100,93.3],[0,93.3]],
+  hexagon:[...Array(6).keys()].map(i=>{const t=(i/6)*2*Math.PI;return [50+50*Math.cos(t),50+50*Math.sin(t)]})
+};
+const orient=P=>{let s=0;P.forEach((p,i)=>{const q=P[(i+1)%P.length];s+=p[0]*q[1]-q[0]*p[1]});return Math.sign(s)||1};
+function edgeDist(P,q){
+  const o=orient(P);let m=Infinity;
+  for(let i=0;i<P.length;i++){const a=P[i],b=P[(i+1)%P.length],dx=b[0]-a[0],dy=b[1]-a[1],L=Math.hypot(dx,dy);if(L<1e-9)continue;
+    m=Math.min(m,o*(dx*(q[1]-a[1])-dy*(q[0]-a[0]))/L)}
+  return m;
+}
+const insideP=(P,q,margin=0)=>edgeDist(P,q)>=margin;
+function foldLines(R){
+  const xs=R.map(p=>p[0]),ys=R.map(p=>p[1]),x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys),cx=(x0+x1)/2,cy=(y0+y1)/2,w=x1-x0,h=y1-y0;
+  const L=(a,b,kind)=>({a,b,kind});
+  const out=[L([cx,y0-5],[cx,y1+5],'V'),L([x0-5,cy],[x1+5,cy],'H'),L([cx-60,cy-60],[cx+60,cy+60],'D'),L([cx+60,cy-60],[cx-60,cy+60],'A'),
+    L([x0+w*.3,y0-5],[x0+w*.3,y1+5],'v'),L([x1-w*.3,y0-5],[x1-w*.3,y1+5],'v'),L([x0-5,y0+h*.3],[x1+5,y0+h*.3],'h'),L([x0-5,y1-h*.3],[x1+5,y1-h*.3],'h')];
+  if(R.length<=8)for(let i=0;i<R.length;i++)for(let j=i+1;j<R.length;j++){
+    const e1=[R[i],R[(i+1)%R.length]],e2=[R[j],R[(j+1)%R.length]],m1=[(e1[0][0]+e1[1][0])/2,(e1[0][1]+e1[1][1])/2],m2=[(e2[0][0]+e2[1][0])/2,(e2[0][1]+e2[1][1])/2];
+    if(Math.hypot(m1[0]-m2[0],m1[1]-m2[1])>15)out.push(L(m1,m2,'m'))}
+  return out;
+}
+function tryFold(R,line,keep){
+  const kept=clipPoly(R,line,keep),away=clipPoly(R,line,-keep);
+  if(kept.length<3||away.length<3)return null;
+  const A=area(R);if(area(away)<A*.12||area(kept)<A*.25)return null;
+  if(!away.every(p=>insideP(kept,reflectPt(p,line),-.6)))return null;
+  const ck=centroid(kept),rk=reflectPt(ck,line);
+  return {kind:line.kind,line,keep,before:R,after:kept,away,shift:[rk[0]-ck[0],rk[1]-ck[1]],arrowFrom:centroid(away)};
+}
+const HR=5.2;
+const mkHole=(c,tri,ang)=>({c,tri:tri?[0,1,2].map(k=>{const t=ang+k*2*Math.PI/3,r=k?5.2:7.6;return [c[0]+r*Math.cos(t),c[1]+r*Math.sin(t)]}):null});
+const reflHole=(h,l)=>({c:reflectPt(h.c,l),tri:h.tri&&h.tri.map(p=>reflectPt(p,l))});
+const moveHole=(h,d)=>({c:[h.c[0]+d[0],h.c[1]+d[1]],tri:h.tri&&h.tri.map(p=>[p[0]+d[0],p[1]+d[1]])});
+const apex=h=>{const v=[h.tri[0][0]-h.c[0],h.tri[0][1]-h.c[1]],L=Math.hypot(...v);return [v[0]/L,v[1]/L]};
+function holesSimilar(A,B){
+  if(A.length!==B.length)return false;const used=new Set();
+  for(const a of A){let hit=-1;
+    for(let i=0;i<B.length;i++){if(used.has(i))continue;const b=B[i];if(Math.hypot(a.c[0]-b.c[0],a.c[1]-b.c[1])>5)continue;
+      if(!!a.tri!==!!b.tri)continue;if(a.tri){const p=apex(a),q=apex(b);if(p[0]*q[0]+p[1]*q[1]<.9)continue}hit=i;break}
+    if(hit<0)return false;used.add(hit)}
+  return true;
+}
+function punch2Puzzle(lvl){
+  const papers=XP?['square','circle','triangle','hexagon']:['square','circle','triangle'];
+  for(let tries=0;tries<400;tries++){
+    const pname=pick(papers),paper=PAPERS[pname],nf=XP?pick([2,3,3]):2,folds=[];let R=paper,layers=[];
+    for(let k=0;k<nf;k++){
+      const opts=[];for(const l of foldLines(R))for(const keep of [1,-1]){const f=tryFold(R,l,keep);if(f)opts.push(f)}
+      if(!opts.length)break;
+      const corner=opts.filter(f=>f.kind==='m'),strip=opts.filter(f=>'vh'.includes(f.kind)),whole=opts.filter(f=>'VHDA'.includes(f.kind));
+      const r=Math.random(),bucket=(r<.4&&corner.length)?corner:(r<.6&&strip.length)?strip:whole.length?whole:corner.length?corner:strip;
+      const f=pick(bucket);f.layers=layers;folds.push(f);R=f.after;
+      const nl=[];for(const L of layers){const kL=clipPoly(L,f.line,f.keep),aL=clipPoly(L,f.line,-f.keep);if(kL.length>=3&&area(kL)>1)nl.push(kL);if(aL.length>=3&&area(aL)>1)nl.push(aL.map(p=>reflectPt(p,f.line)))}
+      nl.push(f.away.map(p=>reflectPt(p,f.line)));layers=nl;
+    }
+    if(folds.length<nf)continue;
+    const tri=Math.random()<(XP?.45:.25),nh=XP?2+rnd(2):2,punched=[];
+    for(let t=0;t<200&&punched.length<nh;t++){
+      const xs=R.map(p=>p[0]),ys=R.map(p=>p[1]);
+      const q=[Math.min(...xs)+Math.random()*(Math.max(...xs)-Math.min(...xs)),Math.min(...ys)+Math.random()*(Math.max(...ys)-Math.min(...ys))];
+      if(!insideP(R,q,HR+4))continue;
+      if(folds.some(f=>Math.abs(sideOf(f.line,q))/Math.hypot(f.line.b[0]-f.line.a[0],f.line.b[1]-f.line.a[1])<HR+3))continue;
+      if(punched.some(h=>Math.hypot(h.c[0]-q[0],h.c[1]-q[1])<HR*3.2))continue;
+      punched.push(mkHole(q,tri,Math.random()*2*Math.PI));
+    }
+    if(punched.length<nh)continue;
+    // unfold: at fold k, a hole gets a copy wherever the flap was lying on top of it
+    const unfold=(mapFor)=>{let H=punched.map(h=>({...h}));
+      for(let k=folds.length-1;k>=0;k--){const f=folds[k],m=mapFor(k);if(!m)continue;
+        const add=[];for(const h of H){const r=reflectPt(h.c,f.line);if(insideP(f.away,r,-.5)){const n=m(h,f);if(n)add.push(n)}}H=H.concat(add)}
+      return H};
+    const real=(h,f)=>reflHole(h,f.line);
+    const correct=unfold(()=>real);
+    if(correct.some(h=>!insideP(paper,h.c,HR+2)))continue;
+    let clash=false;for(let i=0;i<correct.length&&!clash;i++)for(let j=i+1;j<correct.length;j++)if(Math.hypot(correct[i].c[0]-correct[j].c[0],correct[i].c[1]-correct[j].c[1])<HR*2.6){clash=true;break}
+    if(clash||correct.length<3)continue;
+    const cands=[];
+    for(let mask=1;mask<(1<<folds.length)-1;mask++)cands.push(unfold(k=>mask>>k&1?real:null));
+    cands.push(punched.map(h=>({...h})));
+    folds.forEach((f,j)=>{const c=centroid(f.before),d=[f.line.b[0]-f.line.a[0],f.line.b[1]-f.line.a[1]],perp={a:c,b:[c[0]-d[1],c[1]+d[0]]};
+      cands.push(unfold(k=>k===j?(h=>reflHole(h,perp)):real));
+      cands.push(unfold(k=>k===j?((h,ff)=>moveHole(h,ff.shift)):real))});
+    if(tri)cands.push(unfold(()=>(h,f)=>{const r=reflectPt(h.c,f.line);return moveHole(h,[r[0]-h.c[0],r[1]-h.c[1]])}));
+    cands.push(correct.map(h=>reflHole(h,{a:[50,0],b:[50,100]})));
+    if(correct.length>3)cands.push(correct.filter((_,i)=>i!==rnd(correct.length)));
+    const want=nOpts(lvl),out=[];
+    for(const c of shuffle(cands)){if(out.length>=want-1)break;
+      if(!c.length||c.some(h=>!insideP(paper,h.c,HR)))continue;
+      if(c.some((h,i)=>c.some((g,j)=>j>i&&Math.hypot(h.c[0]-g.c[0],h.c[1]-g.c[1])<HR*2.4)))continue;
+      if(holesSimilar(c,correct)||out.some(o=>holesSimilar(o,c)))continue;out.push(c)}
+    for(let t=0;t<60&&out.length<want-1;t++){const c=correct.map(h=>({...h}));const i=rnd(c.length);
+      const d=[(Math.random()-.5)*40,(Math.random()-.5)*40];c[i]=moveHole(c[i],d);
+      if(!insideP(paper,c[i].c,HR+2)||c.some((h,j)=>j!==i&&Math.hypot(h.c[0]-c[i].c[0],h.c[1]-c[i].c[1])<HR*2.6))continue;
+      if(holesSimilar(c,correct)||out.some(o=>holesSimilar(o,c)))continue;out.push(c)}
+    if(out.length<want-1)continue;
+    const cor={holes2:correct,paper},opts=shuffle([cor,...out.map(h=>({holes2:h,paper}))]);
+    return {type:'punch2',paper,pname,folds,final:R,layers,punched,opts,ans:opts.indexOf(cor)};
+  }
+}
+const holeMark=h=>h.tri?`<polygon points="${pts(h.tri)}" style="fill:var(--ink)"/>`:`<circle cx="${h.c[0].toFixed(1)}" cy="${h.c[1].toFixed(1)}" r="${HR}" style="fill:var(--ink)"/>`;
+const flaps=L=>(L||[]).map(P=>`<polygon points="${pts(P)}" style="fill:var(--flap);stroke:var(--ink);stroke-width:1.5;stroke-linejoin:round"/>`).join('');
+function fold2Panel(f,paper){
+  const [x,y]=f.arrowFrom,[rx,ry]=reflectPt(f.arrowFrom,f.line);
+  const dx=f.line.b[0]-f.line.a[0],dy=f.line.b[1]-f.line.a[1],len=Math.hypot(dx,dy),mx=(x+rx)/2+dx/len*14,my=(y+ry)/2+dy/len*14;
+  const seg=clipPoly(f.before,{a:f.line.a,b:f.line.b},1).filter(p=>Math.abs(sideOf(f.line,p))/len<.6);
+  const ln=seg.length>=2?`<line x1="${seg[0][0].toFixed(1)}" y1="${seg[0][1].toFixed(1)}" x2="${seg[seg.length-1][0].toFixed(1)}" y2="${seg[seg.length-1][1].toFixed(1)}" style="stroke:var(--accent);stroke-width:2;stroke-dasharray:6 4"/>`:'';
+  return `<svg viewBox="-6 -6 112 112" aria-hidden="true"><polygon points="${pts(paper)}" style="fill:none;stroke:var(--muted);stroke-width:1.6;stroke-dasharray:5 4"/>
+    <polygon points="${pts(f.before)}" style="fill:var(--accent-soft);stroke:var(--ink);stroke-width:2.4;stroke-linejoin:round"/>${flaps(f.layers)}${ln}
+    <path d="M${x.toFixed(1)} ${y.toFixed(1)} Q${mx.toFixed(1)} ${my.toFixed(1)} ${rx.toFixed(1)} ${ry.toFixed(1)}" marker-end="url(#mA)" style="fill:none;stroke:var(--ink);stroke-width:3;stroke-linecap:round"/></svg>`;
+}
+function punch2Panel(p){
+  return `<svg viewBox="-6 -6 112 112" aria-hidden="true"><polygon points="${pts(p.paper)}" style="fill:none;stroke:var(--muted);stroke-width:1.6;stroke-dasharray:5 4"/>
+    <polygon points="${pts(p.final)}" style="fill:var(--accent-soft);stroke:var(--ink);stroke-width:2.4;stroke-linejoin:round"/>${flaps(p.layers)}${p.punched.map(holeMark).join('')}</svg>`;
+}
+const holes2SVG=o=>`<svg viewBox="-6 -6 112 112" aria-hidden="true"><polygon points="${pts(o.paper)}" style="fill:var(--card);stroke:var(--ink);stroke-width:2.4;stroke-linejoin:round"/>${o.holes2.map(holeMark).join('')}</svg>`;
+
+function foldPanel(f){
+  const [x,y]=f.arrowFrom,[rx,ry]=reflectPt(f.arrowFrom,f.line);
+  const dx=f.line.b[0]-f.line.a[0],dy=f.line.b[1]-f.line.a[1],len=Math.hypot(dx,dy);
+  const mx=(x+rx)/2+dx/len*16,my=(y+ry)/2+dy/len*16;
+  return `<svg viewBox="-6 -6 112 112" aria-hidden="true"><rect width="100" height="100" style="fill:none;stroke:var(--muted);stroke-width:1.6;stroke-dasharray:5 4"/>
+    <polygon points="${pts(f.before)}" style="fill:var(--accent-soft);stroke:var(--ink);stroke-width:2.4;stroke-linejoin:round"/>
+    <line x1="${f.line.a[0]}" y1="${f.line.a[1]}" x2="${f.line.b[0]}" y2="${f.line.b[1]}" style="stroke:var(--accent);stroke-width:2;stroke-dasharray:6 4"/>
+    <path d="M${x.toFixed(1)} ${y.toFixed(1)} Q${mx.toFixed(1)} ${my.toFixed(1)} ${rx.toFixed(1)} ${ry.toFixed(1)}" marker-end="url(#mA)" style="fill:none;stroke:var(--ink);stroke-width:3;stroke-linecap:round"/></svg>`;
+}
+function punchPanel(p){
+  return `<svg viewBox="-6 -6 112 112" aria-hidden="true"><rect width="100" height="100" style="fill:none;stroke:var(--muted);stroke-width:1.6;stroke-dasharray:5 4"/>
+    <polygon points="${pts(p.final)}" style="fill:var(--accent-soft);stroke:var(--ink);stroke-width:2.4;stroke-linejoin:round"/>
+    ${p.punched.map(i=>{const[cx,cy]=cellPt(i);return `<circle cx="${cx}" cy="${cy}" r="7" style="fill:var(--ink)"/>`}).join('')}</svg>`;
+}
+function holesSVG(h){
+  const s=new Set(h);
+  return `<svg viewBox="-6 -6 112 112" aria-hidden="true"><rect width="100" height="100" style="fill:var(--card);stroke:var(--ink);stroke-width:2.4"/>
+    ${[...Array(16).keys()].map(i=>{const[cx,cy]=cellPt(i);return s.has(i)?`<circle cx="${cx}" cy="${cy}" r="7.5" style="fill:var(--ink)"/>`:`<circle cx="${cx}" cy="${cy}" r="6.5" style="fill:none;stroke:var(--grey);stroke-width:1.6"/>`}).join('')}</svg>`;
+}
+
+/* ---------- Cube nets ---------- */
+const NETS=["00 10 20 11 12 13","00 10 20 21 31 41","00 10 11 21 31 12","00 10 11 21 31 22","00 10 11 21 31 32","00 10 11 21 12 13","00 10 11 21 22 32","00 10 11 12 22 13","00 10 11 12 22 23","00 10 11 12 13 23","00 01 11 21 31 02","00 01 11 21 31 12","00 01 11 21 31 22","00 01 11 21 31 32","00 01 11 21 12 13","00 01 11 21 22 32","00 01 11 12 22 13","00 01 11 12 22 23","00 01 11 12 13 23","00 01 02 12 13 14","10 20 01 11 12 13","10 20 11 02 12 03","10 20 11 02 12 13","10 20 11 12 03 13","10 01 11 21 31 02","10 01 11 21 31 12","10 01 11 21 31 22","10 01 11 21 31 32","10 01 11 21 12 13","10 01 11 21 22 32","10 01 11 12 22 13","10 01 11 12 22 23","10 01 11 12 13 23","10 11 21 31 02 12","10 11 21 02 12 03","10 11 21 02 12 13","10 11 21 12 03 13","10 11 02 12 22 03","10 11 02 12 22 13","10 11 02 12 22 23","10 11 02 12 03 04","10 11 02 12 13 23","10 11 12 22 03 13","10 11 12 03 13 23","20 30 40 01 11 21","20 30 01 11 21 02","20 30 01 11 21 12","20 30 01 11 21 22","20 30 11 21 02 12","20 01 11 21 31 02","20 01 11 21 31 12","20 01 11 21 31 22","20 01 11 21 31 32","20 01 11 21 12 13","20 01 11 21 22 32","20 11 21 31 02 12","20 11 21 02 12 03","20 11 21 02 12 13","20 11 21 12 03 13","30 01 11 21 31 02","30 01 11 21 31 12","30 01 11 21 31 22","30 01 11 21 31 32","30 11 21 31 02 12"].map(s=>s.split(' ').map(t=>[+t[0],+t[1]]));
+const LONGNETS=NETS.filter(sh=>[0,1,2,3,4].some(k=>sh.filter(c=>c[0]===k).length===4||sh.filter(c=>c[1]===k).length===4));
+const dot3=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+const cross3=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+const neg3=a=>a.map(v=>-v||0);
+const eq3=(a,b)=>a[0]===b[0]&&a[1]===b[1]&&a[2]===b[2];
+const clean=a=>a.map(v=>Math.round(v)||0);
+const AXES=[[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]];
+const CROTS=(()=>{const out=[];for(const p of [[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]])for(let s=0;s<8;s++){
+  const M=[0,1,2].map(i=>{const r=[0,0,0];r[p[i]]=(s>>i&1)?-1:1;return r});
+  const det=M[0][0]*(M[1][1]*M[2][2]-M[1][2]*M[2][1])-M[0][1]*(M[1][0]*M[2][2]-M[1][2]*M[2][0])+M[0][2]*(M[1][0]*M[2][1]-M[1][1]*M[2][0]);
+  if(det===1)out.push(M)}return out})();
+const app=(M,v)=>clean(M.map(r=>dot3(r,v)));
+const GLYPH={
+  F:{t:'F'},G:{t:'G'},P:{t:'P'},R:{t:'R'},E:{t:'E'},'2':{t:'2'},'3':{t:'3'},'4':{t:'4'},'5':{t:'5'},
+  heart:{d:'<path d="M50 80 C8 52 22 14 50 34 C78 14 92 52 50 80 Z" style="fill:var(--ink)"/>'},
+  arrow:{d:'<path d="M50 12 L78 44 H61 V88 H39 V44 H22 Z" style="fill:var(--ink)"/>'},
+  moon:{d:'<path d="M60 14 A36 36 0 1 0 60 86 A44 44 0 0 1 60 14 Z" style="fill:var(--ink)"/>'},
+  target:{s:1,d:'<circle cx="50" cy="50" r="30" style="fill:none;stroke:var(--ink);stroke-width:7"/><circle cx="50" cy="50" r="11" style="fill:var(--ink)"/>'},
+  plus:{s:90,d:'<path d="M41 16 H59 V41 H84 V59 H59 V84 H41 V59 H16 V41 H41 Z" style="fill:var(--ink)"/>'},
+  xmark:{s:90,d:'<path d="M41 16 H59 V41 H84 V59 H59 V84 H41 V59 H16 V41 H41 Z" transform="rotate(45 50 50)" style="fill:var(--ink)"/>'},
+  box:{s:90,d:'<rect x="21" y="21" width="58" height="58" style="fill:none;stroke:var(--ink);stroke-width:7"/><rect x="40" y="40" width="20" height="20" style="fill:var(--ink)"/>'},
+  dots:{s:90,d:'<circle cx="31" cy="31" r="10" style="fill:var(--ink)"/><circle cx="69" cy="31" r="10" style="fill:var(--ink)"/><circle cx="31" cy="69" r="10" style="fill:var(--ink)"/><circle cx="69" cy="69" r="10" style="fill:var(--ink)"/>'},
+  half:{d:'<rect x="18" y="18" width="64" height="64" style="fill:none;stroke:var(--ink);stroke-width:6"/><rect x="18" y="18" width="32" height="64" style="fill:var(--ink)"/>'},
+  corner:{d:'<rect x="18" y="18" width="64" height="64" style="fill:none;stroke:var(--ink);stroke-width:6"/><path d="M18 18 H82 L18 82 Z" style="fill:var(--ink)"/>'},
+  diamond:{s:90,d:'<path d="M50 14 L86 50 L50 86 L14 50 Z" style="fill:var(--grey);stroke:var(--ink);stroke-width:5"/>'}
+};
+const symOf=g=>GLYPH[g].s||360;
+const glyphSVG=g=>GLYPH[g].t?`<text x="50" y="53" text-anchor="middle" dominant-baseline="middle" font-family="Baloo 2, Arial, sans-serif" font-weight="800" font-size="74" style="fill:var(--ink)">${GLYPH[g].t}</text>`:GLYPH[g].d;
+const LETTERS=['F','G','P','R','E','2','3','4','5'],TURNERS=['heart','arrow','moon','half','corner'],ROUNDS=['target','plus','xmark','box','dots','diamond'];
+const perpTo=n=>AXES.filter(a=>dot3(a,n)===0);
+const faceAt=(c,n)=>c.find(f=>eq3(f.n,n));
+const rotCube=(c,M)=>c.map(f=>({...f,n:app(M,f.n),up:app(M,f.up)}));
+const sameFace=(a,b)=>a.g===b.g&&(symOf(a.g)!==360||eq3(a.up,b.up));
+const VIS=[[0,1,0],[0,0,1],[1,0,0]];
+const viewOf=c=>VIS.map(n=>faceAt(c,n));
+const showsView=(c,v)=>CROTS.some(M=>{const r=rotCube(c,M);return VIS.every((n,i)=>sameFace(faceAt(r,n),v[i]))});
+const faceKey=f=>f.g+(symOf(f.g)===360?f.up.join(''):'');
+const cubeKey=c=>CROTS.map(M=>{const r=rotCube(c,M);return AXES.map(n=>faceKey(faceAt(r,n))).join('|')}).sort()[0];
+const viewKey=v=>v.map(faceKey).join('|');
+function foldFrames(sh){
+  const idx=new Map(sh.map((c,i)=>[c.join(),i])),fr=[];fr[0]={n:[0,0,1],r:[1,0,0],d:[0,-1,0]};const q=[0];
+  const moves=[[1,0,f=>({n:f.r,r:neg3(f.n),d:f.d})],[-1,0,f=>({n:neg3(f.r),r:f.n,d:f.d})],[0,1,f=>({n:f.d,r:f.r,d:neg3(f.n)})],[0,-1,f=>({n:neg3(f.d),r:f.r,d:f.n})]];
+  while(q.length){const i=q.shift(),[x,y]=sh[i];for(const[dx,dy,g]of moves){const j=idx.get([x+dx,y+dy].join());if(j!=null&&!fr[j]){fr[j]=g(fr[i]);q.push(j)}}}
+  return fr;
+}
+function unfold(c,sh){
+  const fr=foldFrames(sh);
+  return {net:true,cells:sh.map((cell,i)=>{const f=faceAt(c,fr[i].n),ux=dot3(f.up,fr[i].r),uy=dot3(f.up,fr[i].d);
+    return {x:cell[0],y:cell[1],g:f.g,rot:mod(Math.round(Math.atan2(ux,-uy)*180/Math.PI),360)}})};
+}
+function netToCube(net){
+  const fr=foldFrames(net.cells.map(c=>[c.x,c.y]));
+  return net.cells.map((c,i)=>{const t=c.rot*Math.PI/180,ux=Math.sin(t),uy=-Math.cos(t);
+    return {n:fr[i].n,g:c.g,up:clean([0,1,2].map(k=>ux*fr[i].r[k]+uy*fr[i].d[k]))}});
+}
+function randomCube(glyphs){return AXES.map((n,i)=>({n,g:glyphs[i],up:pick(perpTo(n))}))}
+const turnUp=(from,to,up)=>{if(eq3(from,neg3(to)))return up;const a=cross3(from,to);return clean(cross3(a,up).map((v,k)=>v+a[k]*dot3(a,up)))};
+function perturbCube(c,ops){
+  const d=c.map(f=>({...f})),op=pick(ops);
+  const vis=VIS.map(n=>faceAt(d,n)),hid=d.filter(f=>!vis.includes(f));
+  const swap=(A,B)=>{const ga=A.g,ua=A.up;A.g=B.g;A.up=turnUp(B.n,A.n,B.up);B.g=ga;B.up=turnUp(A.n,B.n,ua)};
+  if(op==='hidden')swap(pick(vis),pick(hid));
+  else if(op==='swap'){const[A,B]=sample(vis,2);swap(A,B)}
+  else{const A=pick(vis);for(let k=1+rnd(3);k>0;k--)A.up=clean(cross3(A.n,A.up))}
+  return d;
+}
+function glyphSet(lvl){
+  if(lvl==='easy')return shuffle(ROUNDS);
+  if(lvl==='normal')return shuffle([...sample(LETTERS,3),...sample(TURNERS,2),pick(ROUNDS)]);
+  if(XP)return shuffle([...sample(LETTERS,3),...sample(TURNERS,3)]);
+  return shuffle([...sample(LETTERS,5),pick(TURNERS)]);
+}
+function cubePuzzle(lvl){
+  const dir=lvl==='easy'?'toNet':pick(['toNet','toCube']);
+  const shapes=lvl==='easy'?LONGNETS:NETS,want=nOpts(lvl);
+  const ops=lvl==='easy'?['hidden','hidden','swap']:lvl==='normal'?['hidden','swap','turn']:XP?['turn','turn','swap']:['swap','turn','turn','hidden'];
+  for(let tries=0;tries<100;tries++){
+    const c=randomCube(glyphSet(lvl));
+    if(dir==='toNet'){
+      const view=viewOf(c),seen=new Set([cubeKey(c)]),wrong=[];
+      for(let t=0;t<300&&wrong.length<want-1;t++){
+        const d=perturbCube(lvl==='hard'&&Math.random()<.4?perturbCube(c,ops):c,ops);
+        if(showsView(d,view))continue;const k=cubeKey(d);if(seen.has(k))continue;seen.add(k);wrong.push(d);
+      }
+      if(wrong.length<want-1)continue;
+      const cor=unfold(rotCube(c,pick(CROTS)),pick(shapes));
+      const opts=shuffle([cor,...wrong.map(d=>unfold(rotCube(d,pick(CROTS)),pick(shapes)))]);
+      return {type:'cube',dir,view,opts,ans:opts.indexOf(cor)};
+    }else{
+      const net=unfold(c,pick(shapes)),cor={view:viewOf(rotCube(c,pick(CROTS)))};
+      const seen=new Set([viewKey(cor.view)]),wrong=[];
+      for(let t=0;t<300&&wrong.length<want-1;t++){
+        const v=viewOf(perturbCube(rotCube(c,pick(CROTS)),ops));
+        if(showsView(c,v))continue;const k=viewKey(v);if(seen.has(k))continue;seen.add(k);wrong.push({view:v});
+      }
+      if(wrong.length<want-1)continue;
+      const opts=shuffle([cor,...wrong]);
+      return {type:'cube',dir,net,cube:c,opts,ans:opts.indexOf(cor)};
+    }
+  }
+}
+const FACEFR={top:{n:[0,1,0],R:[1,0,0],U:[0,0,-1]},front:{n:[0,0,1],R:[1,0,0],U:[0,1,0]},right:{n:[1,0,0],R:[0,0,-1],U:[0,1,0]}};
+function cubeSVG(view){
+  const S=64,D=30,ox=5,oy=D+5,k=v=>(v/100).toFixed(3);
+  const M={top:[S,0,-D,D,ox+D,oy-D],front:[S,0,0,S,ox,oy],right:[D,-D,0,S,ox+S,oy]};
+  return `<svg viewBox="0 0 ${S+D+10} ${S+D+10}" aria-hidden="true">${['top','front','right'].map((name,i)=>{
+    const f=view[i],F=FACEFR[name],th=Math.round(Math.atan2(dot3(f.up,F.R),dot3(f.up,F.U))*180/Math.PI),m=M[name];
+    const shade=name==='top'?'var(--accent-soft)':name==='right'?'var(--paper)':'var(--card)';
+    return `<g transform="matrix(${k(m[0])},${k(m[1])},${k(m[2])},${k(m[3])},${m[4]},${m[5]})"><rect width="100" height="100" vector-effect="non-scaling-stroke" style="fill:${shade};stroke:var(--ink);stroke-width:2.2;stroke-linejoin:round"/><g transform="translate(14 14) scale(.72) rotate(${th} 50 50)">${glyphSVG(f.g)}</g></g>`}).join('')}</svg>`;
+}
+function netSVG(net){
+  const w=Math.max(...net.cells.map(c=>c.x))+1,h=Math.max(...net.cells.map(c=>c.y))+1;
+  return `<svg viewBox="-5 -5 ${w*100+10} ${h*100+10}" aria-hidden="true">${net.cells.map(c=>`<g transform="translate(${c.x*100} ${c.y*100})"><rect width="100" height="100" style="fill:var(--card);stroke:var(--ink);stroke-width:5"/><g transform="translate(13 13) scale(.74) rotate(${c.rot} 50 50)">${glyphSVG(c.g)}</g></g>`).join('')}</svg>`;
+}
+
+/* ---------- Top view of block stacks ---------- */
+const N4=[[1,0],[-1,0],[0,1],[0,-1]];
+const normCells=cs=>{const mx=Math.min(...cs.map(c=>c[0])),my=Math.min(...cs.map(c=>c[1]));return cs.map(c=>[c[0]-mx,c[1]-my]).sort((a,b)=>a[1]-b[1]||a[0]-b[0])};
+const cellsKey=cs=>normCells(cs).map(c=>c.join(',')).join(' ');
+const rot90=cs=>cs.map(([x,y])=>[-y,x]);
+const flipX=cs=>cs.map(([x,y])=>[-x,y]);
+const turns=cs=>{const o=[cs];for(let i=0;i<3;i++)o.push(rot90(o[i]));return o};
+const canonTurn=cs=>turns(cs).map(cellsKey).sort()[0];
+const canonAll=cs=>[...turns(cs),...turns(flipX(cs))].map(cellsKey).sort()[0];
+const hasCell=(cs,p)=>cs.some(c=>c[0]===p[0]&&c[1]===p[1]);
+function connected(cs){if(!cs.length)return false;const seen=new Set([cs[0].join()]),st=[cs[0]];
+  while(st.length){const[x,y]=st.pop();for(const[dx,dy]of N4){const n=[x+dx,y+dy];if(hasCell(cs,n)&&!seen.has(n.join())){seen.add(n.join());st.push(n)}}}return seen.size===cs.length}
+function growPoly(k,maxD){
+  for(;;){const cs=[[0,0]];let t=0;
+    while(cs.length<k&&t++<200){const[x,y]=pick(cs),[dx,dy]=pick(N4),n=[x+dx,y+dy];if(hasCell(cs,n))continue;
+      const all=[...cs,n],w=Math.max(...all.map(c=>c[0]))-Math.min(...all.map(c=>c[0]))+1,h=Math.max(...all.map(c=>c[1]))-Math.min(...all.map(c=>c[1]))+1;
+      if(w<=maxD&&h<=maxD)cs.push(n)}
+    if(cs.length===k)return normCells(cs)}
+}
+function topVisible(cols){
+  const cubes=cols.flatMap(c=>[...Array(c.h).keys()].map(z=>[c.x,c.y,z]));
+  const seen=(q)=>!cubes.some(([cx,cy,cz])=>{let lo=.001,hi=Infinity;for(const[c,v]of[[cx,q[0]],[cy,q[1]],[cz,q[2]]]){lo=Math.max(lo,c-v);hi=Math.min(hi,c+1-v)}return hi-lo>.02});
+  return cols.every(c=>[[.5,.5],[.25,.25],[.75,.25],[.25,.75],[.75,.75]].filter(([a,b])=>seen([c.x+a,c.y+b,c.h])).length>=4);
+}
+function topPuzzle(lvl){
+  const k=XP?pick([6,7]):lvl==='easy'?4:lvl==='normal'?5:pick([5,6]),maxH=lvl==='hard'?3:2,want=nOpts(lvl);
+  for(let tries=0;tries<300;tries++){
+    const foot=growPoly(k,lvl==='easy'?3:4);
+    const cols=foot.map(([x,y])=>({x,y,h:1+rnd(maxH)}));
+    if(!cols.some(c=>c.h>1)||!topVisible(cols))continue;
+    if(XP&&canonTurn(foot)===canonTurn(flipX(foot)))continue;
+    const cA=canonAll(foot),opts=[],seen=new Set([cA]);
+    const chiral=canonTurn(foot)!==canonTurn(flipX(foot));
+    if(lvl==='hard'&&chiral)opts.push(flipX(foot));
+    for(let t=0;t<400&&opts.length<want-1;t++){
+      let d=foot.map(c=>[...c]);const op=XP?'move':pick(['move','move','add','remove']);
+      const free=()=>{const f=[];for(const[x,y]of d)for(const[dx,dy]of N4){const n=[x+dx,y+dy];if(!hasCell(d,n))f.push(n)}return f};
+      if(op!=='add'){d.splice(rnd(d.length),1)}
+      if(op!=='remove'){d.push(pick(free()))}
+      if(d.length<3||!connected(d))continue;
+      const ck=canonAll(d);if(seen.has(ck))continue;seen.add(ck);opts.push(normCells(d));
+    }
+    if(opts.length<want-1)continue;
+    const cor={plan:foot};
+    const all=shuffle([cor,...opts.map(p=>({plan:p}))]).map(o=>({plan:normCells(pick(turns(o.plan))),ok:o===cor}));
+    const dim=Math.max(...all.flatMap(o=>o.plan.map(c=>Math.max(c[0],c[1])+1)));
+    all.forEach(o=>o.dim=dim);
+    return {type:'top',cols,opts:all,ans:all.findIndex(o=>o.ok)};
+  }
+}
+function isoSVG(cols){
+  const U=20,P=(x,y,z)=>[((x-y)*0.866*U),((x+y)*0.5*U-z*U)];
+  const pt=a=>a.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ');
+  const xs=cols.map(c=>c.x),ys=cols.map(c=>c.y),X0=Math.min(...xs),X1=Math.max(...xs)+1,Y0=Math.min(...ys),Y1=Math.max(...ys)+1;
+  let floor='';for(let x=X0;x<X1;x++)for(let y=Y0;y<Y1;y++)floor+=`<polygon points="${pt([P(x,y,0),P(x+1,y,0),P(x+1,y+1,0),P(x,y+1,0)])}" style="fill:none;stroke:var(--rule);stroke-width:1"/>`;
+  const cubes=cols.flatMap(c=>[...Array(c.h).keys()].map(z=>[c.x,c.y,z])).sort((a,b)=>(a[0]+a[1]+a[2])-(b[0]+b[1]+b[2])||a[2]-b[2]);
+  const st='stroke:var(--ink);stroke-width:1.3;stroke-linejoin:round';
+  const dk=(x,y,z)=>cols.some(c=>c.x===x&&c.y===y&&c.dark&&c.dark.includes(z));
+  const body=cubes.map(([x,y,z])=>{const d=dk(x,y,z),s=d?'stroke:var(--card);stroke-width:1.3;stroke-linejoin:round':st;return `<polygon points="${pt([P(x,y+1,z),P(x+1,y+1,z),P(x+1,y+1,z+1),P(x,y+1,z+1)])}" style="fill:${d?'var(--d2)':'var(--accent-soft)'};${s}"/>`+
+    `<polygon points="${pt([P(x+1,y,z),P(x+1,y+1,z),P(x+1,y+1,z+1),P(x+1,y,z+1)])}" style="fill:${d?'var(--d3)':'var(--grey)'};${s}"/>`+
+    `<polygon points="${pt([P(x,y,z+1),P(x+1,y,z+1),P(x+1,y+1,z+1),P(x,y+1,z+1)])}" style="fill:${d?'var(--d1)':'var(--card)'};${s}"/>`}).join('');
+  const all=[];for(const c of cols)for(const[a,b]of[[0,0],[1,0],[0,1],[1,1]])all.push(P(c.x+a,c.y+b,0),P(c.x+a,c.y+b,c.h));
+  for(const[a,b]of[[X0,Y0],[X1,Y0],[X0,Y1],[X1,Y1]])all.push(P(a,b,0));
+  const minX=Math.min(...all.map(p=>p[0]))-3,maxX=Math.max(...all.map(p=>p[0]))+3,minY=Math.min(...all.map(p=>p[1]))-3,maxY=Math.max(...all.map(p=>p[1]))+3;
+  const w=maxX-minX,h=maxY-minY,s=Math.max(w,h);
+  return `<svg viewBox="${(minX-(s-w)/2).toFixed(1)} ${(minY-(s-h)/2).toFixed(1)} ${s.toFixed(1)} ${s.toFixed(1)}" aria-hidden="true">${floor}${body}</svg>`;
+}
+function planSVG(o){
+  const c=100/o.dim,w=Math.max(...o.plan.map(p=>p[0]))+1,h=Math.max(...o.plan.map(p=>p[1]))+1,ox=(100-w*c)/2,oy=(100-h*c)/2;
+  return `<svg viewBox="-6 -6 112 112" aria-hidden="true">${o.plan.map(([x,y])=>`<rect x="${(ox+x*c).toFixed(1)}" y="${(oy+y*c).toFixed(1)}" width="${c.toFixed(1)}" height="${c.toFixed(1)}" style="fill:var(--card);stroke:var(--ink);stroke-width:2.4"/>`).join('')}</svg>`;
+}
+
+function quadSVG(p){
+  const st='stroke:var(--ink);stroke-width:2.4;stroke-linejoin:round';
+  const seg=(r,k)=>{if(p.frame==='square'){const x=k===0||k===1?0:-r,y=k===1||k===2?0:-r;return `<rect x="${x}" y="${y}" width="${r}" height="${r}"`}
+    const a0=(-90+90*k)*Math.PI/180,a1=(90*k)*Math.PI/180;return `<path d="M0 0 L${(r*Math.cos(a0)).toFixed(1)} ${(r*Math.sin(a0)).toFixed(1)} A${r} ${r} 0 0 1 ${(r*Math.cos(a1)).toFixed(1)} ${(r*Math.sin(a1)).toFixed(1)} Z"`};
+  let g=p.outer.map((f,k)=>`${seg(40,k)} style="fill:${FILL[f]};${st}"/>`).join('');
+  if(p.inner)g+=p.inner.map((f,k)=>`${seg(20,k)} style="fill:${FILL[f]};${st}"/>`).join('');
+  return `<svg viewBox="-50 -50 100 100" aria-hidden="true">${g}</svg>`;
+}
+function slideSVG(p){
+  const x=[-24,0,24][mod(p.pos,3)],tri=p.up?`M${x} -12 L${x+11} 12 H${x-11} Z`:`M${x} 12 L${x+11} -12 H${x-11} Z`;
+  return `<svg viewBox="-50 -50 100 100" aria-hidden="true"><rect x="-42" y="-22" width="84" height="44" style="fill:var(--card);stroke:var(--ink);stroke-width:2.6"/><path d="${tri}" style="fill:${FILL[p.fill]};stroke:var(--ink);stroke-width:2.2;stroke-linejoin:round"/></svg>`;
+}
+/* ---------- View from the right (block models with dark cubes) ---------- */
+function rayFree(q,cubes,self){
+  return !cubes.some(c=>{if(c===self)return false;let lo=.001,hi=Infinity;
+    for(let k=0;k<3;k++){lo=Math.max(lo,c[k]-q[k]);hi=Math.min(hi,c[k]+1-q[k])}return hi-lo>.02});
+}
+const SAMP=[[.5,.5],[.25,.25],[.75,.25],[.25,.75],[.75,.75]];
+function faceVis(c,cubes){
+  const [x,y,z]=c;
+  const faces=[SAMP.map(([a,b])=>[x+a,y+b,z+1]),SAMP.map(([a,b])=>[x+1,y+a,z+b]),SAMP.map(([a,b])=>[x+a,y+1,z+b])];
+  return Math.max(...faces.map(f=>f.filter(q=>rayFree(q,cubes,c)).length));
+}
+function viewGrid(cubes,dir){
+  const X=cubes.map(c=>c[0]),Y=cubes.map(c=>c[1]);
+  const x0=Math.min(...X),x1=Math.max(...X),y0=Math.min(...Y),y1=Math.max(...Y),H=Math.max(...cubes.map(c=>c[2]))+1;
+  const W=(dir==='right'||dir==='left')?y1-y0+1:x1-x0+1;
+  const g=[...Array(H)].map(()=>Array(W).fill(0));
+  for(const c of cubes){
+    const col=dir==='right'?y1-c[1]:dir==='left'?c[1]-y0:dir==='front'?c[0]-x0:x1-c[0];
+    const depth=dir==='right'?c[0]:dir==='left'?-c[0]:dir==='front'?c[1]:-c[1];
+    const row=H-1-c[2],cur=g[row][col];
+    if(!cur||depth>cur.d)g[row][col]={d:depth,v:c.dark?2:1};
+  }
+  return g.map(r=>r.map(v=>v?v.v:0));
+}
+const gridKey=g=>g.map(r=>r.join('')).join('/');
+function trimGrid(g){
+  while(g.length&&g[0].every(v=>!v))g=g.slice(1);
+  let l=0,r=g[0].length-1;while(g.every(row=>!row[l]))l++;while(g.every(row=>!row[r]))r--;
+  return g.map(row=>row.slice(l,r+1));
+}
+/* ---------- View from the right, answered with 3D pictures ---------- */
+const normCols=cols=>{const mx=Math.min(...cols.map(c=>c.x)),my=Math.min(...cols.map(c=>c.y));return cols.map(c=>({x:c.x-mx,y:c.y-my,h:c.h,dark:[...(c.dark||[])]}))};
+// walking round to the right: the right-hand face swings round to the front
+const turnRight=cols=>normCols(cols.map(c=>({...c,x:-c.y,y:c.x})));
+const turnCols=(cols,k)=>{let c=cols;for(let i=0;i<k;i++)c=turnRight(c);return normCols(c)};
+const mirrorCols=cols=>normCols(cols.map(c=>({...c,x:-c.x})));
+// what the drawing actually looks like: cast a ray through a grid of points on screen
+function lookKey(cols){
+  const cubes=cols.flatMap(c=>[...Array(c.h).keys()].map(z=>({x:c.x,y:c.y,z,d:(c.dark||[]).includes(z)})));
+  const P=(x,y,z)=>[(x-y)*.866,(x+y)*.5-z];
+  const pr=cubes.flatMap(q=>[[0,0,0],[1,0,0],[0,1,0],[1,1,0],[0,0,1],[1,0,1],[0,1,1],[1,1,1]].map(([a,b,e])=>P(q.x+a,q.y+b,q.z+e)));
+  const X0=Math.min(...pr.map(p=>p[0])),X1=Math.max(...pr.map(p=>p[0])),Y0=Math.min(...pr.map(p=>p[1])),Y1=Math.max(...pr.map(p=>p[1]));
+  let s='';
+  for(let Y=Y0+.07;Y<Y1;Y+=.14)for(let X=X0+.07;X<X1;X+=.14){
+    const a=X/.866,b=Y;let best=-Infinity,code='.';
+    for(const q of cubes){
+      const iv=[[q.z,q.z+1,'t'],[q.x-b-a/2,q.x+1-b-a/2,'r'],[q.y-b+a/2,q.y+1-b+a/2,'f']];
+      const lo=Math.max(...iv.map(v=>v[0])),hiV=iv.reduce((m,v)=>v[1]<m[1]?v:m);
+      if(hiV[1]-lo>1e-6&&hiV[1]>best){best=hiV[1];code=hiV[2]+(q.d?'D':'')}
+    }
+    s+=code;
+  }
+  return (X1-X0).toFixed(2)+'x'+(Y1-Y0).toFixed(2)+':'+s;
+}
+function side3dPuzzle(lvl){
+  const k=XP?pick([6,7]):lvl==='hard'?pick([5,6]):4+rnd(2),maxH=lvl==='hard'?3:2,want=nOpts(lvl);
+  for(let tries=0;tries<300;tries++){
+    const foot=growPoly(k,lvl==='hard'?4:3);
+    let cols=foot.map(([x,y])=>({x,y,h:1+rnd(maxH),dark:[]}));
+    if(!cols.some(c=>c.h>1))continue;
+    const cubes=cols.flatMap(c=>[...Array(c.h).keys()].map(z=>[c.x,c.y,z]));
+    if(cubes.some(c=>faceVis(c,cubes)<3))continue;
+    for(const q of sample(cubes,XP?3:lvl==='hard'?2:1))cols.find(c=>c.x===q[0]&&c.y===q[1]).dark.push(q[2]);
+    cols=normCols(cols);
+    const correct=turnRight(cols),ck=lookKey(correct);
+    {const cc=correct.flatMap(c=>[...Array(c.h).keys()].map(z=>{const q=[c.x,c.y,z];q.d=c.dark.includes(z);return q}));
+     if(cc.some(q=>faceVis(q,cc)<(q.d?3:1)))continue}
+    if(lookKey(cols)===ck)continue;
+    const cands=[turnCols(cols,3),turnCols(cols,2),cols,mirrorCols(correct)];
+    const tweak=f=>{const c=JSON.parse(JSON.stringify(correct));f(c);return normCols(c)};
+    cands.push(tweak(c=>{const all=c.flatMap(cc=>[...Array(cc.h).keys()].map(z=>[cc,z]));const ds=all.filter(([cc,z])=>cc.dark.includes(z)),ws=all.filter(([cc,z])=>!cc.dark.includes(z));
+      if(ds.length&&ws.length){const[d1,z1]=pick(ds),[w1,z2]=pick(ws);d1.dark=d1.dark.filter(z=>z!==z1);w1.dark.push(z2)}}));
+    cands.push(tweak(c=>{const tall=c.filter(cc=>cc.h>1);if(!tall.length)return;const t=pick(tall),o=pick(c.filter(cc=>cc!==t));t.dark=t.dark.filter(z=>z<t.h-1);t.h--;o.h++}));
+    cands.push(tweak(c=>{const tall=c.filter(cc=>cc.h>1);if(tall.length){const t=pick(tall);t.dark=t.dark.filter(z=>z<t.h-1);t.h--}}));
+    const seen=new Set([ck]),out=[];
+    const order=lvl==='normal'?cands:[...shuffle(cands.slice(0,4)),...shuffle(cands.slice(4))];
+    for(const c of order){if(out.length>=want-1)break;if(!c.length||c.some(cc=>cc.h<1))continue;const kk=lookKey(c);if(seen.has(kk))continue;seen.add(kk);out.push(c)}
+    if(out.length<want-1)continue;
+    const cor={cols3:correct},opts=shuffle([cor,...out.map(c=>({cols3:c}))]);
+    return {type:'side',view3d:true,cols,opts,ans:opts.indexOf(cor),prompt:'Which picture shows these blocks as you would see them from the right-hand side, where the eye is?'};
+  }
+}
+
+function sidePuzzle(lvl){
+  if(lvl!=='easy'&&Math.random()<({normal:.3,hard:.5}[lvl]+(XP?.1:0))){const p=side3dPuzzle(lvl);if(p)return p}
+  const k=XP?pick([6,7]):lvl==='easy'?4:lvl==='normal'?5:6,maxH=lvl==='hard'?3:2,want=nOpts(lvl);
+  for(let tries=0;tries<400;tries++){
+    const foot=growPoly(k,lvl==='easy'?3:4);
+    const cols=foot.map(([x,y])=>({x,y,h:1+rnd(maxH)}));
+    if(!cols.some(c=>c.h>1))continue;
+    const cubes=cols.flatMap(c=>[...Array(c.h).keys()].map(z=>[c.x,c.y,z]));
+    if(cubes.some(c=>faceVis(c,cubes)<3))continue;
+    const nd=XP?3:lvl==='easy'?1:lvl==='normal'?1+rnd(2):2+rnd(2);
+    sample(cubes,nd).forEach(c=>c.dark=true);
+    const right=viewGrid(cubes,'right');
+    if(!right.flat().includes(2))continue;
+    const seen=new Set([gridKey(right)]),out=[];
+    const add=g=>{if(!g||!g.length||!g.flat().some(v=>v))return;g=trimGrid(g);const kk=gridKey(g);if(seen.has(kk))return;seen.add(kk);out.push(g)};
+    const cands=[viewGrid(cubes,'left'),viewGrid(cubes,'front'),viewGrid(cubes,'back'),right.map(r=>[...r].reverse())];
+    for(let t=0;t<40;t++){
+      const g=right.map(r=>[...r]),H=g.length,W=g[0].length,op=pick(['recolour','recolour','move','top','drop']);
+      const filled=[];g.forEach((r,i)=>r.forEach((v,j)=>{if(v)filled.push([i,j])}));
+      if(op==='recolour'){const[i,j]=pick(filled);g[i][j]=3-g[i][j]}
+      else if(op==='move'){const darks=filled.filter(([i,j])=>g[i][j]===2),wh=filled.filter(([i,j])=>g[i][j]===1);if(!darks.length||!wh.length)continue;const[a,b]=pick(darks),[c,d]=pick(wh);g[a][b]=1;g[c][d]=2}
+      else if(op==='top'){const j=rnd(W);let i=0;while(i<H&&!g[i][j])i++;if(i===0){g.unshift(Array(W).fill(0));g[0][j]=1}else g[i-1][j]=1}
+      else{const j=rnd(W);let i=0;while(i<H&&!g[i][j])i++;if(i<H-1)g[i][j]=0;else continue}
+      cands.push(g);
+    }
+    const order=lvl==='easy'?[...cands.slice(4),...cands.slice(0,4)]:[...shuffle(cands.slice(0,4)),...shuffle(cands.slice(4))];
+    for(const g of order){if(out.length>=want-1)break;add(g)}
+    if(out.length<want-1)continue;
+    const cor={grid:right},opts=shuffle([cor,...out.map(g=>({grid:g}))]);
+    const dim=Math.max(...opts.flatMap(o=>[o.grid.length,o.grid[0].length]));opts.forEach(o=>o.dim=dim);
+    return {type:'side',cols:cols.map(c=>({...c,dark:cubes.filter(q=>q.dark&&q[0]===c.x&&q[1]===c.y).map(q=>q[2])})),opts,ans:opts.indexOf(cor)};
+  }
+}
+function gridSVG(o){
+  const c=100/o.dim,h=o.grid.length,w=o.grid[0].length,ox=(100-w*c)/2,oy=(100-h*c)/2;
+  return `<svg viewBox="-6 -6 112 112" aria-hidden="true">${o.grid.flatMap((r,i)=>r.map((v,j)=>v?`<rect x="${(ox+j*c).toFixed(1)}" y="${(oy+i*c).toFixed(1)}" width="${c.toFixed(1)}" height="${c.toFixed(1)}" style="fill:${v===2?'var(--ink)':'var(--card)'};stroke:var(--ink);stroke-width:2.4"/>`:'')).join('')}</svg>`;
+}
+const eyeSVG=`<svg viewBox="0 0 64 30" aria-hidden="true"><path d="M4 15 H22 M4 15 l7 -6 M4 15 l7 6" style="fill:none;stroke:var(--ink);stroke-width:3;stroke-linecap:round;stroke-linejoin:round"/><path d="M28 15 Q44 1 60 15 Q44 29 28 15 Z" style="fill:var(--card);stroke:var(--ink);stroke-width:2.6"/><circle cx="44" cy="15" r="5" style="fill:var(--ink)"/></svg>`;
+
+/* ---------- Warm-up: count the blocks ---------- */
+function countPuzzle(lvl){
+  const k=XP?5+rnd(3):lvl==='easy'?2+rnd(3):lvl==='normal'?3+rnd(3):4+rnd(3),maxH=lvl==='easy'?2:3,want=nOpts(lvl);
+  for(let tries=0;tries<300;tries++){
+    const foot=growPoly(k,lvl==='easy'?3:4),cols=foot.map(([x,y])=>({x,y,h:1+rnd(maxH)}));
+    if(!cols.some(c=>c.h>1)||!topVisible(cols))continue;
+    const total=cols.reduce((a,c)=>a+c.h,0),all=XP?Math.random()<.75:lvl==='hard'&&Math.random()<.5;
+    const correct=all?total:k,trap=all?k:total;
+    const t=rnd(Math.min(want-1,correct-1)+1);
+    const pickSide=(pool,n)=>{const pr=pool.includes(trap)?[trap]:[];return [...pr,...sample(pool.filter(x=>x!==trap),n-pr.length)].slice(0,n)};
+    const below=pickSide([...Array(Math.min(4,correct-1)).keys()].map(i=>correct-1-i),t);
+    const above=pickSide([1,2,3,4,5].map(d=>correct+d),want-1-t);
+    const nums=[correct,...below,...above];
+    if(below.length<t||new Set(nums).size<want)continue;
+    const opts=nums.sort((a,b)=>a-b).map(String);
+    return {type:'count',cols,prompt:all?'How many blocks are there altogether? Remember the ones underneath.':'If you looked at these blocks from straight above, how many blocks could you see?',opts,ans:opts.indexOf(String(correct))};
+  }
+}
+/* ---------- Word ladders ---------- */
+const W3=`ant ape arm art ask bag bat bed bee beg bet bib big bin bit bog box boy bud bug bun bus but buy cab can cap car cat cot cow cry cub cup cut dad dam day den dig dim dip dog dot dry dug ear eat egg elf end eye fan far fat fed few fig fin fit fix fly fog fox fry fun fur gap gas get gum gut hat hay hen her hid him hip his hit hog hop hot how hug hum hut ice ink jam jar jaw jet jog jot joy jug kid kit lab lap law lay leg let lid lip lit log lot low mad man map mat men met mix mob mop mud mug nap net new nod not now nut oak odd off old one our out owl pad pan paw pay pea peg pen pet pig pin pit pop pot pup put rag ram ran rat raw red rib rid rim rip rob rod rot row rub rug run sad sag sat saw say sea set sew she shy sip sit six sky sob son sow spy sum sun tab tag tan tap tar tea ten tie tin tip toe ton top toy try tub tug two van vet wag war was wax way web wet who why wig win wit yes yet zip zoo`.split(' ');
+const W4=`able bake ball band bang bank bare bark barn base bath bead beak beam bean bear beat beef been beep bell belt bend bent best bike bill bind bird bite blow blue boat body boil bold bolt bone book boot bore born boss both bowl bulb bull bump burn bush busy cage cake call calm came camp cane cape card care cart case cash cast cave cell chin chip city clap claw clay clip club coal coat code coin cold come cone cook cool cope copy cord core corn cost cosy crab crow cube cute dame damp dare dark darn dart dash date dawn dead deaf deal dear deep deer desk dial dice dine dirt dish dive dock does doll dome done door dose dove down drag draw drip drop drum duck dull dune dust duty each earn ease east easy edge else even ever face fact fade fail fair fake fall fame farm fast fate fear feed feel feet fell felt file fill film find fine fire firm fish fist five flag flap flat flew flip flow foam fold folk food fool foot fork form fort four free frog from fuel full fund fuse gain game gate gave gear gift girl give glad glow glue goal goat gold golf gone good gown grab grew grin grip grow gulp hail hair half hall hand hang hard hare harm harp hate have head heal heap hear heat heel held help herb herd here hero hide high hike hill hint hire hold hole home hood hook hoop hope horn hose host hour huge hunt hurt idea inch iron item jazz join joke jump just keen keep kept kick kind king kiss kite knee knew knit knot know lace lack lady laid lake lamb lame lamp land lane last late lawn lazy lead leaf leak lean leap left lend lens less lick life lift like lime limp line link lion list live load loaf loan lock loft long look loop lord lose loss lost loud love luck lump lung made mail main make male mane many mare mark mask mast mate maze meal mean meat meet melt mend menu mess mice mild mile milk mill mind mine mint miss mist moan mode mole moon more moss most moth move much mule must name navy near neat neck need nest news next nice nine none nose note oven over pace pack page paid pail pain pair pale palm pane park part pass past path peak pear peas peel peer pest pick pile pill pine pink pipe plan play plot plug plum poem pole pond pony pool poor pork port pose post pour pull pump pure push race rack rage rail rain rake ramp rang rare rash rate read real rear rest rice rich ride ring ripe rise road roar robe rock rode role roll roof room root rope rose rude rule rush rust safe said sail sale salt same sand sang save seal seat seed seek seem seen self sell send sent shed ship shoe shop shot show shut sick side sigh sign silk sing sink site size skin skip slam slip slow snow soap sock soft soil sold sole some song soon sore sort soup sour spin spot star stay stem step stew stir stop such suit sung sunk sure swan swim tail take tale talk tall tame tank tape task team tear tell tent term test than that them then they thin this tide tidy tile till time tiny toad told toll tomb tone took tool torn toss tour town trap tray tree trip true tube tuck tune turn twin type ugly unit upon used vase vast very vest view vote wade wage wait wake walk wall wand want ward warm warn wart wash wasp wave weak wear week well went were west what when whip wide wife wild will wind wine wing wink wipe wire wise wish with woke wolf wood wool word wore work worm worn wrap yard yarn year yell zero zest zone zoom wart cast link lock real lame sand loft zest belt warn make bash dash cash wash mash rash`.split(' ');
+const WSET={3:[...new Set(W3)],4:[...new Set(W4)]};
+const ham=(a,b)=>{let d=0;for(let i=0;i<a.length;i++)if(a[i]!==b[i])d++;return d};
+const NB={};
+for(const n of [3,4]){const L=WSET[n];for(const w of L)NB[w]=L.filter(x=>ham(w,x)===1)}
+const chainOK=ws=>ws.every((w,i)=>i===0||ham(ws[i-1],w)===1);
+function ladderPuzzle(lvl){
+  const len=lvl==='easy'?3:4,gaps=XP?3:lvl==='hard'?2:1,want=nOpts(lvl),L=WSET[len];
+  for(let tries=0;tries<400;tries++){
+    const start=pick(L),dist=new Map([[start,0]]),par=new Map([[start,[]]]),q=[start];
+    while(q.length){const w=q.shift(),d=dist.get(w);if(d>gaps)continue;
+      for(const x of NB[w]){if(!dist.has(x)){dist.set(x,d+1);par.set(x,[w]);q.push(x)}else if(dist.get(x)===d+1)par.get(x).push(w)}}
+    const ends=L.filter(w=>dist.get(w)===gaps+1&&ham(start,w)===gaps+1);
+    if(!ends.length)continue;
+    const end=pick(ends),path=[end];while(path[0]!==start)path.unshift(pick(par.get(path[0])));
+    const mid=path.slice(1,-1),seen=new Set([mid.join()]),out=[];
+    for(let t=0;t<300&&out.length<want-1;t++){
+      let m;const r=Math.random();
+      if(gaps>1&&r<.4){m=[];let w=start;for(let j=0;j<gaps;j++){const nx=NB[w].filter(x=>x!==start&&x!==end&&!m.includes(x));if(!nx.length)break;w=pick(nx);m.push(w)}}
+      else if(gaps>1&&r<.8){m=[];let w=end;for(let j=0;j<gaps;j++){const nx=NB[w].filter(x=>x!==start&&x!==end&&!m.includes(x));if(!nx.length)break;w=pick(nx);m.unshift(w)}}
+      else{m=[...mid];const i=rnd(m.length),chain=[start,...m,end];
+        const pool=[...NB[chain[i]],...NB[chain[i+2]]].filter(w=>!m.includes(w)&&w!==start&&w!==end);
+        if(!pool.length)continue;m[i]=pick(pool)}
+      if(m.length!==gaps)continue;
+      if(chainOK([start,...m,end]))continue;
+      const k=m.join();if(seen.has(k))continue;seen.add(k);out.push(m);
+    }
+    if(out.length<want-1)continue;
+    const fmt=m=>m.map(w=>w.toUpperCase()).join('\n'),cor=fmt(mid),opts=shuffle([cor,...out.map(fmt)]);
+    return {type:'ladder',start:start.toUpperCase(),end:end.toUpperCase(),gaps,opts,ans:opts.indexOf(cor),wordy:true};
+  }
+}
+
+/* ---------- keep each set varied ---------- */
+function usesOf(p){
+  if(p.type==='ladder')return [...new Set([p.start,p.end,...p.opts[p.ans].split('\n')])].map(w=>'w:'+w);
+  const out=new Set(),walk=o=>{if(!o||typeof o!=='object')return;if(Array.isArray(o)){o.forEach(walk);return}if(o.kind==='icon')out.add(o.shape);for(const k in o)if(o[k]&&typeof o[k]==='object')walk(o[k])};
+  walk(p);return [...out];
+}
+function canonCols(cols){
+  let cs=cols.map(c=>[c.x,c.y,c.h+(c.dark&&c.dark.length?'d'+c.dark.join(''):'')]),best=null;
+  for(let f=0;f<2;f++){for(let r=0;r<4;r++){cs=cs.map(([x,y,h])=>[-y,x,h]);
+      const mx=Math.min(...cs.map(c=>c[0])),my=Math.min(...cs.map(c=>c[1]));
+      const k=cs.map(([x,y,h])=>[x-mx,y-my,h].join(',')).sort().join(' ');if(best===null||k<best)best=k}
+    cs=cs.map(([x,y,h])=>[-x,y,h])}
+  return best;
+}
+const varying=figs=>{const ks=['shape','fill','count','a','size','inner','dot','m','v','pos','up','outer'];return ks.filter(k=>new Set(figs.map(f=>JSON.stringify(f&&f[k]))).size>1).join('+')};
+function sigOf(p){
+  switch(p.type){
+    case 'cube':return 'cube:'+(p.view||p.net.cells).map(f=>f.g).sort().join(',');
+    case 'top':case 'side':case 'count':return p.type+':'+canonCols(p.cols);
+    case 'punch2':return 'punch2:'+p.pname+':'+p.folds.map(f=>f.kind).join('')+':'+Math.round(p.punched[0].c[0]/10);
+    case 'punch':return 'punch:'+p.folds.map(f=>f.kind).join('')+':'+p.punched.slice().sort().join(',');
+    case 'codes':{const figs=[...p.examples.map(e=>e.fig),p.test];return 'codes:'+varying(figs)+':'+figs[0].shape}
+    case 'sequence':return 'seq:'+varying(p.cells)+':'+(p.cells[0].shape||p.cells[0].kind);
+    case 'pair':if(p.matSig)return 'pairmat:'+p.matSig;return 'pair:'+varying([p.A,p.B])+':'+p.A.shape+':'+p.C.shape;
+    case 'odd':return 'odd:'+varying(p.opts)+':'+p.opts.map(o=>o.shape).sort().join(',');
+    case 'ladder':return 'ladder:'+p.start+p.end;
+    default:return p.type+':'+usesOf(p).join(',')+':'+Math.random();
+  }
+}
+const GEN={rotate:rotatePuzzle,mirror:mirrorPuzzle,sequence:seqPuzzle,pair:pairPuzzle,odd:oddPuzzle,codes:codesPuzzle,punch:punchPuzzle,cube:cubePuzzle,top:topPuzzle,side:sidePuzzle,count:countPuzzle,ladder:ladderPuzzle};
+const PROMPT={
+  rotate:'Which answer is the picture turned round?',
+  mirror:'Which answer is the mirror image?',
+  sequence:'The squares follow a pattern. Which picture fills the gap?',
+  pair:'The first picture changes into the second. Which answer changes the third picture in the same way?',
+  odd:'Which picture is the odd one out?',
+  codes:'Each letter stands for something about the picture. Which code goes with the last picture?',
+  punch2:'The paper is folded, then holes are punched right through it. What does it look like when it is opened out?',
+  punch:'The paper is folded, then holes are punched right through it. What does it look like when it is opened out?',
+  cube:'',
+  top:'Which picture shows these blocks seen from straight above?',
+  count:'How many blocks could you see?',
+  ladder:'Change one letter at a time to turn the first word into the last word. Every step must be a real word.',
+  side:'Which picture shows these blocks seen from the right-hand side, where the eye is?'
+};
+const TIPS={
+  rotate:'Turning a picture never makes it face the other way. If the chimney has swapped sides, it has been flipped, not turned. Stuck? Tap Rotate to turn the picture: you get 3 turns per question.',
+  mirror:'In a mirror beside a picture, left and right swap but top stays at the top. When the mirror line is underneath, top and bottom swap instead.',
+  sequence:'Check one thing at a time. Is something turning, moving round, growing, adding more, or changing colour?',
+  pair:'Say out loud what changed between the first two pictures, then do exactly that to the third.',
+  odd:'Find what four of the pictures have in common. The odd one out breaks that rule.',
+  codes:'Find two pictures that share a letter, then spot what else they have in common.',
+  punch:'Every fold makes a mirror copy of the holes. Unfold one step at a time, starting with the last fold.',
+  cube:'Two faces that are opposite each other on the cube can never be seen at the same time. In a net, opposite faces have one square between them in a straight line. Then check which way each picture points.',
+  top:'From straight above you only see the top of each stack, so a tower of three cubes looks like one square. The answer may be turned round.',
+  side:'From the side you see the front-most block in each row and column. A dark block only shows if nothing is in front of it.',
+  count:'From above, a tower of blocks looks like just one block. To count them all, add up how tall each tower is.',
+  ladder:'Find the letters that are different between the first and last words. Change one of them at a time, and check each new word is real.',
+  mix:'Every puzzle is a different kind, so read each question before choosing.'
+};
+
+/* ---------- page ---------- */
+if(typeof document!=='undefined'){
+  let mode='rotate',level='normal',set=[],right=0;
+  const list=document.getElementById('list');
+  const rotIcon=`<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M30 20a10 10 0 1 1-4-8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M27 4 L28 13 L19 13" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  const mirIcon=ax=>`<svg viewBox="0 0 40 40" aria-hidden="true"><path d="${{h:'M4 20 H36',v:'M20 4 V36',d1:'M6 34 L34 6',d2:'M6 6 L34 34'}[ax]}" stroke="currentColor" stroke-width="3" stroke-dasharray="5 4"/></svg>`;
+  const LET='ABCDE';
+
+  function build(){
+    const kinds=mode==='mix'?shuffle(Object.keys(GEN).filter(k=>k!=='count')):Array(10).fill(mode);
+    XP=level==='expert';const lv=XP?'hard':level;
+    const gen1=k=>{for(let i=0;i<8;i++){const p=GEN[k](lv);if(p)return p}const x=XP;XP=false;const p=GEN[k]('normal');XP=x;return p};
+    USED_ICONS=new Set();const sigs=new Set();
+    const gen=k=>{let p;for(let t=0;t<60;t++){p=gen1(k);const u=usesOf(p),sg=sigOf(p);if(u.some(x=>USED_ICONS.has(x))||sigs.has(sg))continue;break}
+      usesOf(p).forEach(x=>USED_ICONS.add(x));sigs.add(sigOf(p));return p};
+    set=kinds.map(k=>({...gen(k),done:false,pick:-1}));
+    right=0;revealed=false;document.getElementById('done').hidden=true;document.getElementById('tip').textContent=TIPS[mode];render();
+  }
+  const HINTS=3;
+  const hintLabel=p=>p.done?'Try it':`${HINTS-p.hints} left`;
+  function stem(p,qi){
+    const f=(x,c='fig sm')=>`<div class="${c}">${figSVG(x)}</div>`;
+    switch(p.type){
+      case 'rotate':return `<div class="stem"><div class="fig"><div class="spin" id="spin${qi}" style="transform:rotate(${p.turn}deg)">${figSVG(p.src)}</div></div><button class="instr hintbtn" data-hint="${qi}" ${!p.done&&p.hints>=HINTS?'disabled':''} aria-label="Turn the picture to help">Rotate${rotIcon}<span class="hl" id="hl${qi}">${hintLabel(p)}</span></button></div>`;
+      case 'mirror':return `<div class="stem">${f(p.src,'fig')}<div class="instr">Mirror${mirIcon(p.axis)}${{h:'line below',v:'line beside',d1:'slanted line',d2:'slanted line'}[p.axis]}</div></div>`;
+      case 'sequence':return `<div class="cells">${p.cells.map((c,i)=>i===p.blank?'<div class="cell blank">?</div>':`<div class="cell">${figSVG(c)}</div>`).join('')}</div>`;
+      case 'pair':return `<div class="stem pair">${f(p.A)}<span class="sym">→</span>${f(p.B)}<span class="sym">:</span>${f(p.C)}<span class="sym">→</span><div class="fig sm blank"></div></div>`;
+      case 'codes':return `<div class="codes">${p.examples.map(e=>`<div class="ex">${f(e.fig)}<span class="code">${e.code}</span></div>`).join('')}<div class="ex test">${f(p.test)}<span class="code">?</span></div></div>`;
+      case 'cube':return p.dir==='toNet'?`<div class="stem"><div class="fig cubefig">${cubeSVG(p.view)}</div></div>`:`<div class="stem"><div class="fig netfig">${netSVG(p.net)}</div></div>`;
+      case 'side':return `<div class="stem"><div class="fig isofig">${isoSVG(p.cols)}</div><div class="eye">${eyeSVG}</div></div>`;
+      case 'count':return `<div class="stem"><div class="fig isofig">${isoSVG(p.cols)}</div></div>`;
+      case 'ladder':return `<div class="ladder"><span>${p.start}</span>${Array(p.gaps).fill('<span class="gap"></span>').join('')}<span>${p.end}</span></div>`;
+      case 'top':return `<div class="stem"><div class="fig isofig">${isoSVG(p.cols)}</div></div>`;
+      case 'punch2':return `<div class="stem pair">${p.folds.map(f=>`<div class="fig fp">${fold2Panel(f,p.paper)}</div>`).join('<span class="sym">›</span>')}<span class="sym">›</span><div class="fig fp">${punch2Panel(p)}</div></div>`;
+      case 'punch':return `<div class="stem pair">${p.folds.map(f=>`<div class="fig fp">${foldPanel(f)}</div>`).join('<span class="sym">›</span>')}<span class="sym">›</span><div class="fig fp">${punchPanel(p)}</div></div>`;
+      default:return '';
+    }
+  }
+  function render(){
+    list.innerHTML=set.map((p,qi)=>{
+      const opts=p.opts.map((o,oi)=>{
+        let cls='opt';
+        if(p.done){if(oi===p.ans)cls+=' right';else if(p.pick===oi)cls+=' wrong'}
+        const inner=typeof o==='string'?`<span class="codeopt${p.wordy?' wordopt':''}">${o}</span>`:`<span class="pic">${o.cols3?isoSVG(o.cols3):o.holes2?holes2SVG(o):o.grid?gridSVG(o):o.plan?planSVG(o):o.holes?holesSVG(o.holes):o.net?netSVG(o):o.view?cubeSVG(o.view):figSVG(o)}</span>`;
+        return `<button class="${cls}" data-q="${qi}" data-o="${oi}" ${p.done?'disabled':''} aria-label="Answer ${LET[oi]}">${inner}<span class="let">${LET[oi]}</span></button>`;
+      }).join('');
+      return `<section class="q"><div class="qhead"><div class="num">${qi+1}</div><p class="prompt">${p.prompt?p.prompt:p.type==='cube'?(p.dir==='toNet'?'Which net folds up to make this cube?':'Which cube can be made by folding up this net?'):PROMPT[p.type]}</p></div>
+        <div class="body">${stem(p,qi)}<div class="opts" style="grid-template-columns:repeat(${p.opts.length},minmax(0,1fr))">${opts}</div></div></section>`;
+    }).join('');
+    document.getElementById('score').textContent=`${right} / ${set.length}`;
+  }
+  /* ---- progress, kept in this browser ---- */
+  const HKEY='logic-puzzles-history-v1';
+  const loadH=()=>{try{const v=JSON.parse(localStorage.getItem(HKEY)||'[]');return Array.isArray(v)?v:[]}catch(e){return []}};
+  const saveH=h=>{try{localStorage.setItem(HKEY,JSON.stringify(h.slice(-300)));return true}catch(e){return false}};
+  const label=(grp,v)=>{const b=document.querySelector(`#${grp} button[data-v="${v}"]`);return b?b.textContent:v};
+  const LVORD={easy:0,normal:1,hard:2,expert:3};
+  let revealed=false,confirmClear=false;
+  function renderProgress(){
+    const h=loadH(),el=document.getElementById('prog'),cl=document.getElementById('pclear');
+    if(!h.length){el.innerHTML='<p class="pempty">Finish a set of 10 by answering every question and the score is saved here, so you can see how you improve over time.</p>';cl.innerHTML='';return}
+    const groups=new Map();for(const r of h){const k=r.m+'|'+r.l;if(!groups.has(k))groups.set(k,[]);groups.get(k).push(r)}
+    const rows=[...groups.values()].sort((a,b)=>b[b.length-1].t-a[a.length-1].t);
+    const fmt=t=>new Date(t).toLocaleDateString(undefined,{day:'numeric',month:'short'});
+    el.innerHTML=`<div class="ptable-wrap"><table class="ptable"><thead><tr><th>Puzzle</th><th>Level</th><th>Sets</th><th>Best</th><th>Average</th><th>Last 8</th><th>Last played</th></tr></thead><tbody>${rows.map(g=>{
+      const last=g.slice(-8),best=Math.max(...g.map(r=>r.s)),avg=g.reduce((a,r)=>a+r.s,0)/g.length,n=g[0].n||10;
+      return `<tr><td>${label('mode',g[0].m)}</td><td>${label('level',g[0].l)}</td><td class="pn">${g.length}</td><td class="pn">${best}/${n}</td><td class="pn">${avg.toFixed(1)}</td><td><div class="spark" title="${last.map(r=>r.s).join(', ')}">${last.map(r=>`<i class="${r.s===n?'full':''}" style="height:${Math.max(3,r.s/n*30)}px"></i>`).join('')}</div></td><td>${fmt(g[g.length-1].t)}</td></tr>`}).join('')}</tbody></table></div>`;
+    cl.innerHTML=confirmClear?'<span>Delete all saved scores on this device?</span><button class="btn small danger" id="pyes">Delete</button><button class="btn small" id="pno">Keep them</button>':'<button class="btn small" id="pask">Clear history</button>';
+  }
+  document.getElementById('pclear').addEventListener('click',e=>{
+    const id=e.target.id;if(id==='pask')confirmClear=true;else if(id==='pno')confirmClear=false;else if(id==='pyes'){saveH([]);confirmClear=false}else return;renderProgress();
+  });
+  function finished(){
+    const el=document.getElementById('done');
+    if(set.every(p=>p.done)&&!revealed){
+      const ok=saveH([...loadH(),{t:Date.now(),m:mode,l:level,s:right,n:set.length}]);
+      el.innerHTML=`<strong>${right} out of ${set.length}</strong><span>${right===set.length?'Every one right. Brilliant!':right>=set.length*.7?'Great work.':'Good try. Look back at the ones in red.'} ${ok?'Saved to Progress below.':''}</span><button class="btn primary" id="again">New puzzles</button>`;
+      el.hidden=false;renderProgress();
+      celebrate(right,set.length);
+    }
+  }
+  /* ---- celebration screen ---- */
+  const starPath=(cx,cy,R,r)=>{let d='';for(let k=0;k<10;k++){const t=-Math.PI/2+k*Math.PI/5,q=k%2?r:R;d+=(k?'L':'M')+(cx+q*Math.cos(t)).toFixed(1)+' '+(cy+q*Math.sin(t)).toFixed(1)}return d+'Z'};
+  const reduce=()=>window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function celebrate(sc,n){
+    const perfect=sc===n,earned=perfect?3:sc>=n*.7?2:1;
+    const msgs=perfect?['Perfect score!','All '+n+' right. You are a puzzle superstar!']:sc>=n*.8?['Fantastic!','So close to perfect. Can you get all '+n+' next time?']:sc>=n*.5?['Well done!','Tap "Look at my answers" to see the ones that tripped you up.']:['Good effort!','Every puzzle makes your brain stronger. Have another go!'];
+    const rays=[...Array(12)].map((_,i)=>`<path d="M100 100 L${(100+98*Math.cos((i*30-4)*Math.PI/180)).toFixed(1)} ${(100+98*Math.sin((i*30-4)*Math.PI/180)).toFixed(1)} L${(100+98*Math.cos((i*30+4)*Math.PI/180)).toFixed(1)} ${(100+98*Math.sin((i*30+4)*Math.PI/180)).toFixed(1)} Z" style="fill:var(--gold1);opacity:.35"/>`).join('');
+    document.getElementById('cel-star').innerHTML=`<svg viewBox="0 0 200 200"><defs><linearGradient id="gg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--gold1)"/><stop offset=".55" style="stop-color:var(--gold2)"/><stop offset="1" style="stop-color:var(--gold3)"/></linearGradient></defs>
+      <g class="shine">${rays}</g>
+      <path d="${starPath(100,106,96,52)}" style="fill:url(#gg);stroke:var(--gold3);stroke-width:4;stroke-linejoin:round"/>
+      <path d="${starPath(100,106,80,43)}" style="fill:none;stroke:var(--gold1);stroke-width:2.5;stroke-linejoin:round;opacity:.8"/>
+      <text x="100" y="114" text-anchor="middle" dominant-baseline="middle" font-family="Baloo 2, sans-serif" font-weight="800" font-size="${sc>9?27:34}" style="fill:#5a3b00">${sc}/${n}</text></svg>`;
+    document.getElementById('cel-stars').innerHTML=[0,1,2].map(i=>`<svg viewBox="0 0 40 40" style="animation-delay:${.6+i*.18}s"><path d="${starPath(20,21,18,8)}" style="fill:${i<earned?'var(--gold2)':'var(--rule)'};stroke:${i<earned?'var(--gold3)':'var(--grey)'};stroke-width:2;stroke-linejoin:round"/></svg>`).join('');
+    document.getElementById('cel-title').textContent=msgs[0];
+    document.getElementById('cel-msg').textContent=msgs[1];
+    const ov=document.getElementById('celebrate');ov.hidden=false;
+    setTimeout(()=>document.getElementById('cel-again').focus(),50);
+    if(perfect&&!reduce()){confetti();balloons()}
+  }
+  function closeCelebrate(){document.getElementById('celebrate').hidden=true;document.getElementById('balloons').innerHTML='';stopConfetti=true}
+  document.getElementById('cel-review').onclick=closeCelebrate;
+  document.getElementById('cel-again').onclick=()=>{closeCelebrate();build();window.scrollTo({top:0,behavior:'smooth'})};
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.getElementById('celebrate').hidden)closeCelebrate()});
+  const PARTY=['--c1','--c2','--c3','--c4','--c5','--c6','--gold2'].map(v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim()||'#f5b301');
+  let stopConfetti=false,parts=[],running=false,cv=null,ctx=null,dpr=1;
+  function sizeCanvas(){cv=document.getElementById('confetti');ctx=cv.getContext('2d');dpr=window.devicePixelRatio||1;cv.width=innerWidth*dpr;cv.height=innerHeight*dpr}
+  function burstAt(x,y,count,power){
+    if(!cv||cv.width!==innerWidth*dpr)sizeCanvas();
+    for(let i=0;i<count;i++){const a=Math.random()*Math.PI*2,v=(2+Math.random()*power)*dpr;
+      parts.push({x:x*dpr,y:y*dpr,vx:Math.cos(a)*v,vy:Math.sin(a)*v-4*dpr,r:Math.random()*6.3,vr:(Math.random()-.5)*.4,w:(6+Math.random()*7)*dpr,h:(4+Math.random()*5)*dpr,c:pick(PARTY),life:0})}
+    if(!running){running=true;requestAnimationFrame(frame)}
+  }
+  function frame(){
+    const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
+    for(const p of parts){p.vy+=.25*dpr;p.vx*=.985;p.vy*=.985;p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;p.life++;
+      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.r);ctx.scale(1,Math.cos(p.life*.15));ctx.fillStyle=p.c;ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore()}
+    parts=parts.filter(p=>p.y<H+40);
+    if(parts.length&&!stopConfetti)requestAnimationFrame(frame);else{parts=[];running=false;ctx.clearRect(0,0,W,H)}
+  }
+  function confetti(){
+    stopConfetti=false;sizeCanvas();
+    [[.5,.38,0],[.2,.3,500],[.8,.3,900],[.35,.2,1500],[.65,.2,1900],[.5,.3,2600]].forEach(([fx,fy,t])=>setTimeout(()=>{if(!stopConfetti)burstAt(fx*innerWidth,fy*innerHeight,90,9)},t));
+  }
+  document.getElementById('balloons').addEventListener('pointerdown',e=>{
+    const b=e.target.closest('.balloon');if(!b||b.classList.contains('popped'))return;
+    e.preventDefault();const r=b.querySelector('ellipse').getBoundingClientRect();
+    b.classList.add('popped');stopConfetti=false;burstAt(r.left+r.width/2,r.top+r.height/2,45,6);
+    setTimeout(()=>b.remove(),200);
+  });
+  function balloons(){
+    const box=document.getElementById('balloons');box.innerHTML='';
+    const n=Math.max(10,Math.min(18,Math.round(innerWidth/60)));
+    for(let i=0;i<n;i++){
+      const c=PARTY[i%PARTY.length],b=document.createElement('div');b.className='balloon';
+      const w=48+Math.random()*30;
+      b.style.cssText=`left:${(i+.5)/n*100-4+Math.random()*4}%;width:${w}px;--dur:${15+Math.random()*4}s;--delay:${Math.random()*3}s`;
+      b.innerHTML=`<svg viewBox="0 0 60 130" style="animation-delay:-${(Math.random()*2.6).toFixed(2)}s"><path d="M30 76 Q24 92 32 104 Q38 116 28 128" style="fill:none;stroke:var(--muted);stroke-width:1.6"/><path d="M26 80 L34 80 L30 73 Z" style="fill:${c}"/><ellipse cx="30" cy="38" rx="26" ry="34" style="fill:${c}"/><ellipse cx="20" cy="24" rx="6" ry="10" transform="rotate(-25 20 24)" style="fill:#fff;opacity:.45"/></svg>`;
+      box.appendChild(b);
+    }
+    setTimeout(()=>{box.innerHTML=''},23500);
+  }
+  list.addEventListener('click',e=>{
+    const hb=e.target.closest('[data-hint]');
+    if(hb){const qi=+hb.dataset.hint,p=set[qi];if(!p.done&&p.hints>=HINTS)return;
+      p.turn+=p.step;if(!p.done)p.hints++;
+      document.getElementById('spin'+qi).style.transform=`rotate(${p.turn}deg)`;
+      document.getElementById('hl'+qi).textContent=hintLabel(p);hb.disabled=!p.done&&p.hints>=HINTS;return}
+    const b=e.target.closest('.opt');if(!b||b.disabled)return;
+    const p=set[+b.dataset.q];if(p.done)return;
+    p.done=true;p.pick=+b.dataset.o;if(p.pick===p.ans)right++;render();finished();
+  });
+  document.getElementById('done').addEventListener('click',e=>{if(e.target.id==='again'){build();window.scrollTo({top:0,behavior:'smooth'})}});
+  document.getElementById('reveal').onclick=()=>{if(!set.every(p=>p.done))revealed=true;set.forEach(p=>p.done=true);render()};
+  document.getElementById('new').onclick=build;
+  const seg=(id,fn)=>{const el=document.getElementById(id);el.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+    el.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));fn(b.dataset.v);build()})};
+  seg('mode',v=>mode=v);seg('level',v=>level=v);
+  build();
+  renderProgress();
+}else{globalThis.__T={side3dPuzzle,lookKey,turnRight,matPair,applyMat,matKey,punch2Puzzle,holesSimilar,insideP,reflectPt,sideOf,TR,usesOf,sigOf,resetUsed:()=>USED_ICONS=new Set(),USED:()=>USED_ICONS,canonTurn,setXP:v=>XP=v,chainOK,viewGrid,gridKey,canonAll,GEN,key,valid,holeKey,netToCube,showsView,viewOf,cubeKey,unfold}}
+</script>
+
+</body>
+</html>
