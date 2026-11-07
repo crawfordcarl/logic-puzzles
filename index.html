@@ -1032,6 +1032,11 @@ function punch2Puzzle(lvl){
     return {type:'punch2',paper,pname,folds,final:R,layers,punched,opts,ans:opts.indexOf(cor)};
   }
 }
+/* ---------- "Show me" for Rotate and Mirror ---------- */
+// the turn to show: the right answer's angle, taken the short way round (positive = clockwise)
+const showTurn=p=>{const a=mod(p.opts[p.ans].a,360);return a>180?a-360:a};
+// mirror lines as a direction across the picture (screen coordinates, y down) and where the picture sits beside it
+const MIRROR_AXIS={v:{dir:[0,1],at:[28,56]},h:{dir:[1,0],at:[56,28]},d2:{dir:[1,1],at:[78,34]},d1:{dir:[1,-1],at:[34,34]}};
 /* ---------- "Show me": the unfolding, worked out step by step from the puzzle's own folds ---------- */
 function unfoldSteps(p){
   const grid=p.type==='punch';
@@ -1716,7 +1721,7 @@ if(typeof document!=='undefined'){
         return `<button class="${cls}" data-q="${qi}" data-o="${oi}" ${p.done?'disabled':''} aria-label="Answer ${LET[oi]}">${inner}<span class="let">${LET[oi]}</span></button>`;
       }).join('');
       return `<section class="q"><div class="qhead"><div class="num">${qi+1}</div><p class="prompt">${p.prompt?p.prompt:p.type==='cube'?(p.dir==='toNet'?'Which net folds up to make this cube?':'Which cube can be made by folding up this net?'):PROMPT[p.type]}</p></div>${TIP_TYPES.has(p.type)&&!p.done&&struggled?(p.tips?`<div class="ptips"><p><span class="tiplogo" aria-hidden="true">${PUFF_MINI}</span>${tipsFor(p)[1]}</p></div>`:`<div class="tiprow"><button class="tipbtn" data-tipq="${qi}"><span class="tiplogo" aria-hidden="true">${PUFF_MINI}</span>Puffin tip</button></div>`):''}
-        <div class="body">${stem(p,qi)}<div class="opts" style="grid-template-columns:repeat(${p.opts.length},minmax(0,1fr))">${opts}</div></div>${p.done&&p.pick>=0&&p.pick!==p.ans?`<p class="why"><b>Why?</b> ${explain(p,p.opts[p.pick])}${p.type==='punch'||p.type==='punch2'?` <button class="showme" data-showme="${qi}">Show me</button>`:''}</p>`:''}</section>`;
+        <div class="body">${stem(p,qi)}<div class="opts" style="grid-template-columns:repeat(${p.opts.length},minmax(0,1fr))">${opts}</div></div>${p.done&&p.pick>=0&&p.pick!==p.ans?`<p class="why"><b>Why?</b> ${explain(p,p.opts[p.pick])}${['punch','punch2','rotate','mirror'].includes(p.type)?` <button class="showme" data-showme="${qi}">Show me</button>`:''}</p>`:''}</section>`;
     }).join('');
     document.getElementById('score').textContent=`${right} / ${set.length}`;
   }
@@ -1928,6 +1933,39 @@ if(typeof document!=='undefined'){
   const ufLayer=(poly,holes,fill)=>`<svg viewBox="-6 -6 112 112"><polygon points="${pts(poly)}" style="fill:${fill};stroke:var(--ink);stroke-width:1.8;stroke-linejoin:round"/>${holes.map(holeMark).join('')}</svg>`;
   function ufPlay(){
     ufTimers.forEach(clearTimeout);ufTimers=[];
+    if(ufPuzzle.type==='rotate')return ufRotate();
+    if(ufPuzzle.type==='mirror')return ufMirror();
+    return ufPunch();
+  }
+  const ufStill=()=>window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const ufPic=(fig,x,y,size)=>{const svg=figSVG(fig);return svg.replace('<svg ',`<svg x="${x-size/2}" y="${y-size/2}" width="${size}" height="${size}" `)};
+  function ufRotate(){
+    const p=ufPuzzle,turn=showTurn(p),pick=p.opts[p.pick],still=ufStill();
+    ufStage.innerHTML=`<div class="uf-layer uf-spin" id="uf-spin">${figSVG(p.src)}</div>`;
+    const el=document.getElementById('uf-spin');
+    el.style.transition=still?'none':'transform 1.8s cubic-bezier(.45,.05,.3,1)';
+    ufCap.textContent='Watch the picture turn round. It stays the same picture the whole time.';
+    ufLater(()=>{el.style.transform=`rotate(${turn}deg)`},still?600:900);
+    ufLater(()=>{
+      const flipped=pick&&pick.m,changed=pick&&pick.v;
+      ufCap.textContent=`It's ${turnWords(turn)}: that's answer ${LET[p.ans]}.`+(flipped?` Answer ${LET[p.pick]} is flipped over, which turning can never do.`:changed?` Answer ${LET[p.pick]} has a small change, so it isn't the same picture.`:'');
+    },still?1400:3000);
+  }
+  function ufMirror(){
+    const p=ufPuzzle,ax=MIRROR_AXIS[p.axis],still=ufStill(),[dx,dy]=ax.dir;
+    const L=dx===0?'M56 2 V110':dy===0?'M2 56 H110':dx*dy>0?'M4 4 L108 108':'M4 108 L108 4';
+    ufStage.innerHTML=`<div class="uf-layer"><svg viewBox="0 0 112 112"><path d="${L}" style="stroke:var(--accent);stroke-width:2;stroke-dasharray:5 4"/>${ufPic(p.src,ax.at[0],ax.at[1],40)}</svg></div>`;
+    const flap=document.createElement('div');flap.className='uf-layer';
+    flap.innerHTML=`<svg viewBox="0 0 112 112">${ufPic(p.src,ax.at[0],ax.at[1],40)}</svg>`;
+    flap.style.transformOrigin='50% 50%';flap.style.transform=`rotate3d(${dx},${dy},0,0deg)`;
+    if(still)flap.style.transition='none';
+    ufStage.appendChild(flap);flap.getBoundingClientRect();
+    ufCap.textContent='The dashed line is the mirror. Watch the picture flip over it, like turning a page.';
+    ufLater(()=>{flap.style.transform=`rotate3d(${dx},${dy},0,180deg)`},still?600:1000);
+    ufLater(()=>{ufCap.textContent=`That's the mirror image: answer ${LET[p.ans]}. ${p.axis==='h'?'Top and bottom have swapped.':p.axis==='v'?'Left and right have swapped.':'Each part is the same distance from the line, on the other side.'}`},still?1400:2600);
+  }
+  function ufPunch(){
+    ufTimers.forEach(clearTimeout);ufTimers=[];
     const r=unfoldSteps(ufPuzzle),still=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches,tri=r.holes.some(h=>h.tri);
     ufStage.innerHTML=`<div class="uf-ghost">${`<svg viewBox="-6 -6 112 112"><polygon points="${pts(r.paper)}" style="fill:none;stroke:var(--muted);stroke-width:1.2;stroke-dasharray:4 3"/></svg>`}</div><div class="uf-layer">${ufLayer(r.start,r.steps.length?r.steps[0].holes:r.holes,'var(--accent-soft)')}</div>`;
     ufCap.textContent='This is the folded paper with the holes punched right through.';
@@ -1962,7 +2000,7 @@ if(typeof document!=='undefined'){
   seg('mode',v=>{mode=v;keep('pp-mode',v)});seg('level',v=>{level=v;keep('pp-level',v)});
   build();
   renderProgress();
-}else{globalThis.__T={unfoldSteps,nearEdge,HR,explain,tipsFor,GLYPHW,side3dPuzzle,lookKey,turnRight,matPair,applyMat,matKey,punch2Puzzle,holesSimilar,insideP,reflectPt,sideOf,TR,usesOf,sigOf,resetUsed:()=>USED_ICONS=new Set(),USED:()=>USED_ICONS,canonTurn,setXP:v=>XP=v,chainOK,viewGrid,gridKey,canonAll,GEN,key,valid,holeKey,netToCube,showsView,viewOf,cubeKey,unfold}}
+}else{globalThis.__T={showTurn,MIRROR_AXIS,unfoldSteps,nearEdge,HR,explain,tipsFor,GLYPHW,side3dPuzzle,lookKey,turnRight,matPair,applyMat,matKey,punch2Puzzle,holesSimilar,insideP,reflectPt,sideOf,TR,usesOf,sigOf,resetUsed:()=>USED_ICONS=new Set(),USED:()=>USED_ICONS,canonTurn,setXP:v=>XP=v,chainOK,viewGrid,gridKey,canonAll,GEN,key,valid,holeKey,netToCube,showsView,viewOf,cubeKey,unfold}}
 </script>
 
 </body>

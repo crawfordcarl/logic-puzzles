@@ -348,3 +348,21 @@ test('fold & punch "Show me": the animation ends on the marked answer', () => {
     }
   }
 });
+
+// "Show me" for Rotate and Mirror must show exactly the marked answer.
+test('rotate & mirror "Show me": the animation lands on the marked answer', () => {
+  const M = (a, m) => { const t = a * Math.PI / 180, c = Math.cos(t), s = Math.sin(t), k = m ? -1 : 1; return [c * k, -s, s * k, c].map(v => Math.round(v * 1000) / 1000 + 0); };
+  for (const level of LEVELS) {
+    for (const p of make('rotate', level, N).puzzles) {
+      const turn = T.showTurn(p), right = p.opts[p.ans];
+      assert.ok(Math.abs(turn) <= 180, 'the turn should go the short way round');
+      assert.deepEqual(M(turn, false), M(right.a, right.m), `${level.name}: the turn shown is not the marked answer`);
+    }
+    for (const p of make('mirror', level, N).puzzles) {
+      const [dx, dy] = T.MIRROR_AXIS[p.axis].dir, L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L;
+      const reflect = [2 * ux * ux - 1, 2 * ux * uy, 2 * ux * uy, 2 * uy * uy - 1].map(v => Math.round(v * 1000) / 1000 + 0);
+      const right = p.opts[p.ans];
+      assert.deepEqual(reflect, M(right.a, right.m), `${level.name} (${p.axis} mirror): the flip shown is not the marked answer`);
+    }
+  }
+});

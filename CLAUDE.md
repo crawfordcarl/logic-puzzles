@@ -41,7 +41,7 @@ These are over 110 checks using only Node 18+, and GitHub Actions runs them on e
 - **No random rewards.** Every sticker has a visible goal, nothing can be lost, and there are no streaks to break. It must never feel like gambling.
 - **No sounds.** A deliberate choice, not an oversight.
 - **No pop-ups or install prompts.** The browser's install bar is suppressed, and installing is only ever offered through the browser menu.
-- **Keep the screen calm.** "Why?" appears only under wrong answers. Puffin tips appear only after a mistake in the set, give one question-specific nudge, and must never give the answer away (at least two choices must still fit the tip; tested). The celebration screen keeps the star as the main focus, with no puffin on it. Fold & punch "Why?" boxes have a **Show me** link that animates the unfolding from the puzzle's own folds (`unfoldSteps`); a test checks it always ends on the marked answer.
+- **Keep the screen calm.** "Why?" appears only under wrong answers. Puffin tips appear only after a mistake in the set, give one question-specific nudge, and must never give the answer away (at least two choices must still fit the tip; tested). The celebration screen keeps the star as the main focus, with no puffin on it. Fold & punch, Rotate and Mirror "Why?" boxes have a **Show me** link that animates the answer: unfolding from the puzzle's own folds (`unfoldSteps`), the picture turning the short way (`showTurn`), or flipping over the mirror line (`MIRROR_AXIS`). Tests check each animation lands on the marked answer.
 - **Text for 5–8 year olds:** Andika, large question text, short plain sentences, kind wording ("Good effort!", never "Wrong").
 - **Keep clear of Puffin Books** (Penguin Random House's children's imprint): don't use "Puffin Books", "Puffin stories", "Puffin Club" or similar names, and keep our logo (a round colourful badge, puffin holding a puzzle piece) visibly different from theirs.
 - **Never use the child's name on the site.** The footer credit stays "Made by a parent with Claude".
@@ -75,6 +75,8 @@ These are over 110 checks using only Node 18+, and GitHub Actions runs them on e
 - **Back up progress:** a "save my progress" file or code from the footer, so clearing the browser or changing tablets doesn't lose stickers.
 
 ## Ideas not done yet
+
+- More "Show me" animations: Cube nets folding up into a cube (most helpful, true 3D), then View from the right (model turning), Top view (model tilting down), Complete the pair (shapes sliding). Not worth it for Codes, Odd one out, Word ladders, Fill the gap or Warm-up.
 
 - Accessibility pass: keyboard, screen readers, contrast in all five themes.
 - Optional timed mode for older children (off by default, calm countdown).
