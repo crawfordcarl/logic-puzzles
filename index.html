@@ -1478,11 +1478,36 @@ function explain(p,o){
       const bits=p.key.map(k=>`${k.letter} means ${D[k.nm](k.val)}`);
       return `Here ${bits.join(', ')}. So the last picture is ${p.opts[p.ans]}.`;}
     case 'punch':case 'punch2':{
-      const n=(p.opts[p.ans].holes||p.opts[p.ans].holes2).length;
-      return `Unfold one step at a time, starting with the last fold. Each fold opens into a mirror copy of the holes, so the opened paper has ${n} holes.`;}
-    case 'cube':return p.dir==='toNet'?'Two faces that are opposite each other on a cube can never be seen together. In that net, check which faces end up opposite, and which way each picture points when it folds up.':'In the net, faces with one square between them in a straight line end up opposite each other, so you can never see both at once. Then check which way each picture points.';
-    case 'top':{const n=p.cols.length;return `From straight above you see just the top of each stack, however tall it is. This model has ${n} stacks, so you see ${n} squares in that shape. The answer may be turned round.`;}
-    case 'side':return p.view3d?'Imagine walking round to where the eye is: the side the eye looks at becomes the front. Check where the tall stacks and dark blocks end up.':'From the right you only see the nearest block in each row and column. A dark block only shows if nothing stands in front of it.';
+      const right=p.opts[p.ans],n=(right.holes||right.holes2).length,k=(o.holes||o.holes2).length;
+      const tri=!!(right.holes2&&right.holes2.some(h=>h.tri));
+      if(k!==n)return `That one has ${k} hole${k===1?'':'s'}, but the opened paper has ${n}. Each fold opens into a mirror copy of the holes, so count them one fold at a time, starting with the last fold.`;
+      if(right.holes2){
+        const at=(A,B)=>A.every(a=>B.some(b=>Math.hypot(a.c[0]-b.c[0],a.c[1]-b.c[1])<3));
+        if(at(o.holes2,right.holes2)&&tri)return 'The holes are in the right places, but check which way the triangles point. When a fold opens, each copy is flipped over like a reflection, so a triangle points the opposite way across the fold.';
+        return `Some holes are in the wrong place. Unfold the last fold first: each hole gets a twin the same distance away on the other side of that fold line.${tri?' And remember each copied triangle is flipped, so it points the other way.':''}`;
+      }
+      return 'Some holes are in the wrong place. Unfold the last fold first: each hole gets a twin the same distance away on the other side of that fold line.';}
+    case 'cube':{
+      const opp=(c,g1,g2)=>{const a=c.find(f=>f.g===g1),b=c.find(f=>f.g===g2);return a&&b&&a.n.every((x,i)=>x===-b.n[i])};
+      if(p.dir==='toNet'){
+        const c=netToCube(o),g=p.view.map(f=>f.g);
+        for(const [x,y] of [[0,1],[0,2],[1,2]])if(opp(c,g[x],g[y]))return `In that net, ${GLYPHW[g[x]]} and ${GLYPHW[g[y]]} end up opposite each other, so they could never be seen together like they are on this cube.`;
+        return 'That net puts the right faces next to each other, but folded up, one of the pictures would point a different way. Check the direction of each letter or arrow as you fold.';
+      }
+      const c=netToCube(p.net),g=o.view.map(f=>f.g);
+      for(const [x,y] of [[0,1],[0,2],[1,2]])if(opp(c,g[x],g[y]))return `That cube shows ${GLYPHW[g[x]]} and ${GLYPHW[g[y]]} together, but in the net they're opposite each other, with one square between them in a line. So they can never be seen at the same time.`;
+      if(g.some(x=>!c.some(f=>f.g===x)))return 'That cube has a picture that isn\'t in the net at all.';
+      return 'Those three faces can sit together, but one of the pictures is pointing the wrong way. In the net, check which way each one faces as you fold it up.';}
+    case 'top':{const n=p.cols.length,k=o.plan.length;
+      if(k!==n)return `That shape has ${k} squares, but the model has ${n} stacks. From straight above you see just one square for each stack, however tall it is.`;
+      return `The right number of squares, but not the right shape. From above, each stack is one square. Trace the model's outline from the top. The answer may be turned round.`;}
+    case 'side':{
+      if(p.view3d)return 'Imagine walking round to where the eye is: the side the eye looks at becomes the front. Check where the tall stacks and dark blocks end up.';
+      const g=p.opts[p.ans].grid,W=g[0].length,H=g.length,w=o.grid[0].length,h=o.grid.length;
+      if(w!==W||h!==H)return `From the right, the blocks are ${W} wide and ${H} tall, but that picture is ${w} wide and ${h} tall. You might be looking from the front or the other side.`;
+      const dk=G=>G.flat().filter(v=>v===2).length;
+      if(dk(o.grid)!==dk(g))return 'The shape is right, but the dark blocks aren\'t. A dark block only shows if nothing is standing in front of it from where the eye is.';
+      return 'Nearly! The outline is the right size, but some blocks are in the wrong place. Picture yourself where the eye is and check one column at a time.';}
     case 'count':{const all=p.prompt.startsWith('How many blocks are'),hs=p.cols.map(c=>c.h);
       return all?`Add up how tall each tower is: ${hs.join(' + ')} = ${hs.reduce((a,b)=>a+b,0)}.`:`From above, each tower looks like just one block, however tall it is. There are ${hs.length} towers, so you would see ${hs.length}.`;}
     case 'ladder':return `Each step changes just one letter: ${[p.start,...p.opts[p.ans].split('\n'),p.end].join(' → ')}.`;

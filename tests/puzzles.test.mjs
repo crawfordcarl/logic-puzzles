@@ -309,3 +309,26 @@ test('fold & punch (any shape): no punched hole touches the edge of the paper or
     T.setXP(false);
   }
 });
+
+// Feedback 2026-11-07: when only the triangle holes pointed the wrong way, the explanation just
+// talked about unfolding. The reason under a wrong answer must name the actual mistake.
+test('fold & punch: wrong answers get the reason that fits them', () => {
+  const near = (A, B) => A.length === B.length && A.every(a => B.some(b => Math.hypot(a.c[0] - b.c[0], a.c[1] - b.c[1]) < 3));
+  let triangleCases = 0;
+  for (const level of LEVELS.filter(l => l.lvl === 'hard')) {
+    T.setXP(level.xp);
+    for (let i = 0; i < N; i++) {
+      const p = T.punch2Puzzle('hard');
+      if (!p) continue;
+      const right = p.opts[p.ans].holes2;
+      p.opts.forEach((o, k) => {
+        if (k === p.ans) return;
+        const why = T.explain(p, o);
+        if (o.holes2.length !== right.length) assert.match(why, new RegExp(`has ${o.holes2.length} holes?, but the opened paper has ${right.length}`));
+        else if (near(o.holes2, right) && right.some(h => h.tri)) { triangleCases++; assert.match(why, /triangles point/); }
+      });
+    }
+    T.setXP(false);
+  }
+  assert.ok(triangleCases > 0, 'no triangle-direction mistakes were generated to check');
+});
