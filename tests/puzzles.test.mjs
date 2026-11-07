@@ -366,3 +366,41 @@ test('rotate & mirror "Show me": the animation lands on the marked answer', () =
     }
   }
 });
+
+// "Show me" for Top view and View from the right turns the real model with a small camera.
+// Where the camera ends must give exactly the marked answer.
+test('block views "Show me": the camera ends on the marked answer', () => {
+  const cellsAt = (faces, pick) => [...new Set(faces.filter(pick).map(f => {
+    const cx = f.pts.reduce((a, q) => a + q[0], 0) / 4, cy = f.pts.reduce((a, q) => a + q[1], 0) / 4;
+    return Math.round(cx * 2) / 2 + ',' + Math.round(cy * 2) / 2;
+  }))];
+  const norm = list => { const v = list.map(s => s.split(',').map(Number)); const mx = Math.min(...v.map(a => a[0])), my = Math.min(...v.map(a => a[1])); return v.map(([a, b]) => (a - mx) + ',' + (b - my)).sort().join(' '); };
+  for (const level of LEVELS) {
+    for (const p of make('top', level, 150).puzzles) {
+      const to = T.blockTarget(p), tops = T.projectBlocks(p.cols, to.yaw, to.tilt).filter(f => f.k === 'top');
+      // from straight above, the squares you see are exactly the footprint of the model
+      const seen = cellsAt(tops, () => true).map(s => s.split(',').map(Number)).map(([a, b]) => [a - 0.5, b - 0.5]);
+      assert.equal(T.canonTurn(seen.map(([a, b]) => [Math.round(a), Math.round(b)])), T.canonTurn(p.opts[p.ans].plan), `${level.name}: top view doesn't match`);
+    }
+    for (const p of make('side', level, 120).puzzles) {
+      const to = T.blockTarget(p);
+      if (p.view3d) {
+        // a quarter turn round the model draws exactly what the answer picture draws
+        const a = T.projectBlocks(p.cols, to.yaw, to.tilt), b = T.projectBlocks(p.opts[p.ans].cols3, T.BLOCK_START.yaw, T.BLOCK_START.tilt);
+        // line the two drawings up first, then round, so a shifted copy still matches
+        const key = fs => { const c = fs.map(f => [f.pts.reduce((s, q) => s + q[0], 0) / 4, f.pts.reduce((s, q) => s + q[1], 0) / 4, f.dark]);
+          const mx = Math.min(...c.map(v => v[0])), my = Math.min(...c.map(v => v[1]));
+          return c.map(([x, y, d]) => Math.round((x - mx) * 4) + ',' + Math.round((y - my) * 4) + (d ? 'D' : '')).sort().join(' '); };
+        assert.equal(key(a), key(b), `${level.name}: the 3D side view doesn't match`);
+      } else {
+        // looking straight at the eye's side, the front-most faces make the flat answer, dark blocks included
+        const front = T.projectBlocks(p.cols, to.yaw, to.tilt).filter(f => f.k !== 'top');
+        const cells = new Map();
+        for (const f of front) { const cx = f.pts.reduce((a, q) => a + q[0], 0) / 4, cy = f.pts.reduce((a, q) => a + q[1], 0) / 4; cells.set(Math.round(cx - .5) + ',' + Math.round(cy - .5), f.dark ? 2 : 1); }
+        const xs = [...cells.keys()].map(k => +k.split(',')[0]), ys = [...cells.keys()].map(k => +k.split(',')[1]);
+        const g = []; for (let y = Math.min(...ys); y <= Math.max(...ys); y++) { const row = []; for (let x = Math.min(...xs); x <= Math.max(...xs); x++) row.push(cells.get(x + ',' + y) || 0); g.push(row); }
+        assert.equal(T.gridKey(g), T.gridKey(p.opts[p.ans].grid), `${level.name}: the flat side view doesn't match`);
+      }
+    }
+  }
+});

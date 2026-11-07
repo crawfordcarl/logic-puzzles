@@ -1043,6 +1043,30 @@ function punch2Puzzle(lvl){
     return {type:'punch2',paper,pname,folds,final:R,layers,punched,opts,ans:opts.indexOf(cor)};
   }
 }
+/* ---------- "Show me" for the block models: a tiny camera that can look from any angle ---------- */
+// yaw turns the camera round the model, tilt is how far it looks down (radians). The starting
+// view is the same as the pictures on the page (true isometric: yaw 45°, tilt 35.26°).
+const BLOCK_START={yaw:Math.PI/4,tilt:Math.atan(1/Math.SQRT2)};
+// where each block puzzle's animation ends: looking down from above, from the eye's side, or a quarter turn round
+const blockTarget=p=>p.type==='top'?{yaw:0,tilt:Math.PI/2}:p.view3d?{yaw:3*Math.PI/4,tilt:BLOCK_START.tilt}:{yaw:Math.PI/2,tilt:0};
+function projectBlocks(cols,yaw,tilt){
+  const cy=Math.cos(yaw),sy=Math.sin(yaw),ce=Math.cos(tilt),se=Math.sin(tilt);
+  const P=(x,y,z)=>{const xr=x*cy-y*sy,yr=x*sy+y*cy;return [xr,yr*se-z*ce]};
+  const depth=(x,y,z)=>(x*sy+y*cy)*ce+z*se;
+  const g=[sy*ce,cy*ce,se];
+  const has=new Set();cols.forEach(c=>{for(let z=0;z<c.h;z++)has.add(c.x+','+c.y+','+z)});
+  const cubes=[];cols.forEach(c=>{for(let z=0;z<c.h;z++)cubes.push({x:c.x,y:c.y,z,dark:(c.dark||[]).includes(z)})});
+  const FACES=[{n:[0,0,1],k:'top',q:[[0,0,1],[1,0,1],[1,1,1],[0,1,1]]},{n:[1,0,0],k:'x',q:[[1,0,0],[1,1,0],[1,1,1],[1,0,1]]},{n:[-1,0,0],k:'x',q:[[0,0,0],[0,1,0],[0,1,1],[0,0,1]]},
+    {n:[0,1,0],k:'y',q:[[0,1,0],[1,1,0],[1,1,1],[0,1,1]]},{n:[0,-1,0],k:'y',q:[[0,0,0],[1,0,0],[1,0,1],[0,0,1]]}];
+  const out=[];
+  cubes.sort((a,b)=>depth(a.x+.5,a.y+.5,a.z+.5)-depth(b.x+.5,b.y+.5,b.z+.5));
+  for(const c of cubes)for(const f of FACES){
+    if(f.n[0]*g[0]+f.n[1]*g[1]+f.n[2]*g[2]<=1e-6)continue;
+    if(has.has((c.x+f.n[0])+','+(c.y+f.n[1])+','+(c.z+f.n[2])))continue;
+    out.push({k:f.k,dark:c.dark,pts:f.q.map(([a,b,e])=>P(c.x+a,c.y+b,c.z+e)),cube:c});
+  }
+  return out;
+}
 /* ---------- "Show me" for Rotate and Mirror ---------- */
 // the turn to show: the right answer's angle, taken the short way round (positive = clockwise)
 const showTurn=p=>{const a=mod(p.opts[p.ans].a,360);return a>180?a-360:a};
@@ -1732,7 +1756,7 @@ if(typeof document!=='undefined'){
         return `<button class="${cls}" data-q="${qi}" data-o="${oi}" ${p.done?'disabled':''} aria-label="Answer ${LET[oi]}">${inner}<span class="let">${LET[oi]}</span></button>`;
       }).join('');
       return `<section class="q"><div class="qhead"><div class="num">${qi+1}</div><p class="prompt">${p.prompt?p.prompt:p.type==='cube'?(p.dir==='toNet'?'Which net folds up to make this cube?':'Which cube can be made by folding up this net?'):PROMPT[p.type]}</p></div>${TIP_TYPES.has(p.type)&&!p.done&&struggled?(p.tips?`<div class="ptips"><p><span class="tiplogo" aria-hidden="true">${PUFF_MINI}</span>${tipsFor(p)[1]}</p></div>`:`<div class="tiprow"><button class="tipbtn" data-tipq="${qi}"><span class="tiplogo" aria-hidden="true">${PUFF_MINI}</span>Puffin tip</button></div>`):''}
-        <div class="body">${stem(p,qi)}<div class="opts" style="grid-template-columns:repeat(${p.opts.length},minmax(0,1fr))">${opts}</div></div>${p.done&&p.pick>=0&&p.pick!==p.ans?`<p class="why"><b>Why?</b> ${explain(p,p.opts[p.pick])}${['punch','punch2','rotate','mirror'].includes(p.type)?` <button class="showme" data-showme="${qi}">Show me</button>`:''}</p>`:''}</section>`;
+        <div class="body">${stem(p,qi)}<div class="opts" style="grid-template-columns:repeat(${p.opts.length},minmax(0,1fr))">${opts}</div></div>${p.done&&p.pick>=0&&p.pick!==p.ans?`<p class="why"><b>Why?</b> ${explain(p,p.opts[p.pick])}${['punch','punch2','rotate','mirror','top','side'].includes(p.type)?` <button class="showme" data-showme="${qi}">Show me</button>`:''}</p>`:''}</section>`;
     }).join('');
     document.getElementById('score').textContent=`${right} / ${set.length}`;
   }
@@ -1947,6 +1971,7 @@ if(typeof document!=='undefined'){
     document.querySelectorAll('#uf-opts .uf-o').forEach(e=>e.classList.remove('right','lit'));
     if(ufPuzzle.type==='rotate')return ufRotate();
     if(ufPuzzle.type==='mirror')return ufMirror();
+    if(ufPuzzle.type==='top'||ufPuzzle.type==='side')return ufBlocks();
     return ufPunch();
   }
   const ufStill=()=>window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1976,6 +2001,31 @@ if(typeof document!=='undefined'){
     ufCap.textContent='The dashed line is the mirror. Watch the picture flip over it, like turning a page.';
     ufLater(()=>{flap.style.transform=`rotate3d(${dx},${dy},0,180deg)`},still?600:1000);
     ufLater(()=>{ufReveal();ufCap.textContent=`That's the mirror image: answer ${LET[p.ans]}. ${p.axis==='h'?'Top and bottom have swapped.':p.axis==='v'?'Left and right have swapped.':'Each part is the same distance from the line, on the other side.'}`},still?1400:2600);
+  }
+  function ufBlocks(){
+    const p=ufPuzzle,from=BLOCK_START,to=blockTarget(p),still=ufStill();
+    // one fixed frame for the whole animation, so the model doesn't zoom about
+    let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;
+    for(let i=0;i<=12;i++){const t=i/12;for(const f of projectBlocks(p.cols,from.yaw+(to.yaw-from.yaw)*t,from.tilt+(to.tilt-from.tilt)*t))for(const[a,b]of f.pts){x0=Math.min(x0,a);x1=Math.max(x1,a);y0=Math.min(y0,b);y1=Math.max(y1,b)}}
+    const sz=Math.max(x1-x0,y1-y0)*1.12,vx=(x0+x1)/2-sz/2,vy=(y0+y1)/2-sz/2,sw=(sz/100).toFixed(3);
+    ufStage.innerHTML=`<div class="uf-layer"><svg viewBox="${vx} ${vy} ${sz} ${sz}" id="uf-blocks"></svg></div>`;
+    const svg=document.getElementById('uf-blocks');
+    const fill=f=>f.dark?(f.k==='top'?'var(--d1)':f.k==='y'?'var(--d2)':'var(--d3)'):(f.k==='top'?'var(--card)':f.k==='y'?'var(--accent-soft)':'var(--grey)');
+    const draw=t=>{const e=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2,yaw=from.yaw+(to.yaw-from.yaw)*e,tilt=from.tilt+(to.tilt-from.tilt)*e;
+      svg.innerHTML=projectBlocks(p.cols,yaw,tilt).map(f=>`<polygon points="${f.pts.map(q=>q[0].toFixed(3)+','+q[1].toFixed(3)).join(' ')}" style="fill:${fill(f)};stroke:${f.dark?'var(--card)':'var(--ink)'};stroke-width:${sw};stroke-linejoin:round"/>`).join('')};
+    draw(0);
+    ufCap.textContent=p.type==='top'?'Here are the blocks. Now imagine floating up above them…':'Here are the blocks. Now imagine walking round to where the eye is…';
+    const go=()=>{
+      if(still){draw(1);return}
+      const t0=performance.now(),dur=2400;
+      const step=now=>{const t=Math.min(1,(now-t0)/dur);draw(t);if(t<1&&!ufBox.hidden)requestAnimationFrame(step)};
+      requestAnimationFrame(step);
+    };
+    ufLater(go,still?700:1100);
+    ufLater(()=>{ufReveal();
+      ufCap.textContent=p.type==='top'?`From straight above, every stack is just one square, however tall it is: that's answer ${LET[p.ans]}. The answer may be turned round.`
+        :p.view3d?`Now the side the eye was looking at is at the front: that's answer ${LET[p.ans]}.`
+        :`From where the eye is, you only see the front of each row: that's answer ${LET[p.ans]}.`},still?1500:3700);
   }
   function ufPunch(){
     ufTimers.forEach(clearTimeout);ufTimers=[];
@@ -2018,7 +2068,7 @@ if(typeof document!=='undefined'){
   seg('mode',v=>{mode=v;keep('pp-mode',v)});seg('level',v=>{level=v;keep('pp-level',v)});
   build();
   renderProgress();
-}else{globalThis.__T={showTurn,MIRROR_AXIS,unfoldSteps,nearEdge,HR,explain,tipsFor,GLYPHW,side3dPuzzle,lookKey,turnRight,matPair,applyMat,matKey,punch2Puzzle,holesSimilar,insideP,reflectPt,sideOf,TR,usesOf,sigOf,resetUsed:()=>USED_ICONS=new Set(),USED:()=>USED_ICONS,canonTurn,setXP:v=>XP=v,chainOK,viewGrid,gridKey,canonAll,GEN,key,valid,holeKey,netToCube,showsView,viewOf,cubeKey,unfold}}
+}else{globalThis.__T={projectBlocks,blockTarget,BLOCK_START,showTurn,MIRROR_AXIS,unfoldSteps,nearEdge,HR,explain,tipsFor,GLYPHW,side3dPuzzle,lookKey,turnRight,matPair,applyMat,matKey,punch2Puzzle,holesSimilar,insideP,reflectPt,sideOf,TR,usesOf,sigOf,resetUsed:()=>USED_ICONS=new Set(),USED:()=>USED_ICONS,canonTurn,setXP:v=>XP=v,chainOK,viewGrid,gridKey,canonAll,GEN,key,valid,holeKey,netToCube,showsView,viewOf,cubeKey,unfold}}
 </script>
 
 </body>
