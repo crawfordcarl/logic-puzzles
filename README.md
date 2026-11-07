@@ -31,10 +31,14 @@ Each type has four levels: Easy, Normal, Tricky and Expert. **Mix** gives one of
 
 - Every set is generated fresh, with no repeated pictures or layouts within a set.
 - Each puzzle is checked as it's made so it has exactly one correct answer.
-- Rotate puzzles have a hint button that turns the picture (3 turns per question).
-- A progress table records scores, saved in the browser on that device.
-- A celebration screen at the end of each set, with confetti and poppable balloons for 10/10.
-- Works on phones, tablets and computers, in light and dark mode.
+- Wrong answers get a short "Why?" explanation.
+- Rotate puzzles have a hint button that turns the picture (3 turns per question). After a mistake, the hardest puzzle types also offer a "Puffin tip" that nudges without giving the answer.
+- A celebration screen at the end of each set, with confetti and poppable balloons for 10/10, and a suggestion to try the next level after three sets in a row of nearly all right.
+- A sticker book with 21 stickers, each with a clear goal (nothing random).
+- A progress table and a parent summary ("Strongest · Practise more"), saved in the browser on that device.
+- Five colour themes, light and dark mode, and reduced motion respected throughout.
+- Works offline after the first visit, and can be added to a home screen (never prompted).
+- A printable worksheet with an answer key, from the link at the foot of the page.
 
 ## Updating
 
