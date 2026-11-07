@@ -227,6 +227,33 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .tiplogo svg{width:100%;height:100%;display:block}
 .ptips{max-width:62ch}
 .ptips p{margin:0;font-size:1.02rem;line-height:1.5;padding:8px 12px;border-radius:10px;background:var(--accent-soft);display:flex;gap:8px;align-items:flex-start}
+.printlink{margin:22px 0 0;text-align:center}
+.linkbtn{font:inherit;font-size:.9rem;color:var(--muted);background:none;border:0;padding:4px;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.linkbtn:hover{color:var(--accent)}
+.credit{margin-top:8px}
+.worksheet{display:none}
+@media print{
+  html:root:root:root{--paper:#fff;--card:#fff;--ink:#000;--muted:#444;--rule:#999;--grey:#b5b5b5;--accent:#000;--accent-soft:#eee;--flap:#ddd;--d1:#555;--d2:#333;--d3:#222;color-scheme:light}
+  @page{margin:14mm}
+  body{background:#fff}
+  body>*:not(.worksheet):not(.defs){display:none!important}
+  .worksheet{display:block;font-family:var(--body);color:#000}
+  .ws-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;border-bottom:2px solid #000;padding-bottom:8px;margin-bottom:10px}
+  .ws-head h2,.ws-key h2{font-family:var(--display);font-size:22pt;margin:0;line-height:1}
+  .ws-head p{margin:2px 0 0}
+  .ws-lines{display:flex;flex-direction:column;gap:6px;font-size:11pt}
+  .ws-how{margin:0 0 6px;font-size:11pt}
+  .pq{break-inside:avoid;page-break-inside:avoid;display:flex;flex-direction:column;gap:6px;padding:8px 0;border-bottom:1px solid #bbb}
+  .pq .opt{border:1px solid #888;border-radius:8px;cursor:default;padding:4px}
+  .pq .opt .pic{max-width:80px}
+  .pq .hintbtn{border:0;background:none;padding:0}
+  .pq .hintbtn .hl{display:none}
+  .pq .prompt{font-size:12pt}
+  .pq .fig{width:76px;height:76px}.pq .fig.sm{width:58px;height:58px}.pq .fig.isofig{width:120px;height:120px}.pq .fig.netfig{width:120px;height:120px}
+  .ws-key{break-before:page;page-break-before:always}
+  .ws-key ol{columns:2;font-size:14pt;line-height:1.8;padding-left:0;list-style:none}
+  .ws-foot{margin-top:24px;color:#555;font-size:10pt}
+}
 .tip{color:var(--muted);font-size:1rem;line-height:1.55;max-width:62ch;margin:0}
 .shape{fill:var(--card);stroke:currentColor;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
 .ink{fill:currentColor;stroke:none}
@@ -349,8 +376,10 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
     <div class="pclear" id="pclear"></div>
   </section>
 
+  <p class="printlink"><button class="linkbtn" id="printbtn">Print a worksheet of these puzzles</button></p>
   <footer class="credit">Made by a parent with <a href="https://claude.ai" target="_blank" rel="noopener">Claude</a>, an AI assistant made by Anthropic.</footer>
 </div>
+<div id="worksheet" class="worksheet" aria-hidden="true"></div>
 
 <script>
 /* ---------- helpers ---------- */
@@ -1593,6 +1622,19 @@ if(typeof document!=='undefined'){
       default:return '';
     }
   }
+  const optInner=(p,o)=>typeof o==='string'?`<span class="codeopt${p.wordy?' wordopt':''}">${o}</span>`:`<span class="pic">${o.cols3?isoSVG(o.cols3):o.holes2?holes2SVG(o):o.grid?gridSVG(o):o.plan?planSVG(o):o.holes?holesSVG(o.holes):o.net?netSVG(o):o.view?cubeSVG(o.view):figSVG(o)}</span>`;
+  const promptOf=p=>p.prompt?p.prompt:p.type==='cube'?(p.dir==='toNet'?'Which net folds up to make this cube?':'Which cube can be made by folding up this net?'):PROMPT[p.type];
+  /* ---- printable worksheet: a clean copy of the current set plus an answer key ---- */
+  function buildWorksheet(){
+    const t=document.querySelector(`#mode button[data-v="${mode}"] .tl`),l=document.querySelector(`#level button[data-v="${level}"]`);
+    const what=(t?t.textContent:'')+(l?' · '+l.textContent:'');
+    const qs=set.map((p,qi)=>`<section class="pq"><div class="qhead"><div class="num">${qi+1}</div><p class="prompt">${promptOf(p)}</p></div>
+      <div class="body">${stem({...p,done:false,turn:0,hints:0},'w'+qi)}<div class="opts" style="grid-template-columns:repeat(${p.opts.length},minmax(0,1fr))">${p.opts.map((o,oi)=>`<div class="opt">${optInner(p,o)}<span class="let">${LET[oi]}</span></div>`).join('')}</div></div></section>`).join('');
+    const key=set.map((p,qi)=>`<li><b>${qi+1}.</b> ${LET[p.ans]}${typeof p.opts[p.ans]==='string'&&!p.wordy?` (${p.opts[p.ans]})`:''}</li>`).join('');
+    document.getElementById('worksheet').innerHTML=`<header class="ws-head"><div><h2>Puzzle Puffin</h2><p>${what}</p></div><div class="ws-lines"><span>Name: ____________________</span><span>Date: ______________</span></div></header>
+      <p class="ws-how">Circle the letter of the right answer for each question.</p>${qs}
+      <section class="ws-key"><h2>Answers</h2><p>${what}</p><ol>${key}</ol><p class="ws-foot">puzzlepuffin.com</p></section>`;
+  }
   function render(){
     // tips only show once a question in this set has been answered wrongly
     const struggled=set.some(q=>q.done&&q.pick>=0&&q.pick!==q.ans);
@@ -1600,7 +1642,7 @@ if(typeof document!=='undefined'){
       const opts=p.opts.map((o,oi)=>{
         let cls='opt';
         if(p.done){if(oi===p.ans)cls+=' right'+(p.fresh&&p.pick===p.ans?' fresh':'');else if(p.pick===oi)cls+=' wrong'}
-        const inner=typeof o==='string'?`<span class="codeopt${p.wordy?' wordopt':''}">${o}</span>`:`<span class="pic">${o.cols3?isoSVG(o.cols3):o.holes2?holes2SVG(o):o.grid?gridSVG(o):o.plan?planSVG(o):o.holes?holesSVG(o.holes):o.net?netSVG(o):o.view?cubeSVG(o.view):figSVG(o)}</span>`;
+        const inner=optInner(p,o);
         return `<button class="${cls}" data-q="${qi}" data-o="${oi}" ${p.done?'disabled':''} aria-label="Answer ${LET[oi]}">${inner}<span class="let">${LET[oi]}</span></button>`;
       }).join('');
       return `<section class="q"><div class="qhead"><div class="num">${qi+1}</div><p class="prompt">${p.prompt?p.prompt:p.type==='cube'?(p.dir==='toNet'?'Which net folds up to make this cube?':'Which cube can be made by folding up this net?'):PROMPT[p.type]}</p></div>${TIP_TYPES.has(p.type)&&!p.done&&struggled?(p.tips?`<div class="ptips"><p><span class="tiplogo" aria-hidden="true">${PUFF_MINI}</span>${tipsFor(p)[1]}</p></div>`:`<div class="tiprow"><button class="tipbtn" data-tipq="${qi}"><span class="tiplogo" aria-hidden="true">${PUFF_MINI}</span>Puffin tip</button></div>`):''}
@@ -1798,6 +1840,8 @@ if(typeof document!=='undefined'){
     document.getElementById('stk-count').textContent=`${got.size} of ${STICKERS.length} collected`;
     el.innerHTML=STICKERS.map((st,i)=>stickerHTML(st,got.has(st.id),i)).join('');
   }
+  document.getElementById('printbtn').addEventListener('click',()=>{buildWorksheet();try{window.print()}catch(e){}});
+  window.addEventListener('beforeprint',buildWorksheet);
   seg('mode',v=>mode=v);seg('level',v=>level=v);
   build();
   renderProgress();
