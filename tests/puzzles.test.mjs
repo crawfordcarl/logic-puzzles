@@ -263,3 +263,25 @@ test('codes: every letter of the answer can be worked out from the examples', ()
     }
   }
 });
+
+// ---------- puffin tips ----------
+
+test('puffin tips: two readable tips on the hard puzzle types, and the cube tip names a truly opposite pair', () => {
+  for (const type of ['cube', 'punch', 'top', 'side']) {
+    for (const level of LEVELS) {
+      const { puzzles } = make(type, level, 100);
+      for (const p of puzzles) {
+        const tips = T.tipsFor(p);
+        assert.equal(tips.length, 2, `${type}: expected two tips`);
+        tips.forEach(t => assert.doesNotMatch(t, /undefined|NaN|null|\[object/, `${type}: broken tip "${t}"`));
+        assert.deepEqual(T.tipsFor(p), tips, 'a tip changed between redraws');
+        if (p.type === 'cube' && p.dir === 'toCube') {
+          const cube = T.netToCube(p.net), name = g => T.GLYPHW[g];
+          const named = cube.filter(f => tips[1].includes(name(f.g)));
+          assert.equal(named.length, 2, 'the tip should name two faces');
+          assert.ok(named[0].n.every((x, i) => x === -named[1].n[i]), `${tips[1]} — those faces are not opposite`);
+        }
+      }
+    }
+  }
+});

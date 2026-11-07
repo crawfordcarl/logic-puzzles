@@ -220,6 +220,15 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .cel-up-t{font-family:var(--display);font-weight:800;font-size:1.2rem;color:var(--accent)}
 .cel-up-m{color:var(--ink);font-size:.98rem;max-width:30ch}
 .cel-up .btn{margin-top:4px}
+.tiprow{display:flex}
+.tipbtn{font:inherit;font-weight:700;font-size:.95rem;color:var(--ink);background:var(--accent-soft);border:1.5px dashed var(--accent);border-radius:999px;padding:4px 12px 4px 5px;display:inline-flex;align-items:center;gap:7px;cursor:pointer}
+.tipbtn:hover:not([disabled]){border-style:solid}
+.tipbtn[disabled]{opacity:.5;cursor:default}
+.tiplogo{width:26px;height:26px;display:block}
+.tiplogo svg{width:100%;height:100%;display:block}
+.tipleft{font-weight:400;font-size:.8rem;color:var(--muted)}
+.ptips{display:flex;flex-direction:column;gap:6px;max-width:62ch}
+.ptips p{margin:0;font-size:1.02rem;line-height:1.5;padding:8px 12px;border-radius:10px;background:var(--accent-soft)}
 .tip{color:var(--muted);font-size:1rem;line-height:1.55;max-width:62ch;margin:0}
 .shape{fill:var(--card);stroke:currentColor;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
 .ink{fill:currentColor;stroke:none}
@@ -1442,6 +1451,38 @@ function explain(p,o){
   }
   return '';
 }
+/* ---------- puffin tips: a strategy first, then a nudge about this question (never the answer) ---------- */
+const GLYPHW={F:'the letter F',G:'the letter G',P:'the letter P',R:'the letter R',E:'the letter E','2':'the number 2','3':'the number 3','4':'the number 4','5':'the number 5',
+  heart:'the heart',arrow:'the arrow',moon:'the moon',target:'the target',plus:'the plus sign',xmark:'the cross',box:'the square with a dot',dots:'the four dots',diamond:'the diamond',half:'the half-black square',corner:'the corner triangle'};
+const PUFF_MINI='<svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">\n  <circle cx="60" cy="60" r="57" fill="#cfe6f4" stroke="#1c2430" stroke-width="3"/>\n  <path d="M8 84 Q34 76 60 84 T112 84 A57 57 0 0 1 8 84 Z" fill="#9fcbe6"/>\n  <ellipse cx="47" cy="104" rx="8" ry="4" fill="#f47b20" stroke="#1c2430" stroke-width="2"/>\n  <ellipse cx="66" cy="105" rx="8" ry="4" fill="#f47b20" stroke="#1c2430" stroke-width="2"/>\n  <ellipse cx="56" cy="74" rx="29" ry="31" fill="#1f2733"/>\n  <ellipse cx="63" cy="80" rx="18" ry="23" fill="#ffffff"/>\n  <circle cx="62" cy="42" r="22" fill="#1f2733"/>\n  <ellipse cx="68" cy="43" rx="14" ry="13" fill="#ffffff"/>\n  <path d="M80 34 Q104 38 106 47 Q100 55 80 54 Z" fill="#f47b20" stroke="#1c2430" stroke-width="2.4" stroke-linejoin="round"/>\n  <path d="M80 34 Q87 35 88 44 Q87 53 80 54 Z" fill="#ffd23f"/>\n  <path d="M80 34 L80 54" stroke="#9aa7b4" stroke-width="4"/>\n  <path d="M93 41 Q95 45 93 50" fill="none" stroke="#c4410f" stroke-width="2" stroke-linecap="round"/>\n  <circle cx="71" cy="40" r="5.2" fill="#e8553d"/>\n  <circle cx="71" cy="40" r="3.4" fill="#1c2430"/>\n  <circle cx="72.2" cy="38.8" r="1.1" fill="#ffffff"/>\n  <path d="M66.5 40.5 Q62 41 58.5 44" fill="none" stroke="#1f2733" stroke-width="2" stroke-linecap="round"/><path d="M69 34.2 L71 31.5 L73 34.2 Z" fill="#1f2733"/>\n  <path d="M34 66 Q30 90 50 98 Q42 82 44 66 Z" fill="#141a22"/>\n  <g transform="translate(58 72) rotate(-12)">\n    <path d="M0 0 H7 a4 4 0 1 1 6 0 H20 V7 a4 4 0 1 0 0 6 V20 H0 Z" fill="#ffd23f" stroke="#1c2430" stroke-width="2.2" stroke-linejoin="round"/>\n  </g>\n  <path d="M48 86 Q56 84 60 78" fill="none" stroke="#141a22" stroke-width="6" stroke-linecap="round"/>\n</svg>';
+const TIP_TYPES=new Set(['cube','punch','punch2','top','side']);
+// worked out once per question, so the tip doesn't change when the page redraws
+const tipsFor=p=>p._tips||(p._tips=tipsCalc(p));
+function tipsCalc(p){
+  switch(p.type){
+    case 'cube':{
+      if(p.dir==='toNet'){const v=p.view.map(f=>GLYPHW[f.g]||'that picture');
+        return ['Faces that are opposite each other on a cube can never be seen at the same time. Find them in each net first.',
+          `This cube shows ${v[0]}, ${v[1]} and ${v[2]} all at once, so in the right net none of those three can be opposite each other.`];}
+      const c=netToCube(p.net),a=pick(c),b=c.find(f=>f.n.every((x,i)=>x===-a.n[i]));
+      return ['In a net, two squares with exactly one square between them in a straight line end up opposite each other.',
+        `In this net, ${GLYPHW[a.g]||'one picture'} and ${GLYPHW[b.g]||'another'} end up opposite each other, so no cube can show them both.`];}
+    case 'punch':case 'punch2':{
+      const n=(p.opts[p.ans].holes||p.opts[p.ans].holes2).length;
+      return ['Unfold the last fold first, then the one before. Each time, the holes get a mirror copy on the other side of the fold.',
+        `The holes go through every layer, so when the paper is opened out it will have ${n} holes.`];}
+    case 'top':{const n=p.cols.length;
+      return ['From straight above, a tall tower looks just like a single block. Ignore how tall the stacks are.',
+        `Count the stacks: there are ${n}, so the right answer has ${n} squares.`];}
+    case 'side':{
+      if(p.view3d)return ['Imagine walking round to where the eye is. The side the eye looks at becomes the front.',
+        'Find the tallest stack first and work out where it ends up, then check the dark blocks.'];
+      const ys=p.cols.map(c=>c.y),wide=Math.max(...ys)-Math.min(...ys)+1,tall=Math.max(...p.cols.map(c=>c.h));
+      return ['From the right you only see the nearest block in each row. A dark block only shows if nothing is in front of it.',
+        `From where the eye is, the blocks are ${wide} wide and ${tall} tall.`];}
+  }
+  return [];
+}
 /* ---------- keep each set varied ---------- */
 function usesOf(p){
   if(p.type==='ladder')return [...new Set([p.start,p.end,...p.opts[p.ans].split('\n')])].map(w=>'w:'+w);
@@ -1550,7 +1591,7 @@ if(typeof document!=='undefined'){
         const inner=typeof o==='string'?`<span class="codeopt${p.wordy?' wordopt':''}">${o}</span>`:`<span class="pic">${o.cols3?isoSVG(o.cols3):o.holes2?holes2SVG(o):o.grid?gridSVG(o):o.plan?planSVG(o):o.holes?holesSVG(o.holes):o.net?netSVG(o):o.view?cubeSVG(o.view):figSVG(o)}</span>`;
         return `<button class="${cls}" data-q="${qi}" data-o="${oi}" ${p.done?'disabled':''} aria-label="Answer ${LET[oi]}">${inner}<span class="let">${LET[oi]}</span></button>`;
       }).join('');
-      return `<section class="q"><div class="qhead"><div class="num">${qi+1}</div><p class="prompt">${p.prompt?p.prompt:p.type==='cube'?(p.dir==='toNet'?'Which net folds up to make this cube?':'Which cube can be made by folding up this net?'):PROMPT[p.type]}</p></div>
+      return `<section class="q"><div class="qhead"><div class="num">${qi+1}</div><p class="prompt">${p.prompt?p.prompt:p.type==='cube'?(p.dir==='toNet'?'Which net folds up to make this cube?':'Which cube can be made by folding up this net?'):PROMPT[p.type]}</p></div>${TIP_TYPES.has(p.type)&&!p.done?`<div class="tiprow"><button class="tipbtn" data-tipq="${qi}" ${(p.tips||0)>=2?'disabled':''}><span class="tiplogo" aria-hidden="true">${PUFF_MINI}</span>Puffin tip<span class="tipleft">${2-(p.tips||0)} left</span></button></div>`:''}${(p.tips||0)&&!p.done?`<div class="ptips">${tipsFor(p).slice(0,p.tips).map(t=>`<p>${t}</p>`).join('')}</div>`:''}
         <div class="body">${stem(p,qi)}<div class="opts" style="grid-template-columns:repeat(${p.opts.length},minmax(0,1fr))">${opts}</div></div>${p.done&&p.pick>=0&&p.pick!==p.ans?`<p class="why"><b>Why?</b> ${explain(p,p.opts[p.pick])}</p>`:''}</section>`;
     }).join('');
     document.getElementById('score').textContent=`${right} / ${set.length}`;
@@ -1666,6 +1707,8 @@ if(typeof document!=='undefined'){
     setTimeout(()=>{box.innerHTML=''},23500);
   }
   list.addEventListener('click',e=>{
+    const tb=e.target.closest('[data-tipq]');
+    if(tb){const p=set[+tb.dataset.tipq];if(p.done||(p.tips||0)>=2)return;p.tips=(p.tips||0)+1;render();return}
     const hb=e.target.closest('[data-hint]');
     if(hb){const qi=+hb.dataset.hint,p=set[qi];if(!p.done&&p.hints>=HINTS)return;
       p.turn+=p.step;if(!p.done)p.hints++;
@@ -1746,7 +1789,7 @@ if(typeof document!=='undefined'){
   seg('mode',v=>mode=v);seg('level',v=>level=v);
   build();
   renderProgress();
-}else{globalThis.__T={explain,side3dPuzzle,lookKey,turnRight,matPair,applyMat,matKey,punch2Puzzle,holesSimilar,insideP,reflectPt,sideOf,TR,usesOf,sigOf,resetUsed:()=>USED_ICONS=new Set(),USED:()=>USED_ICONS,canonTurn,setXP:v=>XP=v,chainOK,viewGrid,gridKey,canonAll,GEN,key,valid,holeKey,netToCube,showsView,viewOf,cubeKey,unfold}}
+}else{globalThis.__T={explain,tipsFor,GLYPHW,side3dPuzzle,lookKey,turnRight,matPair,applyMat,matKey,punch2Puzzle,holesSimilar,insideP,reflectPt,sideOf,TR,usesOf,sigOf,resetUsed:()=>USED_ICONS=new Set(),USED:()=>USED_ICONS,canonTurn,setXP:v=>XP=v,chainOK,viewGrid,gridKey,canonAll,GEN,key,valid,holeKey,netToCube,showsView,viewOf,cubeKey,unfold}}
 </script>
 
 </body>
