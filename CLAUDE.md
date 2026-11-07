@@ -41,7 +41,7 @@ These are over 110 checks using only Node 18+, and GitHub Actions runs them on e
 - **No random rewards.** Every sticker has a visible goal, nothing can be lost, and there are no streaks to break. It must never feel like gambling.
 - **No sounds.** A deliberate choice, not an oversight.
 - **No pop-ups or install prompts.** The browser's install bar is suppressed, and installing is only ever offered through the browser menu.
-- **Keep the screen calm.** "Why?" appears only under wrong answers. Puffin tips appear only after a mistake in the set, give one question-specific nudge, and must never give the answer away (at least two choices must still fit the tip; tested). The celebration screen keeps the star as the main focus, with no puffin on it.
+- **Keep the screen calm.** "Why?" appears only under wrong answers. Puffin tips appear only after a mistake in the set, give one question-specific nudge, and must never give the answer away (at least two choices must still fit the tip; tested). The celebration screen keeps the star as the main focus, with no puffin on it. Fold & punch "Why?" boxes have a **Show me** link that animates the unfolding from the puzzle's own folds (`unfoldSteps`); a test checks it always ends on the marked answer.
 - **Text for 5–8 year olds:** Andika, large question text, short plain sentences, kind wording ("Good effort!", never "Wrong").
 - **Keep clear of Puffin Books** (Penguin Random House's children's imprint): don't use "Puffin Books", "Puffin stories", "Puffin Club" or similar names, and keep our logo (a round colourful badge, puffin holding a puzzle piece) visibly different from theirs.
 - **Never use the child's name on the site.** The footer credit stays "Made by a parent with Claude".

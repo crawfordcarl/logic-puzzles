@@ -258,6 +258,15 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .psum b{color:var(--accent)}
 .psum .psep{color:var(--muted);margin:0 4px}
 .psum span:last-child{display:block;font-size:.85rem;color:var(--muted)}
+.showme{font:inherit;font-weight:700;color:var(--accent);background:none;border:0;padding:0;margin-left:4px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.unfold{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:var(--scrim);padding-block:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.uf-card{background:var(--card);color:var(--ink);border-radius:18px;padding:20px;width:min(100%,420px);box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:12px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.uf-stage{width:min(76vw,300px);aspect-ratio:1;max-width:100%;position:relative;perspective:900px}
+.uf-ghost,.uf-layer{position:absolute;inset:0}
+.uf-layer{transform-style:preserve-3d;transition:transform 1.1s cubic-bezier(.45,.05,.3,1)}
+.uf-ghost svg,.uf-layer svg{width:100%;height:100%;display:block;overflow:visible}
+.uf-cap{margin:0;min-height:3em;text-align:center;max-width:32ch}
+@media (prefers-reduced-motion:reduce){.uf-layer{transition:none}}
 .linksep{color:var(--muted)}
 a.linkbtn{display:inline-block}
 .tip{color:var(--muted);font-size:1rem;line-height:1.55;max-width:62ch;margin:0}
@@ -354,6 +363,13 @@ a.linkbtn{display:inline-block}
   <div class="list" id="list"></div>
   <div class="done" id="done" hidden></div>
 
+  <div class="unfold" id="unfold" hidden role="dialog" aria-modal="true" aria-labelledby="uf-cap">
+    <div class="uf-card">
+      <div class="uf-stage" id="uf-stage" aria-hidden="true"></div>
+      <p class="uf-cap" id="uf-cap" aria-live="polite"></p>
+      <div class="cel-actions"><button class="btn" id="uf-again">Watch again</button><button class="btn primary" id="uf-close">Close</button></div>
+    </div>
+  </div>
   <div class="celebrate" id="celebrate" hidden role="dialog" aria-modal="true" aria-labelledby="cel-title">
     <div class="cel-card">
       <div class="cel-star" id="cel-star"></div>
@@ -1015,6 +1031,20 @@ function punch2Puzzle(lvl){
     const cor={holes2:correct,paper},opts=shuffle([cor,...out.map(h=>({holes2:h,paper}))]);
     return {type:'punch2',paper,pname,folds,final:R,layers,punched,opts,ans:opts.indexOf(cor)};
   }
+}
+/* ---------- "Show me": the unfolding, worked out step by step from the puzzle's own folds ---------- */
+function unfoldSteps(p){
+  const grid=p.type==='punch';
+  const paper=grid?[[0,0],[100,0],[100,100],[0,100]]:p.paper;
+  let holes=grid?p.punched.map(i=>({c:cellPt(i),tri:null})):p.punched.map(h=>({c:[...h.c],tri:h.tri&&h.tri.map(q=>[...q])}));
+  const steps=[];
+  for(let k=p.folds.length-1;k>=0;k--){
+    const f=p.folds[k],away=grid?clipPoly(f.before,f.line,-f.keep):f.away,after=grid?clipPoly(f.before,f.line,f.keep):f.after;
+    const flapHoles=holes.filter(h=>insideP(away,reflectPt(h.c,f.line),-0.5)).map(h=>({c:reflectPt(h.c,f.line),tri:h.tri&&h.tri.map(q=>reflectPt(q,f.line))}));
+    steps.push({base:after,flap:away,line:f.line,holes:holes.slice(),flapHoles});
+    holes=holes.concat(flapHoles);
+  }
+  return {paper,steps,holes,start:steps.length?steps[0].base:paper};
 }
 const holeMark=h=>h.tri?`<polygon points="${pts(h.tri)}" style="fill:var(--ink)"/>`:`<circle cx="${h.c[0].toFixed(1)}" cy="${h.c[1].toFixed(1)}" r="${HR}" style="fill:var(--ink)"/>`;
 const flaps=L=>(L||[]).map(P=>`<polygon points="${pts(P)}" style="fill:var(--flap);stroke:var(--ink);stroke-width:1.5;stroke-linejoin:round"/>`).join('');
@@ -1686,7 +1716,7 @@ if(typeof document!=='undefined'){
         return `<button class="${cls}" data-q="${qi}" data-o="${oi}" ${p.done?'disabled':''} aria-label="Answer ${LET[oi]}">${inner}<span class="let">${LET[oi]}</span></button>`;
       }).join('');
       return `<section class="q"><div class="qhead"><div class="num">${qi+1}</div><p class="prompt">${p.prompt?p.prompt:p.type==='cube'?(p.dir==='toNet'?'Which net folds up to make this cube?':'Which cube can be made by folding up this net?'):PROMPT[p.type]}</p></div>${TIP_TYPES.has(p.type)&&!p.done&&struggled?(p.tips?`<div class="ptips"><p><span class="tiplogo" aria-hidden="true">${PUFF_MINI}</span>${tipsFor(p)[1]}</p></div>`:`<div class="tiprow"><button class="tipbtn" data-tipq="${qi}"><span class="tiplogo" aria-hidden="true">${PUFF_MINI}</span>Puffin tip</button></div>`):''}
-        <div class="body">${stem(p,qi)}<div class="opts" style="grid-template-columns:repeat(${p.opts.length},minmax(0,1fr))">${opts}</div></div>${p.done&&p.pick>=0&&p.pick!==p.ans?`<p class="why"><b>Why?</b> ${explain(p,p.opts[p.pick])}</p>`:''}</section>`;
+        <div class="body">${stem(p,qi)}<div class="opts" style="grid-template-columns:repeat(${p.opts.length},minmax(0,1fr))">${opts}</div></div>${p.done&&p.pick>=0&&p.pick!==p.ans?`<p class="why"><b>Why?</b> ${explain(p,p.opts[p.pick])}${p.type==='punch'||p.type==='punch2'?` <button class="showme" data-showme="${qi}">Show me</button>`:''}</p>`:''}</section>`;
     }).join('');
     document.getElementById('score').textContent=`${right} / ${set.length}`;
   }
@@ -1890,10 +1920,49 @@ if(typeof document!=='undefined'){
   }
   document.getElementById('printbtn').addEventListener('click',()=>{buildWorksheet();try{window.print()}catch(e){}});
   window.addEventListener('beforeprint',buildWorksheet);
+  /* ---- Show me player ---- */
+  const ufStage=document.getElementById('uf-stage'),ufCap=document.getElementById('uf-cap'),ufBox=document.getElementById('unfold');
+  let ufTimers=[],ufPuzzle=null,ufReturn=null;
+  const ufLater=(fn,ms)=>ufTimers.push(setTimeout(fn,ms));
+  const ufPct=v=>((v+6)/112*100).toFixed(3)+'%';
+  const ufLayer=(poly,holes,fill)=>`<svg viewBox="-6 -6 112 112"><polygon points="${pts(poly)}" style="fill:${fill};stroke:var(--ink);stroke-width:1.8;stroke-linejoin:round"/>${holes.map(holeMark).join('')}</svg>`;
+  function ufPlay(){
+    ufTimers.forEach(clearTimeout);ufTimers=[];
+    const r=unfoldSteps(ufPuzzle),still=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches,tri=r.holes.some(h=>h.tri);
+    ufStage.innerHTML=`<div class="uf-ghost">${`<svg viewBox="-6 -6 112 112"><polygon points="${pts(r.paper)}" style="fill:none;stroke:var(--muted);stroke-width:1.2;stroke-dasharray:4 3"/></svg>`}</div><div class="uf-layer">${ufLayer(r.start,r.steps.length?r.steps[0].holes:r.holes,'var(--accent-soft)')}</div>`;
+    ufCap.textContent='This is the folded paper with the holes punched right through.';
+    let t=still?1400:1700;
+    r.steps.forEach((st,i)=>{
+      ufLater(()=>{
+        const dx=st.line.b[0]-st.line.a[0],dy=st.line.b[1]-st.line.a[1],mx=(st.line.a[0]+st.line.b[0])/2,my=(st.line.a[1]+st.line.b[1])/2;
+        const flap=document.createElement('div');flap.className='uf-layer';
+        flap.innerHTML=ufLayer(st.flap,st.flapHoles,'var(--flap)');
+        flap.style.transformOrigin=`${ufPct(mx)} ${ufPct(my)}`;
+        flap.style.transform=`rotate3d(${dx.toFixed(3)},${dy.toFixed(3)},0,180deg)`;
+        if(still)flap.style.transition='none';
+        ufStage.appendChild(flap);flap.getBoundingClientRect();
+        ufCap.textContent=i===0?'Open the last fold first. Each hole gets a mirror copy on the other side of the fold.':'Now open the fold before it…';
+        ufLater(()=>{flap.style.transform=`rotate3d(${dx.toFixed(3)},${dy.toFixed(3)},0,0deg)`},still?40:250);
+        if(tri&&i===0)ufLater(()=>{ufCap.textContent='Look at the triangles on the flap: they point the opposite way, because they have been flipped over.'},still?700:1500);
+      },t);
+      t+=still?2000:3300;
+    });
+    ufLater(()=>{
+      ufStage.querySelectorAll('.uf-layer').forEach(l=>l.remove());
+      const all=document.createElement('div');all.className='uf-layer';all.innerHTML=ufLayer(r.paper,r.holes,'var(--accent-soft)');ufStage.appendChild(all);
+      ufCap.textContent=`Opened out: ${r.holes.length} hole${r.holes.length===1?'':'s'}${tri?'. See which way each triangle points.':'.'}`;
+    },t);
+  }
+  function ufOpen(p,from){ufPuzzle=p;ufReturn=from;ufBox.hidden=false;ufPlay();document.getElementById('uf-close').focus()}
+  function ufShut(){ufTimers.forEach(clearTimeout);ufBox.hidden=true;if(ufReturn)ufReturn.focus()}
+  document.getElementById('uf-again').onclick=ufPlay;
+  document.getElementById('uf-close').onclick=ufShut;
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!ufBox.hidden)ufShut()});
+  list.addEventListener('click',e=>{const b=e.target.closest('[data-showme]');if(b)ufOpen(set[+b.dataset.showme],b)});
   seg('mode',v=>{mode=v;keep('pp-mode',v)});seg('level',v=>{level=v;keep('pp-level',v)});
   build();
   renderProgress();
-}else{globalThis.__T={nearEdge,HR,explain,tipsFor,GLYPHW,side3dPuzzle,lookKey,turnRight,matPair,applyMat,matKey,punch2Puzzle,holesSimilar,insideP,reflectPt,sideOf,TR,usesOf,sigOf,resetUsed:()=>USED_ICONS=new Set(),USED:()=>USED_ICONS,canonTurn,setXP:v=>XP=v,chainOK,viewGrid,gridKey,canonAll,GEN,key,valid,holeKey,netToCube,showsView,viewOf,cubeKey,unfold}}
+}else{globalThis.__T={unfoldSteps,nearEdge,HR,explain,tipsFor,GLYPHW,side3dPuzzle,lookKey,turnRight,matPair,applyMat,matKey,punch2Puzzle,holesSimilar,insideP,reflectPt,sideOf,TR,usesOf,sigOf,resetUsed:()=>USED_ICONS=new Set(),USED:()=>USED_ICONS,canonTurn,setXP:v=>XP=v,chainOK,viewGrid,gridKey,canonAll,GEN,key,valid,holeKey,netToCube,showsView,viewOf,cubeKey,unfold}}
 </script>
 
 </body>

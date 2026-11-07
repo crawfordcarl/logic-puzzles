@@ -332,3 +332,19 @@ test('fold & punch: wrong answers get the reason that fits them', () => {
   }
   assert.ok(triangleCases > 0, 'no triangle-direction mistakes were generated to check');
 });
+
+// "Show me" animates the unfolding from the puzzle's own folds. It must end on exactly the
+// marked answer, or it would teach the wrong thing.
+test('fold & punch "Show me": the animation ends on the marked answer', () => {
+  const sameHoles = (A, B) => A.length === B.length && A.every(a => B.some(b => Math.hypot(a.c[0] - b.c[0], a.c[1] - b.c[1]) < 0.6));
+  const CC = c => 12.5 + 25 * c;
+  for (const level of LEVELS) {
+    const { puzzles } = make('punch', level, N);
+    for (const p of puzzles) {
+      const r = T.unfoldSteps(p);
+      assert.equal(r.steps.length, p.folds.length, 'one animation step per fold');
+      const right = p.type === 'punch' ? p.opts[p.ans].holes.map(i => ({ c: [CC(i % 4), CC(Math.floor(i / 4))] })) : p.opts[p.ans].holes2;
+      assert.ok(sameHoles(r.holes, right), `${level.name} ${p.type}: animation ends with ${r.holes.length} holes, answer has ${right.length}`);
+    }
+  }
+});
