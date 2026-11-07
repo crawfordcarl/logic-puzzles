@@ -1,6 +1,8 @@
-# logic-puzzles
+# Puzzle Puffin
 
-Logic puzzles for preparing for the 11+.
+<img src="puffin.svg" alt="Puzzle Puffin logo" width="96">
+
+Logic puzzles for preparing for the 11+, live at **https://puzzlepuffin.com**.
 
 A single web page (`index.html`) that makes fresh sets of 10 non-verbal and verbal reasoning puzzles, in the style of 11+ practice books. Everything runs in the browser: there's no server, no sign-in and nothing to install.
 
