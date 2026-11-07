@@ -2211,6 +2211,21 @@ if(typeof document!=='undefined'){
   document.getElementById('uf-close').onclick=ufShut;
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!ufBox.hidden)ufShut()});
   list.addEventListener('click',e=>{const b=e.target.closest('[data-showme]');if(b)ufOpen(set[+b.dataset.showme],b)});
+  /* ---- the device's back button ----
+     Once a set is under way, one extra history step is kept, so Back closes an open box first,
+     then goes up to the puzzle choice, and only then leaves the site. Nothing ever asks "Leave site?". */
+  const backArmed=()=>!!(history.state&&history.state.pp);
+  // the browser must not jump the page about when Back is pressed: we decide where it goes
+  try{history.scrollRestoration='manual'}catch(e){}
+  const armBack=()=>{try{if(!backArmed())history.pushState({pp:1},'')}catch(e){}};
+  list.addEventListener('click',e=>{if(e.target.closest('.opt,[data-showme]'))armBack()});
+  window.addEventListener('popstate',()=>{
+    if(backArmed())return; // arrived on our own step (e.g. Forward): nothing to do
+    if(!ufBox.hidden){ufShut();armBack();return}
+    if(!document.getElementById('celebrate').hidden){closeCelebrate();armBack();return}
+    if(window.scrollY>120){window.scrollTo({top:0,behavior:reduce()?'auto':'smooth'});return}
+    history.back(); // already at the top: carry on back as normal
+  });
   seg('mode',v=>{mode=v;keep('pp-mode',v)});seg('level',v=>{level=v;keep('pp-level',v)});
   build();
   renderProgress();

@@ -39,3 +39,12 @@ test('the privacy page exists, is linked from the footer and is saved for offlin
   assert.match(read('sw.js'), /'privacy\.html'/, 'privacy page not saved for offline use');
   assert.doesNotMatch(read('privacy.html'), /fonts\.googleapis\.com|fonts\.gstatic\.com/);
 });
+
+test("the device's Back button closes boxes and returns to the puzzle choice before leaving the site", () => {
+  const html = read('index.html');
+  // one extra history step, added only after a tap (browsers ignore steps added without one)
+  assert.match(html, /history\.pushState\(\{pp:1\},''\)/);
+  assert.match(html, /addEventListener\('popstate'/);
+  // never a "Leave site?" warning: that would be a pop-up
+  assert.doesNotMatch(html, /beforeunload/);
+});
