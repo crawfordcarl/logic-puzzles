@@ -40,6 +40,14 @@ Each type has four levels: Easy, Normal, Tricky and Expert. **Mix** gives one of
 
 Replace `index.html` with the new version and commit. GitHub Pages republishes it automatically.
 
+## Offline and home screen
+
+After the first visit, the site keeps working with no internet connection, which is handy for car journeys and flights. On a phone or tablet it can also be added to the home screen (in the browser's menu, choose "Add to Home screen" or "Install") and opens like an app. Nothing is pushed on anyone: the page never asks to be installed, and it switches off the install bar some browsers show by themselves, so installing is only ever a choice in the browser menu.
+
+- `sw.js` is the offline helper. It saves the page, fonts and icons on the device. The page is fetched fresh whenever there is a connection, so updates still arrive. **If you change the fonts, icons or `sw.js` itself, change `CACHE` at the top of `sw.js`** (for example `puzzle-puffin-v2`) so devices pick up the new copies.
+- `manifest.webmanifest` and `icons/` give the app its name and puffin icon.
+- `fonts/` holds the two fonts, Andika and Baloo 2, served from the site itself rather than from Google, for privacy and so they work offline. Both are free under the SIL Open Font License (licences included).
+
 ## Tests
 
 `tests/puzzles.test.mjs` makes hundreds of puzzles of every type at every level and checks that each one is fair: exactly one answer is right, no two answers look the same, and every wrong answer gets a readable explanation. It also has a test for each bug found so far:

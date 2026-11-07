@@ -4,6 +4,6 @@
   "description": "Puzzle Puffin: 11+ style reasoning puzzles in a single web page",
   "type": "module",
   "scripts": {
-    "test": "node --test tests/puzzles.test.mjs"
+    "test": "node --test tests/puzzles.test.mjs tests/site.test.mjs"
   }
 }
