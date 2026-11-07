@@ -205,6 +205,10 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .credit{margin-top:20px;padding-top:14px;border-top:1px solid var(--rule);color:var(--muted);font-size:.9rem;text-align:center}
 .credit a{color:inherit;text-decoration:underline;text-underline-offset:2px}
 .credit a:hover{color:var(--accent)}
+.cel-up{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:6px;padding:12px 14px;border-radius:12px;border:2px solid var(--accent);background:var(--card);text-align:center}
+.cel-up-t{font-family:var(--display);font-weight:800;font-size:1.2rem;color:var(--accent)}
+.cel-up-m{color:var(--ink);font-size:.98rem;max-width:30ch}
+.cel-up .btn{margin-top:4px}
 .tip{color:var(--muted);font-size:1rem;line-height:1.55;max-width:62ch;margin:0}
 .shape{fill:var(--card);stroke:currentColor;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
 .ink{fill:currentColor;stroke:none}
@@ -305,6 +309,7 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
       <div class="cel-stars" id="cel-stars" aria-hidden="true"></div>
       <h2 id="cel-title"></h2>
       <p id="cel-msg"></p>
+      <div class="cel-up" id="cel-up" hidden></div>
       <div class="cel-new" id="cel-new" hidden></div>
       <div class="cel-actions">
         <button class="btn" id="cel-review">Look at my answers</button>
@@ -1569,13 +1574,22 @@ if(typeof document!=='undefined'){
       const fresh=ok?STICKERS.filter(st=>!before.has(st.id)&&st.test(loadH())):[];
       el.innerHTML=`<strong>${right} out of ${set.length}</strong><span>${right===set.length?'Every one right. Brilliant!':right>=set.length*.7?'Great work.':'Good try. Look back at the ones in red.'} ${ok?'Saved to Progress below.':''}</span><button class="btn primary" id="again">New puzzles</button>`;
       el.hidden=false;renderProgress();
-      celebrate(right,set.length,fresh);
+      celebrate(right,set.length,fresh,ok?levelUpFor(mode,level):null);
     }
   }
   /* ---- celebration screen ---- */
   const starPath=(cx,cy,R,r)=>{let d='';for(let k=0;k<10;k++){const t=-Math.PI/2+k*Math.PI/5,q=k%2?r:R;d+=(k?'L':'M')+(cx+q*Math.cos(t)).toFixed(1)+' '+(cy+q*Math.sin(t)).toFixed(1)}return d+'Z'};
   const reduce=()=>window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
-  function celebrate(sc,n,fresh=[]){
+  // suggest the next level after three sets in a row of 9 or more, until a few sets have been tried there
+  const NEXT_LEVEL={easy:'normal',normal:'hard',hard:'expert'};
+  function levelUpFor(m,l){
+    const nx=NEXT_LEVEL[l];if(!nx)return null;
+    const h=loadH(),here=h.filter(r=>r.m===m&&r.l===l).slice(-3);
+    if(here.length<3||here.some(r=>r.s<(r.n||10)-1))return null;
+    if(h.filter(r=>r.m===m&&r.l===nx).length>=3)return null;
+    return nx;
+  }
+  function celebrate(sc,n,fresh=[],up=null){
     const perfect=sc===n,earned=perfect?3:sc>=n*.7?2:1;
     const msgs=perfect?['Perfect score!','All '+n+' right. You are a puzzle superstar!']:sc>=n*.8?['Fantastic!','So close to perfect. Can you get all '+n+' next time?']:sc>=n*.5?['Well done!','Tap "Look at my answers" to see the ones that tripped you up.']:['Good effort!','Every puzzle makes your brain stronger. Have another go!'];
     const rays=[...Array(12)].map((_,i)=>`<path d="M100 100 L${(100+98*Math.cos((i*30-4)*Math.PI/180)).toFixed(1)} ${(100+98*Math.sin((i*30-4)*Math.PI/180)).toFixed(1)} L${(100+98*Math.cos((i*30+4)*Math.PI/180)).toFixed(1)} ${(100+98*Math.sin((i*30+4)*Math.PI/180)).toFixed(1)} Z" style="fill:var(--gold1);opacity:.35"/>`).join('');
@@ -1587,12 +1601,17 @@ if(typeof document!=='undefined'){
     document.getElementById('cel-stars').innerHTML=[0,1,2].map(i=>`<svg viewBox="0 0 40 40" style="animation-delay:${.6+i*.18}s"><path d="${starPath(20,21,18,8)}" style="fill:${i<earned?'var(--gold2)':'var(--rule)'};stroke:${i<earned?'var(--gold3)':'var(--grey)'};stroke-width:2;stroke-linejoin:round"/></svg>`).join('');
     document.getElementById('cel-title').textContent=msgs[0];
     document.getElementById('cel-msg').textContent=msgs[1];
+    {const ub=document.getElementById('cel-up');ub.hidden=!up;document.getElementById('cel-again').classList.toggle('primary',!up);
+      ub.innerHTML=up?`<span class="cel-up-t">You're flying!</span><span class="cel-up-m">You've scored 9 or more three times in a row. Ready for ${label('level',up)}?</span><button class="btn primary" id="cel-up-go" data-l="${up}">Try ${label('level',up)}</button>`:''}
     {const nb=document.getElementById('cel-new');nb.hidden=!fresh.length;
       nb.innerHTML=fresh.length?`<span class="cel-new-t">New sticker${fresh.length>1?'s':''}!</span><div class="cel-new-row">${fresh.slice(0,4).map(st=>`<span class="cel-stk" title="${st.name}">${stickerArt(st)}</span>`).join('')}</div><span class="cel-new-n">${fresh.map(st=>st.name).join(', ')}</span>`:''}
     const ov=document.getElementById('celebrate');ov.hidden=false;
     setTimeout(()=>document.getElementById('cel-again').focus(),50);
     if(perfect&&!reduce()){confetti();balloons()}
   }
+  document.getElementById('cel-up').addEventListener('click',e=>{const b=e.target.closest('#cel-up-go');if(!b)return;
+    closeCelebrate();const lb=document.querySelector(`#level button[data-v="${b.dataset.l}"]`);if(lb)lb.click();
+    const r=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;document.getElementById('actrow').scrollIntoView({behavior:r?'auto':'smooth',block:'start'})});
   function closeCelebrate(){document.getElementById('celebrate').hidden=true;document.getElementById('balloons').innerHTML='';stopConfetti=true}
   document.getElementById('cel-review').onclick=closeCelebrate;
   document.getElementById('cel-again').onclick=()=>{closeCelebrate();build();window.scrollTo({top:0,behavior:'smooth'})};
