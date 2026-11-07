@@ -32,3 +32,10 @@ test('the page registers the offline helper and links the app details', () => {
   assert.equal(manifest.name, 'Puzzle Puffin');
   for (const icon of manifest.icons) assert.ok(existsSync(join(root, icon.src)), `${icon.src} is missing`);
 });
+
+test('the privacy page exists, is linked from the footer and is saved for offline use', () => {
+  assert.ok(existsSync(join(root, 'privacy.html')), 'privacy.html is missing');
+  assert.match(read('index.html'), /href="privacy\.html"/, 'no link to the privacy page');
+  assert.match(read('sw.js'), /'privacy\.html'/, 'privacy page not saved for offline use');
+  assert.doesNotMatch(read('privacy.html'), /fonts\.googleapis\.com|fonts\.gstatic\.com/);
+});

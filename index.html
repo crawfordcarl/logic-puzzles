@@ -258,6 +258,8 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .psum b{color:var(--accent)}
 .psum .psep{color:var(--muted);margin:0 4px}
 .psum span:last-child{display:block;font-size:.85rem;color:var(--muted)}
+.linksep{color:var(--muted)}
+a.linkbtn{display:inline-block}
 .tip{color:var(--muted);font-size:1rem;line-height:1.55;max-width:62ch;margin:0}
 .shape{fill:var(--card);stroke:currentColor;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
 .ink{fill:currentColor;stroke:none}
@@ -381,7 +383,7 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
     <div class="pclear" id="pclear"></div>
   </section>
 
-  <p class="printlink"><button class="linkbtn" id="printbtn">Print a worksheet of these puzzles</button></p>
+  <p class="printlink"><button class="linkbtn" id="printbtn">Print a worksheet of these puzzles</button><span class="linksep" aria-hidden="true"> · </span><a class="linkbtn" href="privacy.html">Privacy</a></p>
   <footer class="credit">Made by a parent with <a href="https://claude.ai" target="_blank" rel="noopener">Claude</a>, an AI assistant made by Anthropic.</footer>
 </div>
 <div id="worksheet" class="worksheet" aria-hidden="true"></div>

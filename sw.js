@@ -3,10 +3,11 @@
 // The page itself is fetched fresh whenever there is a connection, so updates still arrive;
 // fonts and pictures come straight from the saved copy.
 // Change CACHE whenever the fonts, icons or this file change, so devices pick up the new copies.
-const CACHE = 'puzzle-puffin-v1';
+const CACHE = 'puzzle-puffin-v2';
 const FILES = [
   './',
   'index.html',
+  'privacy.html',
   'puffin.svg',
   'manifest.webmanifest',
   'icons/icon-192.png',
@@ -43,10 +44,10 @@ self.addEventListener('fetch', event => {
     event.respondWith(
       withTimeout(fetch(req), 4000)
         .then(res => {
-          if (res.ok) { const copy = res.clone(); caches.open(CACHE).then(c => c.put('./', copy)); }
+          if (res.ok) { const copy = res.clone(); caches.open(CACHE).then(c => c.put(req, copy)); }
           return res;
         })
-        .catch(() => caches.match('./').then(r => r || caches.match('index.html')))
+        .catch(() => caches.match(req, { ignoreSearch: true }).then(r => r || caches.match('./')))
     );
     return;
   }

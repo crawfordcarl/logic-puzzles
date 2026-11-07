@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Privacy · Puzzle Puffin</title>
+<meta name="description" content="How Puzzle Puffin handles privacy: nothing is collected, no cookies, no tracking.">
+<meta name="theme-color" content="#2d6a8c">
+<link rel="icon" type="image/svg+xml" href="puffin.svg">
+<style>
+@font-face{font-family:"Andika";font-style:normal;font-weight:400;font-display:swap;src:url("fonts/Andika-Regular.woff") format("woff")}
+@font-face{font-family:"Andika";font-style:normal;font-weight:700;font-display:swap;src:url("fonts/Andika-Bold.woff") format("woff")}
+@font-face{font-family:"Baloo 2";font-style:normal;font-weight:800;font-display:swap;src:url("fonts/Baloo2-800.woff") format("woff")}
+/* Layout: one readable column, like a printed letter to parents */
+:root{
+  --paper:#f7f8f5; --card:#ffffff; --ink:#1c2430; --muted:#5d6a78; --rule:#d6dde4; --accent:#2d6a8c; --accent-soft:#e3eef4;
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --body:"Andika","Segoe UI",system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--paper:#14181e;--card:#1d232b;--ink:#e8ece9;--muted:#9aa6b2;--rule:#323b46;--accent:#7fb6d4;--accent-soft:#223442;color-scheme:dark}}
+:root[data-theme="dark"]{--paper:#14181e;--card:#1d232b;--ink:#e8ece9;--muted:#9aa6b2;--rule:#323b46;--accent:#7fb6d4;--accent-soft:#223442;color-scheme:dark}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6}
+.wrap{max-width:68ch;margin:0 auto;padding-block:28px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.top{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.top img{width:52px;height:52px}
+.back{color:var(--accent);font-weight:700}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(1.9rem,6vw,2.4rem);line-height:1.1;margin:8px 0 4px}
+h2{font-family:var(--display);font-weight:800;font-size:1.3rem;margin:28px 0 6px}
+p,ul{margin:0 0 10px}
+ul{padding-left:1.2em}
+li{margin-bottom:4px}
+a{color:var(--accent)}
+.updated{color:var(--muted);font-size:.92rem}
+.short{background:var(--accent-soft);border-left:4px solid var(--accent);padding:12px 16px;border-radius:0 10px 10px 0;margin:14px 0 8px}
+.short p{margin:0}
+@media print{
+  :root,:root:not([data-theme="light"]){--paper:#fff;--card:#fff;--ink:#000;--muted:#444;--accent:#000;--accent-soft:#f1f1f1;color-scheme:light}
+  .back{display:none}
+  .wrap{max-width:none;padding:0}
+  a{color:#000}
+  a[href^="http"]::after{content:" (" attr(href) ")";font-size:.85em;word-break:break-all}
+  h2{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><img src="puffin.svg" alt=""><a class="back" href="./">← Back to the puzzles</a></div>
+  <h1>Privacy</h1>
+  <p class="updated">Last updated 7 November 2026</p>
+
+  <div class="short"><p><b>The short version:</b> Puzzle Puffin doesn't collect anything about you or your child. There are no accounts, no cookies, no adverts and no tracking. Progress is saved only on your own device.</p></div>
+
+  <h2>What is saved on this device</h2>
+  <p>To show progress and remember choices, the page saves a little information in your browser's storage on <b>this device only</b>:</p>
+  <ul>
+    <li><b>Finished sets:</b> the date, the kind of puzzle, the level and the score. Stickers, the progress table and the "Strongest · Practise more" summary are all worked out from this.</li>
+    <li><b>Choices:</b> the colour picked, and the last puzzle type and level, so they're ready next time.</li>
+  </ul>
+  <p>This never leaves the device. It isn't sent to us or to anyone else, and it doesn't include names or anything that identifies a child. Each device, and each browser, keeps its own copy.</p>
+
+  <h2>How to delete it</h2>
+  <ul>
+    <li>Use <b>Clear history</b> at the bottom of the puzzle page to delete scores and stickers.</li>
+    <li>Or clear this site's data in your browser's settings, which removes everything, including the colour and level choices.</li>
+  </ul>
+
+  <h2>Working offline</h2>
+  <p>After your first visit, the browser keeps a copy of the page, its fonts and its pictures, so it works without the internet. This copy holds no personal information.</p>
+
+  <h2>Hosting</h2>
+  <p>The site is hosted by <a href="https://pages.github.com">GitHub Pages</a>. Like any web host, GitHub receives the internet address and browser details of each visit, to deliver the page and keep the service secure. We don't see or use this information. GitHub explains how it handles it in its <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">privacy statement</a>.</p>
+  <p>Everything else, including the fonts, comes from this site itself. No other companies are involved.</p>
+
+  <h2>Made with children in mind</h2>
+  <ul>
+    <li>No sign-up, no chat, and no way to contact other people.</li>
+    <li>No adverts, no in-app purchases and no prompts to install anything.</li>
+    <li>Stickers each have a clear goal. Nothing is random, and nothing can be lost by missing a day.</li>
+  </ul>
+
+  <h2>Links to other sites</h2>
+  <p>The note at the bottom of the puzzle page links to claude.ai, the AI assistant used to build Puzzle Puffin. That site has its own privacy policy.</p>
+
+  <h2>Questions</h2>
+  <p>Puzzle Puffin was made by a parent. If you have a question, or spot a puzzle that looks wrong, please open an issue at <a href="https://github.com/crawfordcarl/logic-puzzles/issues">github.com/crawfordcarl/logic-puzzles/issues</a>. This needs a free GitHub account.</p>
+</div>
+</body>
+</html>

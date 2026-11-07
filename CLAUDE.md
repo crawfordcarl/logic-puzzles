@@ -24,6 +24,8 @@ Everything is in `localStorage`, per device, per address. Renaming a key silentl
 
 If the history format ever has to change, read the old key and migrate it. Don't start a new one empty.
 
+**`privacy.html` describes exactly what's stored and who's involved.** If you add anything to storage, any outside service or any link, update that page (and its "Last updated" date) in the same change.
+
 ## Tests: run before every commit
 
 ```
@@ -57,7 +59,7 @@ These are 112 checks using only Node 18+, and GitHub Actions runs them on every 
 
 **Privacy and compliance** (not legal advice; check the ICO's guidance):
 - No cookies, analytics or tracking; settings and progress stay on the device; fonts are self-hosted. Keep it that way.
-- Add a short plain-English privacy note linked from the footer: what's stored on the device and why, that nothing is collected, and that GitHub (the host) keeps standard server logs. This fits the UK Children's Code (Age Appropriate Design Code).
+- ~~Privacy note~~ done: `privacy.html`, linked from the footer, prints cleanly and works offline.
 - Settings and progress are stored only to provide features the user chose, which is usually treated as not needing consent under PECR. Confirm before adding anything else to storage.
 
 **Security** (low risk, as the site is static with no logins and nothing sent anywhere):
