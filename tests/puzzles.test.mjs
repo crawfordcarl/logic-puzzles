@@ -369,6 +369,29 @@ test('rotate & mirror "Show me": the animation lands on the marked answer', () =
 
 // "Show me" for Top view and View from the right turns the real model with a small camera.
 // Where the camera ends must give exactly the marked answer.
+test('Complete the pair and Fill the gap "Show me": the steps end on the second picture and the marked answer', () => {
+  for (const level of LEVELS) {
+    for (const p of make('pair', level, 200).puzzles) {
+      const top = T.pairSteps(p, 'A'), bot = T.pairSteps(p, 'C');
+      assert.ok(top.length > 0 && top.length === bot.length, `${level.name}: pair has no steps`);
+      for (const st of [...top, ...bot]) {
+        assert.ok(st.words && !/undefined/.test(st.words), `${level.name}: a step has no words`);
+        // a real turn or flip of the whole picture is only drawn when it gives exactly the next picture
+        if (st.how !== 'fade') assert.ok(st.fig.kind === 'icon' || st.fig.count === 1, `${level.name}: whole-picture turn on several shapes`);
+      }
+      assert.equal(T.key(top.at(-1).fig), T.key(p.B), `${level.name}: the first picture doesn't end as the second`);
+      assert.equal(T.key(bot.at(-1).fig), T.key(p.opts[p.ans]), `${level.name}: the third picture doesn't end as the answer`);
+    }
+    for (const p of make('sequence', level, 200).puzzles) {
+      const f = T.seqFill(p);
+      if (!f) continue;
+      const from = p.cells[f.from];
+      assert.notEqual(f.from, p.blank);
+      assert.equal(T.key({ ...from, a: from.a + f.deg }), T.key(p.opts[p.ans]), `${level.name}: turning the neighbour doesn't give the answer`);
+    }
+  }
+});
+
 test('cube nets "Show me": the net folds into a closed cube that ends on the marked answer', () => {
   const r = v => v.map(x => Math.round(x) || 0), near = (a, b) => a.every((x, i) => Math.abs(x - b[i]) < 1e-6);
   // the camera at the end sees exactly the top, front and right faces, like the pictures

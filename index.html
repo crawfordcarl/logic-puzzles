@@ -268,7 +268,7 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .uf-cap{margin:0;height:6em;display:flex;align-items:center;justify-content:center;text-align:center;max-width:32ch;line-height:1.5}
 @media (prefers-reduced-motion:reduce){.uf-layer{transition:none}}
 .uf-card{max-height:100%;overflow-y:auto;overflow-x:hidden}
-.uf-spin{inset:15%}.uf-ask{position:absolute;left:0;top:0;width:24%;aspect-ratio:1;padding:4px;box-sizing:border-box;border:1.5px dashed var(--rule);border-radius:10px;background:var(--card)}.uf-ask svg{width:100%;height:100%;display:block}
+.uf-spin{inset:15%}.uf-pair{position:absolute;inset:6% 4%;display:grid;grid-template-columns:1fr auto 1fr;grid-template-rows:1fr 1fr;align-items:center;justify-items:center;gap:8% 6%}.uf-seq{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);display:grid;grid-template-columns:repeat(5,1fr);gap:5px}.uf-pb{width:100%;aspect-ratio:1;box-sizing:border-box;border:1.5px solid var(--rule);border-radius:10px;background:var(--card);padding:8%;perspective:500px;transition:border-color .3s,box-shadow .3s}.uf-pb.slot{border-style:dashed;border-color:var(--muted)}.uf-pb.on{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}.uf-pf{width:100%;height:100%;display:grid;place-items:center}.uf-pf svg{width:100%;height:100%;display:block;overflow:visible}.uf-q{font:800 1.6rem var(--display);color:var(--muted)}.uf-ar{font-size:1.6rem;color:var(--muted)}.uf-ask{position:absolute;left:0;top:0;width:24%;aspect-ratio:1;padding:4px;box-sizing:border-box;border:1.5px dashed var(--rule);border-radius:10px;background:var(--card)}.uf-ask svg{width:100%;height:100%;display:block}
 .uf-opts{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:6px;width:100%}
 .uf-opts .opt{cursor:default;padding:3px 3px 2px;border-radius:8px}
 .uf-opts .opt .pic{max-width:56px}
@@ -1284,6 +1284,38 @@ function cubeFaces(net,th,Q){
       pts:[at(c.x,-c.y),at(c.x+1,-c.y),at(c.x+1,-c.y-1),at(c.x,-c.y-1)]}});
 }
 
+/* "Show me" for Complete the pair and Fill the gap: the change happens one step at a time.
+   Each step names the figure it ends on, so the tests can check the last one is the answer. */
+const SEQ_W={a:'the picture turns a little more each time',count:'there is one more shape each time',dot:'the dot moves round the edge',size:'the shape gets bigger each time',shape:'the shape gets one more side each time',fill:'the colour changes in a repeating pattern',outer:'the shaded parts turn round',inner:'the inner shaded parts turn round',pos:'the triangle slides along the box',up:'the triangle flips up and down'};
+const PAIR_STEP_W={rot90:'it turns a quarter turn clockwise',rot180:'it turns upside down',rot45:'it turns a little way clockwise',flip:'it flips over, left to right',flipV:'it flips over, top to bottom',invert:'black and white swap',countUp:'there is one more shape',swapIn:'the inside and outside shapes swap'};
+const PAIR_TURN={rot90:90,rot180:180,rot45:45};
+function pairSteps(p,from){
+  let X=from==='A'?p.A:p.C;const steps=[];
+  if(p.rule){
+    const n=X.items.length,r=p.rule,id=[...Array(n).keys()],same=(a,b)=>a.join()===b.join(),isId=a=>same(a,id);
+    const ring=a=>n===4?placeWords(a[0]):a[0]===0?'nowhere':a[0]===1?'one place clockwise':'one place anticlockwise';
+    const seg=X.lay==='seg4',add=(rule,words)=>{X=applyMat(X,{P:id,Q:id,spin:0,inv:false,...rule});steps.push({fig:X,how:'fade',words})};
+    if(!isId(r.P)){if(same(r.P,r.Q))add({P:r.P,Q:r.P},`the shapes move ${ring(r.P)}, taking their patterns with them`);
+      else add({P:r.P},`the shapes move ${ring(r.P)}`+(isId(r.Q)?', but the patterns stay where they are':''))}
+    if(!same(r.P,r.Q)&&!isId(r.Q))add({Q:r.Q},seg?`the shading moves ${ring(r.Q)}`:`the patterns move ${ring(r.Q)} on their own`);
+    if(r.spin)add({spin:r.spin},`each shape is ${turnWords(r.spin)}`);
+    if(r.inv)add({inv:true},'black and white swap');
+    return steps;
+  }
+  for(const t of p.trs){
+    const Y=TR[t].f(X),whole=X.kind==='icon'||X.count===1; // turning the whole picture only matches when there's one shape
+    const how=PAIR_TURN[t]&&whole?'rot':t==='flip'&&X.kind==='icon'?'flipX':t==='flipV'&&X.kind==='icon'?'flipY':'fade';
+    steps.push({fig:Y,how,deg:PAIR_TURN[t]||0,words:PAIR_STEP_W[t]});X=Y;
+  }
+  return steps;
+}
+// Fill the gap: when the only change is turning, the picture next to the gap turns into it
+function seqFill(p){
+  if((p.rule||[]).join()!=='a')return null;
+  const b=p.blank,step=p.cells[1].a-p.cells[0].a;
+  return b>0?{from:b-1,deg:step}:{from:1,deg:-step};
+}
+
 /* ---------- Top view of block stacks ---------- */
 const N4=[[1,0],[-1,0],[0,1],[0,-1]];
 const normCells=cs=>{const mx=Math.min(...cs.map(c=>c[0])),my=Math.min(...cs.map(c=>c[1]));return cs.map(c=>[c[0]-mx,c[1]-my]).sort((a,b)=>a[1]-b[1]||a[0]-b[0])};
@@ -1566,8 +1598,7 @@ function explain(p,o){
       if(!o.m)return `That one is only turned round, not reflected. ${line}`;
       return `That's a reflection, but in the wrong direction. ${line}`;}
     case 'sequence':{
-      const W={a:'the picture turns a little more each time',count:'there is one more shape each time',dot:'the dot moves round the edge',size:'the shape gets bigger each time',shape:'the shape gets one more side each time',fill:'the colour changes in a repeating pattern',outer:'the shaded parts turn round',inner:'the inner shaded parts turn round',pos:'the triangle slides along the box',up:'the triangle flips up and down'};
-      const r=(p.rule||[]).map(k=>W[k]).filter(Boolean);
+      const r=(p.rule||[]).map(k=>SEQ_W[k]).filter(Boolean);
       return r.length?`Look at what changes from box to box: ${r.join(', and ')}. Follow that pattern into the gap.`:'Look at what changes from box to box, then follow the pattern into the gap.';}
     case 'pair':{
       if(p.rule){const n=p.A.items.length,ring=n===3||n===4,rot=a=>n===4?placeWords(a[0]):a[0]===0?'nowhere':a[0]===1?'one place clockwise':'one place anticlockwise';
@@ -1800,7 +1831,7 @@ if(typeof document!=='undefined'){
         return `<button class="${cls}" data-q="${qi}" data-o="${oi}" ${p.done?'disabled':''} aria-label="Answer ${LET[oi]}">${inner}<span class="let">${LET[oi]}</span></button>`;
       }).join('');
       return `<section class="q"><div class="qhead"><div class="num">${qi+1}</div><p class="prompt">${p.prompt?p.prompt:p.type==='cube'?(p.dir==='toNet'?'Which net folds up to make this cube?':'Which cube can be made by folding up this net?'):PROMPT[p.type]}</p></div>${TIP_TYPES.has(p.type)&&!p.done&&struggled?(p.tips?`<div class="ptips"><p><span class="tiplogo" aria-hidden="true">${PUFF_MINI}</span>${tipsFor(p)[1]}</p></div>`:`<div class="tiprow"><button class="tipbtn" data-tipq="${qi}"><span class="tiplogo" aria-hidden="true">${PUFF_MINI}</span>Puffin tip</button></div>`):''}
-        <div class="body">${stem(p,qi)}<div class="opts" style="grid-template-columns:repeat(${p.opts.length},minmax(0,1fr))">${opts}</div></div>${p.done&&p.pick>=0&&p.pick!==p.ans?`<p class="why"><b>Why?</b> ${explain(p,p.opts[p.pick])}${['punch','punch2','rotate','mirror','top','side','cube'].includes(p.type)?` <button class="showme" data-showme="${qi}">Show me</button>`:''}</p>`:''}</section>`;
+        <div class="body">${stem(p,qi)}<div class="opts" style="grid-template-columns:repeat(${p.opts.length},minmax(0,1fr))">${opts}</div></div>${p.done&&p.pick>=0&&p.pick!==p.ans?`<p class="why"><b>Why?</b> ${explain(p,p.opts[p.pick])}${['punch','punch2','rotate','mirror','top','side','cube','pair','sequence'].includes(p.type)?` <button class="showme" data-showme="${qi}">Show me</button>`:''}</p>`:''}</section>`;
     }).join('');
     document.getElementById('score').textContent=`${right} / ${set.length}`;
   }
@@ -2017,6 +2048,8 @@ if(typeof document!=='undefined'){
     if(ufPuzzle.type==='mirror')return ufMirror();
     if(ufPuzzle.type==='top'||ufPuzzle.type==='side')return ufBlocks();
     if(ufPuzzle.type==='cube')return ufCube();
+    if(ufPuzzle.type==='pair')return ufPair();
+    if(ufPuzzle.type==='sequence')return ufSeq();
     return ufPunch();
   }
   function ufCube(){
@@ -2103,6 +2136,43 @@ if(typeof document!=='undefined'){
         :p.view3d?`Now the side the eye was looking at is at the front: that's answer ${LET[p.ans]}.`
         :`From where the eye is, you only see the front of each row: that's answer ${LET[p.ans]}.`},still?1500:3700);
   }
+  // change the picture in a box to the next one: a real turn or flip where that's exact, otherwise a quick fade
+  function ufMorph(box,Y,st,still){
+    const w=box.querySelector('.uf-pf');
+    if(still){w.innerHTML=figSVG(Y);return}
+    if(st.how==='fade'){w.style.transition='opacity .35s';w.style.opacity=0;ufLater(()=>{w.innerHTML=figSVG(Y);w.style.opacity=1},380);return}
+    w.style.transition='transform 1s cubic-bezier(.45,.05,.3,1)';
+    w.style.transform=st.how==='rot'?`rotate(${st.deg}deg)`:st.how==='flipX'?'rotateY(180deg)':'rotateX(180deg)';
+    ufLater(()=>{w.style.transition='none';w.innerHTML=figSVG(Y);w.style.transform='none'},1050);
+  }
+  const ufBoxHTML=(fig,cls='')=>`<div class="uf-pb${cls}"><div class="uf-pf">${fig?figSVG(fig):'<span class="uf-q">?</span>'}</div></div>`;
+  function ufPair(){
+    const p=ufPuzzle,still=ufStill(),top=pairSteps(p,'A'),bot=pairSteps(p,'C'),gap=still?900:1450;
+    ufStage.innerHTML=`<div class="uf-pair">${ufBoxHTML(p.A)}<span class="uf-ar">→</span>${ufBoxHTML(p.A,' slot')}${ufBoxHTML(p.C)}<span class="uf-ar">→</span>${ufBoxHTML(null,' slot')}</div>`;
+    const [,b1,,b2]=ufStage.querySelectorAll('.uf-pb');
+    ufCap.textContent='Watch the first picture change into the second…';
+    let t=still?700:1000;
+    top.forEach((st,k)=>{ufLater(()=>{ufCap.textContent=(k?'…and then ':'Watch the first picture change: ')+st.words+'.';b1.classList.add('on');ufMorph(b1,st.fig,st,still)},t);t+=gap});
+    t+=still?300:500;
+    ufLater(()=>{b1.classList.remove('on');b2.classList.add('on');ufCap.textContent='Now do exactly the same to the third picture…';ufMorph(b2,p.C,{how:'fade'},still)},t);t+=still?700:1100;
+    bot.forEach((st,k)=>{ufLater(()=>{ufCap.textContent=(k?'…and then ':'Now the same to the third picture: ')+st.words+'.';ufMorph(b2,st.fig,st,still)},t);t+=gap});
+    ufLater(()=>{ufReveal();ufCap.textContent=`Same change, so the missing picture is answer ${LET[p.ans]}.`},t);
+  }
+  function ufSeq(){
+    const p=ufPuzzle,still=ufStill(),b=p.blank,fill=seqFill(p),cor=p.opts[p.ans];
+    ufStage.innerHTML=`<div class="uf-seq">${p.cells.map((c,i)=>ufBoxHTML(i===b?null:c,i===b?' slot':'')).join('')}</div>`;
+    const boxes=[...ufStage.querySelectorAll('.uf-pb')],light=(...ix)=>boxes.forEach((e,i)=>e.classList.toggle('on',ix.includes(i)));
+    const words=(p.rule||[]).map(k=>SEQ_W[k]).filter(Boolean);
+    ufCap.textContent='Look at what changes from one box to the next…';
+    const pairs=[0,1,2,3].filter(i=>i!==b&&i+1!==b);let t=still?600:900;
+    pairs.forEach((i,k)=>{ufLater(()=>{light(i,i+1);if(k===0&&words.length)ufCap.textContent=`From box to box, ${words.join(', and ')}.`},t);t+=still?700:1200});
+    ufLater(()=>{
+      if(fill){light(fill.from,b);ufCap.textContent=`So the picture in the gap is turned once more from the one ${fill.from<b?'before':'after'} it…`;
+        ufMorph(boxes[b],p.cells[fill.from],{how:'fade'},true);ufLater(()=>ufMorph(boxes[b],cor,{how:'rot',deg:fill.deg},still),still?0:350)}
+      else{light(b);ufCap.textContent='Follow the same pattern into the gap…';ufMorph(boxes[b],cor,{how:'fade'},still)}
+    },t);t+=still?900:1900;
+    ufLater(()=>{ufReveal();ufCap.textContent=`That fits the pattern: it's answer ${LET[p.ans]}.`},t);
+  }
   function ufPunch(){
     ufTimers.forEach(clearTimeout);ufTimers=[];
     const r=unfoldSteps(ufPuzzle),still=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches,tri=r.holes.some(h=>h.tri);
@@ -2144,7 +2214,7 @@ if(typeof document!=='undefined'){
   seg('mode',v=>{mode=v;keep('pp-mode',v)});seg('level',v=>{level=v;keep('pp-level',v)});
   build();
   renderProgress();
-}else{globalThis.__T={foldNet,cubeTurn,cubeFaces,partTurn,CUBE_CAM,camAt,VIS,sameFace,faceAt,projectBlocks,blockTarget,BLOCK_START,showTurn,MIRROR_AXIS,unfoldSteps,nearEdge,HR,explain,tipsFor,GLYPHW,side3dPuzzle,lookKey,turnRight,matPair,applyMat,matKey,punch2Puzzle,holesSimilar,insideP,reflectPt,sideOf,TR,usesOf,sigOf,resetUsed:()=>USED_ICONS=new Set(),USED:()=>USED_ICONS,canonTurn,setXP:v=>XP=v,chainOK,viewGrid,gridKey,canonAll,GEN,key,valid,holeKey,netToCube,showsView,viewOf,cubeKey,unfold}}
+}else{globalThis.__T={pairSteps,seqFill,figSVG,foldNet,cubeTurn,cubeFaces,partTurn,CUBE_CAM,camAt,VIS,sameFace,faceAt,projectBlocks,blockTarget,BLOCK_START,showTurn,MIRROR_AXIS,unfoldSteps,nearEdge,HR,explain,tipsFor,GLYPHW,side3dPuzzle,lookKey,turnRight,matPair,applyMat,matKey,punch2Puzzle,holesSimilar,insideP,reflectPt,sideOf,TR,usesOf,sigOf,resetUsed:()=>USED_ICONS=new Set(),USED:()=>USED_ICONS,canonTurn,setXP:v=>XP=v,chainOK,viewGrid,gridKey,canonAll,GEN,key,valid,holeKey,netToCube,showsView,viewOf,cubeKey,unfold}}
 </script>
 
 </body>
