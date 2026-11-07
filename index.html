@@ -171,6 +171,23 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .sw:hover{transform:scale(1.12)}
 .sw[aria-pressed="true"]{box-shadow:0 0 0 3px var(--ink)}
 @media (prefers-reduced-motion:reduce){.sw{transition:none}.sw:hover{transform:none}}
+.stickers{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:14px 10px}
+.stk{margin:0;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;min-width:0}
+.stk-pic{width:78px;height:78px;border-radius:50%;background:var(--card);border:4px solid var(--ring);box-shadow:0 2px 0 var(--rule);display:grid;place-items:center;padding:10px;box-sizing:border-box}
+.stk-pic svg{width:100%;height:100%;display:block;overflow:visible}
+.stk figcaption{display:flex;flex-direction:column;gap:2px;line-height:1.2}
+.stk figcaption b{font-size:.92rem}
+.stk figcaption span{font-size:.8rem;color:var(--muted)}
+.stk.locked .stk-pic{border:3px dashed var(--grey);box-shadow:none;background:transparent}
+.stk.locked .stk-pic svg{filter:grayscale(1);opacity:.32}
+.stk.locked figcaption b{color:var(--muted)}
+.cel-new{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:6px;padding:10px 14px;border-radius:12px;background:var(--accent-soft)}
+.cel-new-t{font-family:var(--display);font-weight:800;font-size:1.1rem;color:var(--accent)}
+.cel-new-row{display:flex;gap:8px}
+.cel-stk{width:48px;height:48px;border-radius:50%;background:var(--card);border:3px solid var(--accent);padding:6px;box-sizing:border-box;animation:starPop .5s cubic-bezier(.2,1.6,.4,1) .7s both}
+.cel-stk svg{width:100%;height:100%;display:block}
+.cel-new-n{font-size:.9rem;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){.cel-stk{animation:none}}
 .tip{color:var(--muted);font-size:1rem;line-height:1.55;max-width:62ch;margin:0}
 .shape{fill:var(--card);stroke:currentColor;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
 .ink{fill:currentColor;stroke:none}
@@ -271,6 +288,7 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
       <div class="cel-stars" id="cel-stars" aria-hidden="true"></div>
       <h2 id="cel-title"></h2>
       <p id="cel-msg"></p>
+      <div class="cel-new" id="cel-new" hidden></div>
       <div class="cel-actions">
         <button class="btn" id="cel-review">Look at my answers</button>
         <button class="btn primary" id="cel-again">New puzzles</button>
@@ -279,6 +297,11 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
   </div>
   <canvas class="confetti" id="confetti" aria-hidden="true"></canvas>
   <div class="balloons" id="balloons" aria-hidden="true"></div>
+
+  <section class="progress" aria-labelledby="sh">
+    <div class="phead"><h2 id="sh">Sticker book</h2><span class="pnote" id="stk-count"></span></div>
+    <div class="stickers" id="stickers"></div>
+  </section>
 
   <section class="progress" aria-labelledby="ph">
     <div class="phead"><h2 id="ph">Progress</h2><span class="pnote">Saved in this browser on this device</span></div>
@@ -1431,6 +1454,7 @@ if(typeof document!=='undefined'){
   const LVORD={easy:0,normal:1,hard:2,expert:3};
   let revealed=false,confirmClear=false;
   function renderProgress(){
+    renderStickers();
     const h=loadH(),el=document.getElementById('prog'),cl=document.getElementById('pclear');
     if(!h.length){el.innerHTML='<p class="pempty">Finish a set of 10 by answering every question and the score is saved here, so you can see how you improve over time.</p>';cl.innerHTML='';return}
     const groups=new Map();for(const r of h){const k=r.m+'|'+r.l;if(!groups.has(k))groups.set(k,[]);groups.get(k).push(r)}
@@ -1439,7 +1463,7 @@ if(typeof document!=='undefined'){
     el.innerHTML=`<div class="ptable-wrap"><table class="ptable"><thead><tr><th>Puzzle</th><th>Level</th><th>Sets</th><th>Best</th><th>Average</th><th>Last 8</th><th>Last played</th></tr></thead><tbody>${rows.map(g=>{
       const last=g.slice(-8),best=Math.max(...g.map(r=>r.s)),avg=g.reduce((a,r)=>a+r.s,0)/g.length,n=g[0].n||10;
       return `<tr><td>${label('mode',g[0].m)}</td><td>${label('level',g[0].l)}</td><td class="pn">${g.length}</td><td class="pn">${best}/${n}</td><td class="pn">${avg.toFixed(1)}</td><td><div class="spark" title="${last.map(r=>r.s).join(', ')}">${last.map(r=>`<i class="${r.s===n?'full':''}" style="height:${Math.max(3,r.s/n*30)}px"></i>`).join('')}</div></td><td>${fmt(g[g.length-1].t)}</td></tr>`}).join('')}</tbody></table></div>`;
-    cl.innerHTML=confirmClear?'<span>Delete all saved scores on this device?</span><button class="btn small danger" id="pyes">Delete</button><button class="btn small" id="pno">Keep them</button>':'<button class="btn small" id="pask">Clear history</button>';
+    cl.innerHTML=confirmClear?'<span>Delete all saved scores and stickers on this device?</span><button class="btn small danger" id="pyes">Delete</button><button class="btn small" id="pno">Keep them</button>':'<button class="btn small" id="pask">Clear history</button>';
   }
   document.getElementById('pclear').addEventListener('click',e=>{
     const id=e.target.id;if(id==='pask')confirmClear=true;else if(id==='pno')confirmClear=false;else if(id==='pyes'){saveH([]);confirmClear=false}else return;renderProgress();
@@ -1447,16 +1471,18 @@ if(typeof document!=='undefined'){
   function finished(){
     const el=document.getElementById('done');
     if(set.every(p=>p.done)&&!revealed){
+      const before=earnedIds(loadH());
       const ok=saveH([...loadH(),{t:Date.now(),m:mode,l:level,s:right,n:set.length}]);
+      const fresh=ok?STICKERS.filter(st=>!before.has(st.id)&&st.test(loadH())):[];
       el.innerHTML=`<strong>${right} out of ${set.length}</strong><span>${right===set.length?'Every one right. Brilliant!':right>=set.length*.7?'Great work.':'Good try. Look back at the ones in red.'} ${ok?'Saved to Progress below.':''}</span><button class="btn primary" id="again">New puzzles</button>`;
       el.hidden=false;renderProgress();
-      celebrate(right,set.length);
+      celebrate(right,set.length,fresh);
     }
   }
   /* ---- celebration screen ---- */
   const starPath=(cx,cy,R,r)=>{let d='';for(let k=0;k<10;k++){const t=-Math.PI/2+k*Math.PI/5,q=k%2?r:R;d+=(k?'L':'M')+(cx+q*Math.cos(t)).toFixed(1)+' '+(cy+q*Math.sin(t)).toFixed(1)}return d+'Z'};
   const reduce=()=>window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
-  function celebrate(sc,n){
+  function celebrate(sc,n,fresh=[]){
     const perfect=sc===n,earned=perfect?3:sc>=n*.7?2:1;
     const msgs=perfect?['Perfect score!','All '+n+' right. You are a puzzle superstar!']:sc>=n*.8?['Fantastic!','So close to perfect. Can you get all '+n+' next time?']:sc>=n*.5?['Well done!','Tap "Look at my answers" to see the ones that tripped you up.']:['Good effort!','Every puzzle makes your brain stronger. Have another go!'];
     const rays=[...Array(12)].map((_,i)=>`<path d="M100 100 L${(100+98*Math.cos((i*30-4)*Math.PI/180)).toFixed(1)} ${(100+98*Math.sin((i*30-4)*Math.PI/180)).toFixed(1)} L${(100+98*Math.cos((i*30+4)*Math.PI/180)).toFixed(1)} ${(100+98*Math.sin((i*30+4)*Math.PI/180)).toFixed(1)} Z" style="fill:var(--gold1);opacity:.35"/>`).join('');
@@ -1468,6 +1494,8 @@ if(typeof document!=='undefined'){
     document.getElementById('cel-stars').innerHTML=[0,1,2].map(i=>`<svg viewBox="0 0 40 40" style="animation-delay:${.6+i*.18}s"><path d="${starPath(20,21,18,8)}" style="fill:${i<earned?'var(--gold2)':'var(--rule)'};stroke:${i<earned?'var(--gold3)':'var(--grey)'};stroke-width:2;stroke-linejoin:round"/></svg>`).join('');
     document.getElementById('cel-title').textContent=msgs[0];
     document.getElementById('cel-msg').textContent=msgs[1];
+    {const nb=document.getElementById('cel-new');nb.hidden=!fresh.length;
+      nb.innerHTML=fresh.length?`<span class="cel-new-t">New sticker${fresh.length>1?'s':''}!</span><div class="cel-new-row">${fresh.slice(0,4).map(st=>`<span class="cel-stk" title="${st.name}">${stickerArt(st)}</span>`).join('')}</div><span class="cel-new-n">${fresh.map(st=>st.name).join(', ')}</span>`:''}
     const ov=document.getElementById('celebrate');ov.hidden=false;
     setTimeout(()=>document.getElementById('cel-again').focus(),50);
     if(perfect&&!reduce()){confetti();balloons()}
@@ -1556,6 +1584,42 @@ if(typeof document!=='undefined'){
     document.querySelectorAll('#colours .sw').forEach(b=>b.setAttribute('aria-pressed',b.dataset.c===c))};
   {let c='blue';try{c=localStorage.getItem('pp-colour')||'blue'}catch(e){}setColour(c)}
   document.getElementById('colours').addEventListener('click',e=>{const b=e.target.closest('.sw');if(!b)return;setColour(b.dataset.c);try{localStorage.setItem('pp-colour',b.dataset.c)}catch(e){}});
+  /* ---- sticker book: every sticker has a clear, fixed goal (nothing random) ---- */
+  const MODES=[['count','Warm-up'],['rotate','Rotate'],['mirror','Mirror'],['sequence','Fill the gap'],['pair','Complete the pair'],['odd','Odd one out'],['codes','Codes'],['punch','Fold & punch'],['cube','Cube nets'],['top','Top view'],['side','View from the right'],['ladder','Word ladders'],['mix','Mix']];
+  const RING=['--c4','--c2','--c3','--c5','--c1','--c6','--gold2'];
+  const dayKey=t=>{const d=new Date(t);return d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate()};
+  const SA=(d)=>`<svg viewBox="0 0 100 100" aria-hidden="true">${d}</svg>`;
+  const MILESTONE_ART={
+    first:()=>{const l=document.querySelector('.logo svg');return l?l.outerHTML:''},
+    perfect:()=>SA(`<path d="${starPath(50,53,40,18)}" style="fill:var(--gold2);stroke:var(--gold3);stroke-width:3;stroke-linejoin:round"/><text x="50" y="58" text-anchor="middle" font-family="Baloo 2, sans-serif" font-weight="800" font-size="20" style="fill:#5a3b00">10</text>`),
+    sets10:()=>SA(`<g transform="translate(50 50) scale(.95)">${ICONS.fish(false)}</g>`),
+    sets25:()=>SA(`<path d="M30 18 H70 V34 Q70 56 50 60 Q30 56 30 34 Z" style="fill:var(--gold2);stroke:var(--ink);stroke-width:3;stroke-linejoin:round"/><path d="M30 24 Q14 24 18 36 Q22 46 34 46 M70 24 Q86 24 82 36 Q78 46 66 46" style="fill:none;stroke:var(--ink);stroke-width:3"/><path d="M44 60 H56 V72 H44 Z M34 72 H66 V82 H34 Z" style="fill:var(--gold3);stroke:var(--ink);stroke-width:3;stroke-linejoin:round"/>`),
+    tricky:()=>SA(`<path d="M8 82 L36 32 L50 52 L64 26 L92 82 Z" style="fill:var(--grey);stroke:var(--ink);stroke-width:3;stroke-linejoin:round"/><path d="M64 26 L72 41 L66 38 L60 43 L57 39 Z" style="fill:var(--card);stroke:var(--ink);stroke-width:2;stroke-linejoin:round"/><path d="M64 26 V12 L76 16 L64 20" style="fill:var(--c1);stroke:var(--ink);stroke-width:2.5;stroke-linejoin:round"/>`),
+    expert:()=>SA(`<path d="M40 86 L44 30 H56 L60 86 Z" style="fill:var(--card);stroke:var(--ink);stroke-width:3;stroke-linejoin:round"/><path d="M42 50 H58 M41 68 H59" style="stroke:var(--c1);stroke-width:7"/><path d="M40 30 H60 V20 H40 Z" style="fill:var(--gold2);stroke:var(--ink);stroke-width:3"/><path d="M38 20 L50 10 L62 20 Z" style="fill:var(--c1);stroke:var(--ink);stroke-width:3;stroke-linejoin:round"/><path d="M62 24 L90 16 M62 26 L90 34 M38 24 L10 16 M38 26 L10 34" style="stroke:var(--gold2);stroke-width:3;stroke-linecap:round"/>`),
+    days3:()=>SA(`<circle cx="50" cy="50" r="20" style="fill:var(--gold2);stroke:var(--ink);stroke-width:3"/>${[...Array(8).keys()].map(k=>{const t=k*Math.PI/4;return `<path d="M${(50+28*Math.cos(t)).toFixed(1)} ${(50+28*Math.sin(t)).toFixed(1)} L${(50+40*Math.cos(t)).toFixed(1)} ${(50+40*Math.sin(t)).toFixed(1)}" style="stroke:var(--gold3);stroke-width:5;stroke-linecap:round"/>`}).join('')}<text x="50" y="57" text-anchor="middle" font-family="Baloo 2, sans-serif" font-weight="800" font-size="20" style="fill:#5a3b00">3</text>`),
+    days7:()=>SA(['--c1','--c2','--gold2','--c3','--c4'].map((c,i)=>`<path d="M${12+i*6} 74 A${38-i*6} ${38-i*6} 0 0 1 ${88-i*6} 74" style="fill:none;stroke:var(${c});stroke-width:6"/>`).join('')+`<text x="50" y="86" text-anchor="middle" font-family="Baloo 2, sans-serif" font-weight="800" font-size="20" style="fill:var(--ink)">7</text>`)
+  };
+  const STICKERS=[
+    {id:'first',name:'First flight',how:'Finish your first set',test:h=>h.length>=1},
+    {id:'perfect',name:'Perfect ten',how:'Get every answer right in a set',test:h=>h.some(r=>r.s===(r.n||10))},
+    {id:'sets10',name:'Busy beak',how:'Finish 10 sets',test:h=>h.length>=10},
+    {id:'sets25',name:'Puzzle champion',how:'Finish 25 sets',test:h=>h.length>=25},
+    {id:'tricky',name:'Brave climber',how:'Finish a Tricky set',test:h=>h.some(r=>r.l==='hard')},
+    {id:'expert',name:'Lighthouse keeper',how:'Finish an Expert set',test:h=>h.some(r=>r.l==='expert')},
+    {id:'days3',name:'Sunny days',how:'Play on 3 different days',test:h=>new Set(h.map(r=>dayKey(r.t))).size>=3},
+    {id:'days7',name:'Rainbow week',how:'Play on 7 different days',test:h=>new Set(h.map(r=>dayKey(r.t))).size>=7},
+    ...MODES.map(([m,n])=>({id:'m_'+m,name:n,how:`Finish ${/^[AEIOU]/.test(n)?'an':'a'} ${n} set`,mode:m,test:h=>h.some(r=>r.m===m)}))
+  ];
+  const stickerArt=st=>st.mode?`<svg viewBox="0 0 100 100" aria-hidden="true">${TILE_ICONS[st.mode]()}</svg>`:MILESTONE_ART[st.id]();
+  const earnedIds=h=>new Set(STICKERS.filter(st=>st.test(h)).map(st=>st.id));
+  function stickerHTML(st,got,i){
+    return `<figure class="stk${got?'':' locked'}" aria-label="${st.name}: ${got?'collected':st.how}"><div class="stk-pic" style="--ring:var(${RING[i%RING.length]})">${stickerArt(st)}</div><figcaption><b>${st.name}</b>${got?'':`<span>${st.how}</span>`}</figcaption></figure>`;
+  }
+  function renderStickers(){
+    const got=earnedIds(loadH()),el=document.getElementById('stickers');if(!el)return;
+    document.getElementById('stk-count').textContent=`${got.size} of ${STICKERS.length} collected`;
+    el.innerHTML=STICKERS.map((st,i)=>stickerHTML(st,got.has(st.id),i)).join('');
+  }
   seg('mode',v=>mode=v);seg('level',v=>level=v);
   build();
   renderProgress();
