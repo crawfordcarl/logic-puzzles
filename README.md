@@ -6,6 +6,8 @@ Logic puzzles for preparing for the 11+, live at **https://puzzlepuffin.com**.
 
 A single web page (`index.html`) that makes fresh sets of 10 non-verbal and verbal reasoning puzzles, in the style of 11+ practice books. Everything runs in the browser: there's no server, no sign-in and nothing to install.
 
+Puzzle Puffin was designed and built with [Claude](https://claude.ai), an AI assistant made by Anthropic, from photos of real 11+ practice pages.
+
 ## Puzzle types
 
 | Puzzle | What it asks |
