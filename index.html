@@ -175,8 +175,14 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 :root[data-theme="dark"][data-color="purple"]{--accent:#b79ce6;--accent-soft:#2e2640;--flap:#3e3358}
 @media (prefers-color-scheme: dark){:root[data-color="yellow"]:not([data-theme="light"]){--accent:#f2cc4d;--accent-soft:#3a3218;--flap:#4f4420}}
 :root[data-theme="dark"][data-color="yellow"]{--accent:#f2cc4d;--accent-soft:#3a3218;--flap:#4f4420}
-.brand{flex-wrap:wrap}
-.colours{display:flex;align-items:center;gap:8px;margin-left:auto}
+.brand{flex-wrap:nowrap}
+.brand h1{min-width:0}
+.colours{position:relative;margin-left:auto;flex:none}
+.palbtn{width:44px;height:44px;border-radius:50%;border:0;padding:0;cursor:pointer;background:conic-gradient(#2d6a8c 0 72deg,#e0701f 0 144deg,#2f9a6e 0 216deg,#7c55b8 0 288deg,#f2c230 0);display:grid;place-items:center;box-shadow:0 0 0 1.5px var(--rule)}
+.palcur{width:26px;height:26px;border-radius:50%;background:var(--accent);border:3px solid var(--card)}
+.palbtn[aria-expanded="true"]{box-shadow:0 0 0 3px var(--ink)}
+.palpop{position:absolute;right:0;top:calc(100% + 10px);z-index:20;display:flex;gap:8px;padding:9px 10px;background:var(--card);border:1.5px solid var(--rule);border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.palpop[hidden]{display:none!important}
 .sw{width:30px;height:30px;border-radius:50%;border:2.5px solid var(--card);box-shadow:0 0 0 1.5px var(--rule);cursor:pointer;padding:0;transition:transform .15s}
 .sw:hover{transform:scale(1.12)}
 .sw[aria-pressed="true"]{box-shadow:0 0 0 3px var(--ink)}
@@ -253,8 +259,8 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
     <path d="M0 0 H7 a4 4 0 1 1 6 0 H20 V7 a4 4 0 1 0 0 6 V20 H0 Z" fill="#ffd23f" stroke="#1c2430" stroke-width="2.2" stroke-linejoin="round"/>
   </g>
   <path d="M48 86 Q56 84 60 78" fill="none" stroke="#141a22" stroke-width="6" stroke-linecap="round"/>
-</svg></span><h1>Puzzle Puffin</h1><div class="colours" id="colours" role="group" aria-label="Choose a colour"><button class="sw" data-c="blue" aria-pressed="true" aria-label="Puffin Blue" title="Puffin Blue" style="background:#2d6a8c"></button><button class="sw" data-c="orange" aria-pressed="false" aria-label="Beak Orange" title="Beak Orange" style="background:#e0701f"></button><button class="sw" data-c="green" aria-pressed="false" aria-label="Sea Green" title="Sea Green" style="background:#2f9a6e"></button><button class="sw" data-c="purple" aria-pressed="false" aria-label="Heather Purple" title="Heather Purple" style="background:#7c55b8"></button><button class="sw" data-c="yellow" aria-pressed="false" aria-label="Sunny Yellow" title="Sunny Yellow" style="background:#f2c230"></button></div></div>
-    <p class="lede">Reasoning puzzles like the ones in school homework and practice books, from turning and mirroring pictures to folding paper, cube nets and word ladders. Choose a kind of puzzle and a level, then tap an answer to check it. Every tap of "New puzzles" makes a fresh set.</p>
+</svg></span><h1>Puzzle Puffin</h1><div class="colours" id="colours"><button class="palbtn" id="palbtn" aria-expanded="false" aria-controls="palpop" aria-label="Choose a colour" title="Choose a colour"><span class="palcur"></span></button><div class="palpop" id="palpop" role="group" aria-label="Choose a colour" hidden><button class="sw" data-c="blue" aria-pressed="true" aria-label="Puffin Blue" title="Puffin Blue" style="background:#2d6a8c"></button><button class="sw" data-c="orange" aria-pressed="false" aria-label="Beak Orange" title="Beak Orange" style="background:#e0701f"></button><button class="sw" data-c="green" aria-pressed="false" aria-label="Sea Green" title="Sea Green" style="background:#2f9a6e"></button><button class="sw" data-c="purple" aria-pressed="false" aria-label="Heather Purple" title="Heather Purple" style="background:#7c55b8"></button><button class="sw" data-c="yellow" aria-pressed="false" aria-label="Sunny Yellow" title="Sunny Yellow" style="background:#f2c230"></button></div></div></div>
+    <p class="lede">Picture and word puzzles like the ones in 11+ practice books. Pick a level and a puzzle, then tap an answer to check it.</p>
   </header>
 
   <div class="bar">
@@ -1711,6 +1717,12 @@ if(typeof document!=='undefined'){
     document.getElementById('stk-count').textContent=`${got.size} of ${STICKERS.length} collected`;
     el.innerHTML=STICKERS.map((st,i)=>stickerHTML(st,got.has(st.id),i)).join('');
   }
+  {const pb=document.getElementById('palbtn'),pp=document.getElementById('palpop');
+    const openPal=o=>{pp.hidden=!o;pb.setAttribute('aria-expanded',o)};
+    pb.addEventListener('click',e=>{e.stopPropagation();openPal(pp.hidden)});
+    pp.addEventListener('click',e=>{if(e.target.closest('.sw'))setTimeout(()=>{openPal(false);pb.focus()},120)});
+    document.addEventListener('click',e=>{if(!pp.hidden&&!e.target.closest('#colours'))openPal(false)});
+    document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!pp.hidden){openPal(false);pb.focus()}})}
   seg('mode',v=>mode=v);seg('level',v=>level=v);
   build();
   renderProgress();
